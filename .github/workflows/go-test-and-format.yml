@@ -1,40 +1,69 @@
-name: Go Test and Format Check
+name: Go Test and Format Checks
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+  - cron: '0 10 * * 1' # run "At 10:00 on Monday"
+  workflow_call:
+    inputs:
+      skipTests:
+        description: 'Skip tests, useful when there is a dedicated CI job for tests'
+        default: false
+        required: false
+        type: boolean
 
 jobs:
-  test-and-format:
-    name: Test and Format Check
+  run:
+    name: Go Test and Format Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: true
+      matrix:
+        go: ['1.20.x']
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v3
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - name: Install Go
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.20
+          go-version: ${{ matrix.go }}
+          check-latest: true
 
-      - name: Run Go tests
-        run: go test ./...
+      - name: Go Format
+        run: gofmt -s -w . && git diff --exit-code
 
-      - name: Run gofmt check
-        run: gofmt -l -s -e .
+      - name: Go Vet
+        run: go vet ./...
 
-      - name: Check for changes
-        id: git-check
-        run: echo ::set-output name=changes::$(git status --porcelain)
+      - name: Go Tidy
+        run: go mod tidy && git diff --exit-code
 
-      - name: Fail if changes found
-        run: |
-          if [ -n "${{ steps.git-check.outputs.changes }}" ]; then
-            echo "Changes detected. Please run 'gofmt' and commit the changes.";
-            exit 1;
-          fi
+      - name: Go Mod
+        run: go mod download
+
+      - name: Go Mod Verify
+        run: go mod verify
+
+      - name: Go Generate
+        run: go generate ./... && git diff --exit-code
+
+      - name: Go Build
+        run: go build -o /dev/null ./...
+
+      - name: Go Compile Tests
+        if: ${{ inputs.skipTests }}
+        run: go test -exec /bin/true ./...
+
+      - name: Go Test
+        if: ${{ !inputs.skipTests }}
+        run: go test -v -count=1 -race -shuffle=on -coverprofile=coverage.txt ./...
+
+      - name: Go Benchmark
+        if: ${{ !inputs.skipTests }}
+        run: go test -v -shuffle=on -run=- -bench=. -benchtime=1x ./...
