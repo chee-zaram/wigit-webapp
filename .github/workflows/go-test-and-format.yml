@@ -1,0 +1,40 @@
+name: Go Test and Format Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  test-and-format:
+    name: Test and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Run gofmt check
+        run: gofmt -l -s -e .
+
+      - name: Check for changes
+        id: git-check
+        run: echo ::set-output name=changes::$(git status --porcelain)
+
+      - name: Fail if changes found
+        run: |
+          if [ -n "${{ steps.git-check.outputs.changes }}" ]; then
+            echo "Changes detected. Please run 'gofmt' and commit the changes.";
+            exit 1;
+          fi
