@@ -1,10 +1,13 @@
 package db
 
 import (
+	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/wigit-gh/webapp/internal/config"
+	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +23,44 @@ var (
 
 	// dsn is the domain string name to connect to the database.
 	dsn = NewDatabaseDSN(conf)
+
+	// Database object
+	db, _ = NewDB(dsn)
+
+	// All table names
+	tableNames = struct {
+		users    string
+		products string
+		orders   string
+		bookings string
+		items    string
+		services string
+		slots    string
+	}{
+		users: "users", products: "products", orders: "orders", bookings: "bookings",
+		items: "items", services: "services", slots: "slots",
+	}
 )
+
+// TestMain runs before any test in this package runs.
+// It sets all environment variables to ensure all tests can be carried out,
+// and resets the variables when tests are done.
+func TestMain(m *testing.M) {
+	// Drop all existing tables to start from clean slate
+	db.Raw("DROP TABLES IF EXISTS ?, ?, ?, ?, ?, ?, ?;",
+		tableNames.users, tableNames.products, tableNames.orders, tableNames.bookings,
+		tableNames.items, tableNames.services, tableNames.slots,
+	)
+
+	// Call NewDB to perform automigration
+	db, _ = NewDB(dsn)
+
+	// Run all tests
+	exitCode := m.Run()
+
+	// Return the exitCode
+	os.Exit(exitCode)
+}
 
 // TestNewDatabaseDSN tests that the function returns a valid dsn value.
 func TestNewDatabaseDSN(t *testing.T) {
@@ -40,14 +80,15 @@ func TestCreateDBConnection(t *testing.T) {
 	assert := assert.New(t)
 	var gormDB *gorm.DB
 
-	// On success.
 	session, err := createDBConnection(dsn)
 	assert.NotNil(session)
 	assert.Nil(err)
 	assert.IsType(gormDB, session)
+}
 
-	// On failure
-	assert.Panics(func() { createDBConnection("nonsense-string") })
+// TestCreateDBConnectionPanic tests that the function panics with bad argument.
+func TestCreateDBConnectionPanic(t *testing.T) {
+	assert.Panics(t, func() { createDBConnection("nonsense-string") })
 }
 
 // TestNewDB checks that the function returns the custom database type.
@@ -55,12 +96,61 @@ func TestNewDB(t *testing.T) {
 	assert := assert.New(t)
 	var customDBtype *DB
 
-	// On success
-	db, err := NewDB(dsn)
 	assert.NotNil(db)
-	assert.Nil(err)
 	assert.IsType(customDBtype, db)
+}
 
-	// On wrong input
-	assert.Panics(func() { NewDB("nonsense-string") })
+// TestNewDBPanic tests that the function panics with bad argument.
+func TestNewDBPanic(t *testing.T) {
+	assert.Panics(t, func() { NewDB("nonsense-string") })
+}
+
+// TestNewDBAutoMigration checks for the automigration of tables in the database
+func TestNewDBAutoMigration(t *testing.T) {
+	assert := assert.New(t)
+
+	tables := []string{"users", "orders", "items", "bookings", "products", "services", "slots"}
+	query := "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?"
+
+	for _, table := range tables {
+		var count int
+		if err := db.Query(func(tx *gorm.DB) error {
+			return tx.Raw(query, conf.DBName, table).Scan(&count).Error
+		}); err != nil {
+			t.Fatal("failed send query")
+		}
+
+		assert.True(count == 1)
+	}
+}
+
+// TestBeforeCreateHook performs a create operation on the database.
+func TestBeforeCreateHook(t *testing.T) {
+	assert := assert.New(t)
+	slotTime := new(time.Time)
+	isFree := new(bool)
+	slot := new(models.Slot)
+	dbSlot := new(models.Slot)
+
+	*slotTime = time.Now()
+	*slot = models.Slot{
+		DateTime: slotTime,
+		IsFree:   isFree,
+	}
+
+	if err := db.Query(func(tx *gorm.DB) error {
+		return tx.Create(slot).Error
+	}); err != nil {
+		t.Fatal("failed to create slot in database")
+	}
+
+	if err := db.Query(func(tx *gorm.DB) error {
+		return tx.Model(slot).First(dbSlot, slot.ID).Error
+	}); err != nil {
+		t.Fatal("failed to fetch user from slot database")
+	}
+
+	assert.NotNil(dbSlot)
+	assert.NotNil(dbSlot.ID)
+	assert.Equal(dbSlot.ID, slot.ID)
 }
