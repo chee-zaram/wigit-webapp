@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -27,7 +28,7 @@ var logFilePath = filepath.Join(logsDir, logFileName)
 // ConfigureLogger sets up a global logger using `zerolog` package for the program.
 //
 // If in `dev` mode, it logs to `stderr`, if in `prod` it logs to the wigit log file.
-func ConfigureLogger(env string) {
+func ConfigureLogger(env string) *os.File {
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
 	switch env {
@@ -42,10 +43,13 @@ func ConfigureLogger(env string) {
 		logFileWriter := zerolog.ConsoleWriter{Out: logFile, NoColor: true, TimeFormat: time.RFC3339}
 		logger := zerolog.New(logFileWriter).With().Timestamp().Logger()
 		log.Logger = logger
+		return logFile
 	default:
 		fmt.Printf("env not valid: %s\n", env)
 		os.Exit(2)
 	}
+
+	return nil
 }
 
 // createLogDir creates a directory for the program logs if not exists.
@@ -86,11 +90,7 @@ func openLogFile() *os.File {
 }
 
 // SetGinLogToFile sets gin's logger to be the custom log file.
-func SetGinLogToFile() {
+func SetGinLogToFile(logFile *os.File) {
 	gin.SetMode(gin.ReleaseMode)
-	logFile, err := os.Create(logFilePath)
-	if err != nil {
-		log.Panic().Err(err).Msg("error opening gin log file for wigit")
-	}
 	gin.DefaultWriter = io.MultiWriter(logFile)
 }
