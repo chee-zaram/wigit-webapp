@@ -94,3 +94,13 @@ func SetGinLogToFile(logFile *os.File) {
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.MultiWriter(logFile)
 }
+
+// SetGORMLogToFile sets gorm to log to log file
+func SetGORMLogToFile() logger.Interface {
+	return logger.New(&log.Logger, logger.Config{
+		SlowThreshold:             0,
+		Colorful:                  false,
+		IgnoreRecordNotFoundError: true,
+		LogLevel:                  logger.Info,
+	})
+}

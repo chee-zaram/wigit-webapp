@@ -6,6 +6,7 @@ import (
 
 	"github.com/wigit-gh/webapp/internal/config"
 	"github.com/wigit-gh/webapp/internal/db/models"
+	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -65,7 +66,7 @@ func NewDB(dsn string) (*DB, error) {
 // It returns the session and an error if any occured.
 func createDBConnection(dsn string) (*gorm.DB, error) {
 	// Open connection to database
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logging.SetGORMLogToFile()})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
