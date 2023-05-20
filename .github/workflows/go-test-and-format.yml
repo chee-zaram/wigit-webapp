@@ -25,6 +25,16 @@ jobs:
       matrix:
         go: ['1.20.x']
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: WWApp-dev-pwd-0
+          MYSQL_DATABASE: wwapp_dev_db_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
