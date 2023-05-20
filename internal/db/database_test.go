@@ -47,10 +47,7 @@ var (
 // and resets the variables when tests are done.
 func TestMain(m *testing.M) {
 	// Drop all existing tables to start from clean slate
-	db.Raw("DROP TABLES IF EXISTS ?, ?, ?, ?, ?, ?, ?;",
-		tableNames.users, tableNames.products, tableNames.orders, tableNames.bookings,
-		tableNames.items, tableNames.services, tableNames.slots,
-	)
+	db.Exec("DROP TABLES IF EXISTS users, orders, bookings, services, slots, products, items;")
 
 	// Call NewDB to perform automigration
 	db, _ = NewDB(dsn)
