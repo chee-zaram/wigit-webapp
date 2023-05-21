@@ -26,7 +26,7 @@ var (
 	dsn = NewDatabaseDSN(conf)
 
 	// Database object
-	db, _ = NewDB(dsn)
+	db = GetConnector(conf)
 
 	// All table names
 	tableNames = struct {
@@ -48,7 +48,6 @@ var (
 // and resets the variables when tests are done.
 func TestMain(m *testing.M) {
 	logging.ConfigureLogger("dev")
-	logging.SetGORMLogToFile()
 
 	// Drop all existing tables to start from clean slate
 	db.Exec("DROP TABLES IF EXISTS users, orders, bookings, services, slots, products, items;")
