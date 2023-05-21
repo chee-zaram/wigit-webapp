@@ -23,14 +23,16 @@ type User struct {
 	FirstName *string `gorm:"not null;type:varchar(45)" json:"first_name"`
 	LastName  *string `gorm:"not null;type:varchar(45)" json:"last_name"`
 	Address   *string `gorm:"not null;type:varchar(255)" json:"address"`
-	Phone     *string `gorm:"not null;type:varchar(11)" json:"phone" binding:"min=9,max=11"`
+	Phone     *string `gorm:"not null;type:varchar(11)" json:"phone"`
 
 	// Email is the unique email for this user.
 	Email *string `gorm:"unique;not null;type:varchar(45)" json:"email" binding:"required,email,min=5,max=45"`
 
 	// Password is the password entered by the user during signup or signin.
 	// It is not stored in the database.
-	Password *string `gorm:"not null;type:varchar(45)" json:"password" binding:"required,min=5,max=45"`
+	Password *string `gorm:"-" json:"password"`
+
+	RepeatPassword *string `gorm:"-" json:"repeat_password"`
 
 	// This is the hashed version of `Password`, using bcrypt and `Salt`.
 	HashedPassword []byte `gorm:"not null;type:blob" json:"-"`
