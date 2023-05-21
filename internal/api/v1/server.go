@@ -78,4 +78,5 @@ func ListenAndServer(conf config.Config) {
 // addRoutes adds all routes needed by the front end app.
 func addRoutes(api *gin.RouterGroup) {
 	routes.SignUpRoutes(api)
+	routes.SignInRoutes(api)
 }
