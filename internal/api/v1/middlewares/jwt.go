@@ -5,7 +5,6 @@ import (
 
 	"github.com/cristalhq/jwt/v5"
 	"github.com/rs/zerolog/log"
-	"github.com/wigit-gh/webapp/internal/db/models"
 )
 
 var (
@@ -33,11 +32,11 @@ func ConfigureJWT(secretKey []byte) {
 	}
 }
 
-// CreateJWT returns a new token string set up for the logged in user.
-func CreateJWT(user *models.User) (string, error) {
+// CreateJWT returns a new token string set up for the logged in user using userID.
+func CreateJWT(userID string) (string, error) {
 	// Store user ID in claims
 	claims := &jwt.RegisteredClaims{
-		ID:        *user.ID,
+		ID:        userID,
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 	}
 
