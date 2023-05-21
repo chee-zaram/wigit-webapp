@@ -12,14 +12,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/api/v1/routes"
 	"github.com/wigit-gh/webapp/internal/config"
 	"github.com/wigit-gh/webapp/internal/db"
 )
-
-// DBConnector servers as a global link to the database.
-var DBConnector *db.DB
 
 // ListenAndServer starts up the gin web server to listen on host and port as
 // specified in `conf`.
@@ -27,7 +25,7 @@ func ListenAndServer(conf config.Config) {
 	middlewares.ConfigureJWT([]byte(conf.JWTSecret))
 
 	// Our link to the database
-	DBConnector = db.GetConnector(conf)
+	handlers.DBConnector = db.GetConnector(conf)
 
 	// A configured router with logger and recovery middleware
 	router := gin.Default()
