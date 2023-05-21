@@ -57,7 +57,7 @@ func ListenAndServer(conf config.Config) {
 	}()
 
 	// Create a channel
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	// Pass channel to signal to notify when any of the signals are encountered
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	// Execution will be blocked here until a signal is read from quit
