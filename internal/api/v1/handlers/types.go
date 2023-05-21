@@ -10,6 +10,10 @@ import (
 var DBConnector *db.DB
 
 var (
+	// ErrEmailNotProvided indicates email not provided during signin.
+	ErrEmailNotProvided = errors.New("Email required")
+	// ErrInvalidUser indicates the user does not exist during signin.
+	ErrInvalidUser = errors.New("Invalid Email")
 	// ErrInternalServer indicates some server side error occured that can't be handled.
 	ErrInternalServer = errors.New("Something went wrong!")
 	// ErrFailedToAddUserToDB indicates that an error occured when adding user to database.
@@ -26,7 +30,7 @@ var (
 	ErrNoPhone = errors.New("Valid Phone required")
 	// ErrInvalidPhone indicates wrong number of digits were passed for user on sign up.
 	ErrInvalidPhone = errors.New("Invalid number of digits in Phone field")
-	// ErrInvalidPass indicates the user did not provide a Password on sign up.
+	// ErrInvalidPass indicates the user did not provide a Password on sign up or a valid password on signin.
 	ErrInvalidPass = errors.New("Valid Password required")
 	// ErrPassMismatch indicates the user entered did not repeat the password correctly.
 	ErrPassMismatch = errors.New("Password Mismatch")
