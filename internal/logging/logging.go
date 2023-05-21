@@ -101,6 +101,6 @@ func SetGORMLogToFile() logger.Interface {
 		SlowThreshold:             0,
 		Colorful:                  false,
 		IgnoreRecordNotFoundError: true,
-		LogLevel:                  logger.Info,
+		LogLevel:                  logger.Error,
 	})
 }
