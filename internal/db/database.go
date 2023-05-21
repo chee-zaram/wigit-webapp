@@ -4,6 +4,7 @@ import (
 	"fmt"
 	// _ "time/tzdata" if we make use of select time zone we may have to uncomment this and move to main
 
+	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/config"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"github.com/wigit-gh/webapp/internal/logging"
@@ -91,4 +92,14 @@ func createDBConnection(dsn string) (*gorm.DB, error) {
 	}
 
 	return session, nil
+}
+
+// GetConnector returns a ready connector to the database.
+func GetConnector(conf config.Config) *DB {
+	dbConnector, err := NewDB(NewDatabaseDSN(conf))
+	if err != nil {
+		log.Panic().Err(err).Msg("failed to get db connector")
+	}
+
+	return dbConnector
 }
