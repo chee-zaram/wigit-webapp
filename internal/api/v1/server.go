@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
+	"github.com/wigit-gh/webapp/internal/api/v1/routes"
 	"github.com/wigit-gh/webapp/internal/config"
 	"github.com/wigit-gh/webapp/internal/db"
 )
@@ -77,4 +78,6 @@ func ListenAndServer(conf config.Config) {
 }
 
 // addRoutes adds all routes needed by the front end app.
-func addRoutes(api *gin.RouterGroup) {}
+func addRoutes(api *gin.RouterGroup) {
+	routes.SignUpRoutes(api)
+}
