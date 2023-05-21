@@ -1,8 +1,11 @@
 package middlewares
 
 import (
+	"time"
+
 	"github.com/cristalhq/jwt/v5"
 	"github.com/rs/zerolog/log"
+	"github.com/wigit-gh/webapp/internal/db/models"
 )
 
 var (
@@ -28,4 +31,22 @@ func ConfigureJWT(secretKey []byte) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to create JWT verifier")
 	}
+}
+
+// CreateJWT returns a new token string set up for the logged in user.
+func CreateJWT(user *models.User) (string, error) {
+	// Store user ID in claims
+	claims := &jwt.RegisteredClaims{
+		ID:        *user.ID,
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+	}
+
+	builder := jwt.NewBuilder(JWTSigner)
+	token, err := builder.Build(claims)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to build token with claims")
+		return "", err
+	}
+
+	return token.String(), nil
 }
