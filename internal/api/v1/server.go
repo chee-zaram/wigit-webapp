@@ -52,14 +52,14 @@ func ListenAndServer(conf config.Config) {
 	// be reached
 	go func() {
 		if err := r.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-			log.Panic().Err(err).Msg("failed to start server")
+			log.Info().Msg("Server now closed")
 		}
 	}()
 
 	// Create a channel
 	quit := make(chan os.Signal)
 	// Pass channel to signal to notify when any of the signals are encountered
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	// Execution will be blocked here until a signal is read from quit
 	<-quit
 	log.Info().Msg("Attempting to shutdown server gracefully...")
