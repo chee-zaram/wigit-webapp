@@ -81,7 +81,7 @@ func backupLastLog() {
 
 // openLogFile opens the configured log file for writing.
 func openLogFile() *os.File {
-	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE, 0644)
+	logFile, err := os.OpenFile(logFilePath, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		log.Panic().Err(err).Msg("failed to open log file for writing")
 	}
