@@ -114,7 +114,7 @@ func validateSignUpUser(user *models.User) error {
 
 // hashPassword creates a hash of the password plus a random salt.
 func hashPassword(user *models.User) error {
-	salt, err := generateSalt()
+	salt, err := generateRandomBytes()
 	if err != nil {
 		return err
 	}
@@ -130,14 +130,14 @@ func hashPassword(user *models.User) error {
 	return nil
 }
 
-// generateSalt creates a new random salt for the new user.
-func generateSalt() ([]byte, error) {
+// generateRandomBytes generates a random 16 byte slice.
+func generateRandomBytes() ([]byte, error) {
 	salt := make([]byte, 16)
 
 	// generate random bytes
 	if _, err := rand.Read(salt); err != nil {
 		log.Error().Err(err).Msg("failed to create salt")
-		return nil, err
+		return nil, ErrInternalServer
 	}
 	return salt, nil
 }
