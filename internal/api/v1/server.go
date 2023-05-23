@@ -79,4 +79,5 @@ func ListenAndServer(conf config.Config) {
 func addRoutes(api *gin.RouterGroup) {
 	routes.SignUpRoutes(api)
 	routes.SignInRoutes(api)
+	routes.ProductsRoutes(api)
 }
