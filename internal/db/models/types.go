@@ -151,7 +151,7 @@ type Slot struct {
 	BaseModel
 
 	// DateTime is the date and time for which the slot has been allocated.
-	DateTime *time.Time `gorm:"not null"`
+	DateTime *time.Time `gorm:"not null" json:"date_time"`
 
 	// IsFree says if the slot has been taken or not.
 	IsFree *bool `gorm:"not null" json:"is_free"`

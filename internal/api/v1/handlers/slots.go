@@ -14,7 +14,7 @@ func GetSlots(ctx *gin.Context) {
 	var slots []models.Slot
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Where("is_free = ?", true).Where("time > ?", time.Now()).Find(&slots).Error
+		return tx.Where("is_free = ?", true).Where("date_time > ?", time.Now()).Find(&slots).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
