@@ -34,6 +34,9 @@ type User struct {
 
 	RepeatPassword *string `gorm:"-" json:"repeat_password"`
 
+	// ResetToken is used to validate the user to allow them reset their password.
+	ResetToken string `gorm:"type:varchar(16)" json:"-"`
+
 	// This is the hashed version of `Password`, using bcrypt and `Salt`.
 	HashedPassword []byte `gorm:"not null;type:blob" json:"-"`
 
