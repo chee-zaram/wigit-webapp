@@ -82,4 +82,5 @@ func addRoutes(api *gin.RouterGroup) {
 	routes.ProductsRoutes(api)
 	routes.ServicesRoutes(api)
 	routes.SlotsRoutes(api)
+	routes.ResetPasswordRoutes(api)
 }
