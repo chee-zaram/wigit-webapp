@@ -38,4 +38,8 @@ var (
 	ErrPassTooShort = errors.New("Password must be at least 8 characters long")
 	// ErrPassTooLong indicates the user entered a password longer than 45 characters during sign up.
 	ErrPassTooLong = errors.New("Password must not exceed 45 characters")
+	// ErrInvalidProductID indicates that the id provided is invalid.
+	ErrInvalidProductID = errors.New("Invalid Product ID")
+	// ErrInvalidCategory indicates that the category of products provided is invalid.
+	ErrInvalidCategory = errors.New("Not a valid category")
 )
