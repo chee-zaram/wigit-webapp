@@ -42,4 +42,6 @@ var (
 	ErrInvalidProductID = errors.New("Invalid Product ID")
 	// ErrInvalidCategory indicates that the category of products provided is invalid.
 	ErrInvalidCategory = errors.New("Not a valid category")
+	// ErrInvalidServiceID indicates the service specified by the given ip does not exist.
+	ErrInvalidServiceID = errors.New("Not a valid service")
 )
