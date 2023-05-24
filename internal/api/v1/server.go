@@ -108,4 +108,6 @@ func addAuthRoutes(regularAuth *gin.RouterGroup) {}
 
 // addAdminRoutes adds all routes that need both authentication and authorization.
 // Typically, this is all admin routes.
-func addAdminRoutes(admin *gin.RouterGroup) {}
+func addAdminRoutes(admin *gin.RouterGroup) {
+	routes.AdminBookingsRoutes(admin)
+}
