@@ -89,3 +89,62 @@ func GetProductByCategory(ctx *gin.Context) {
 func getTrending() ([]models.Product, error) {
 	panic("Not yet implemented")
 }
+
+// AdminPostProducts adds products to the database.
+func AdminPostProducts(ctx *gin.Context) {
+	product := new(models.Product)
+	if err := ctx.ShouldBind(product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := validatePostProductsData(product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Create(product).Error
+	}); err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
+		return
+	} else if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"msg":     "Product created successfully",
+		"product": product,
+	})
+}
+
+// validatePostProductsData validates the fields provided in the json payload during
+// post request to products endpoint.
+func validatePostProductsData(product *models.Product) error {
+	if product.Name == nil || *product.Name == "" {
+		return errors.New("Invalid product name")
+	}
+
+	if product.Description == nil || *product.Description == "" {
+		return errors.New("Invalid product description")
+	}
+
+	if product.Category == nil || *product.Category == "" {
+		return errors.New("Invalid product category")
+	}
+
+	if product.Stock == nil || *product.Stock < 0 {
+		return errors.New("Invalid product stock")
+	}
+
+	if product.Price == nil || product.Price.Sign() < 0 {
+		return errors.New("Invalid product price")
+	}
+
+	if product.ImageURL == nil || *product.ImageURL == "" {
+		return errors.New("Invalid image URL")
+	}
+
+	return nil
+}
