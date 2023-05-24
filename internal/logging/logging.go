@@ -91,6 +91,7 @@ func openLogFile() *os.File {
 
 // SetGinLogToFile sets gin's logger to be the custom log file.
 func SetGinLogToFile(logFile *os.File) {
+	gin.DisableConsoleColor()
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.MultiWriter(logFile)
 }
