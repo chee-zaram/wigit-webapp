@@ -15,4 +15,5 @@ func ServicesRoutes(api *gin.RouterGroup) {
 func AdminServicesRoutes(admin *gin.RouterGroup) {
 	admin.POST("/services", handlers.AdminPostServices)
 	admin.DELETE("/services/:service_id", handlers.AdminDeleteServices)
+	admin.PUT("/services/:service_id", handlers.AdminPutServices)
 }

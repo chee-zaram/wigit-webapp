@@ -65,7 +65,7 @@ func AdminPostServices(ctx *gin.Context) {
 		return
 	}
 
-	if err := validatePostServicesData(_service); err != nil {
+	if err := validateServicesData(_service); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -92,8 +92,8 @@ func AdminPostServices(ctx *gin.Context) {
 	})
 }
 
-// validatePostServicesData checks to make sure the data to be added is valid.
-func validatePostServicesData(service *models.Service) error {
+// validateServicesData checks to make sure the data to be added is valid.
+func validateServicesData(service *models.Service) error {
 	if service.Price == nil || service.Price.Sign() < 0 {
 		return errors.New("Price must be set and cannot be a negative value")
 	}
@@ -139,6 +139,58 @@ func deleteServiceFromDB(id string) error {
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM services WHERE id = ?`, id).Error
 	}); err != nil { // Exec does not return a ErrRecordNotFound so no need to check
+		return err
+	}
+
+	return nil
+}
+
+// AdminPutServices handles put requests to the services endpoint.
+func AdminPutServices(ctx *gin.Context) {
+	_service := new(models.Service)
+	id := ctx.Param("service_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+		return
+	}
+
+	if err := ctx.ShouldBindJSON(_service); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	service, err := getServiceFromDB(id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := updateServiceInDB(service, _service); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "Service updated successfully",
+		"data": service,
+	})
+}
+
+// updateServiceInDB updates the service's information in the database.
+func updateServiceInDB(dbService, newService *models.Service) error {
+	dbService.Name = newService.Name
+	dbService.Description = newService.Description
+	dbService.Price = newService.Price
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Save(dbService).Error
+	}); err != nil {
+		return err
+	}
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.First(dbService, "id = ?", *dbService.ID).Error
+	}); err != nil {
 		return err
 	}
 
