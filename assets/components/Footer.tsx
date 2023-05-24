@@ -5,7 +5,7 @@ import Feedback from "@components/Feedback";
 import Socials from "@components/Socials";
 
 const Footer = () => (
-    <footer>
+    <footer className='footer'>
         <Feedback />
         <UsefulLinks />
         <Socials />
