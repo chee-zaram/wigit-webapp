@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -53,4 +54,64 @@ func GetServiceByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"data": service})
+}
+
+// AdminPostServices adds a new service to the database.
+func AdminPostServices(ctx *gin.Context) {
+	_service := new(models.Service)
+
+	if err := ctx.ShouldBindJSON(_service); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := validatePostServicesData(_service); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Create(_service).Error
+	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Service with this name already exists"})
+		return
+	} else if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	service, err := getServiceFromDB(*_service.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"msg":  "Service created successfully",
+		"data": service,
+	})
+}
+
+// validatePostServicesData checks to make sure the data to be added is valid.
+func validatePostServicesData(service *models.Service) error {
+	if service.Price == nil || service.Price.Sign() < 0 {
+		return errors.New("Price must be set and cannot be a negative value")
+	}
+
+	return nil
+}
+
+// getServiceFromDB retrieves a service from the database based on the id provided.
+func getServiceFromDB(id string) (*models.Service, error) {
+	service := new(models.Service)
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.First(service, "id = ?", id).Error
+	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("failed to add service to the database")
+	} else if err != nil {
+		return nil, ErrInternalServer
+	}
+
+	return service, nil
 }
