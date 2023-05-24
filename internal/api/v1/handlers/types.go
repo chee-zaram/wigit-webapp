@@ -44,4 +44,6 @@ var (
 	ErrInvalidCategory = errors.New("Not a valid category")
 	// ErrInvalidServiceID indicates the service specified by the given ip does not exist.
 	ErrInvalidServiceID = errors.New("Not a valid service")
+	// ErrInvalidSlotID indicates that not slot id was provided or the slot id provided is not valid.
+	ErrInvalidSlotID = errors.New("Slot ID is not valid")
 )
