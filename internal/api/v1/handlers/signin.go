@@ -13,19 +13,19 @@ import (
 
 // SignIn handles post requests to the /signin route.
 func SignIn(ctx *gin.Context) {
-	user := new(models.User)
-	if err := ctx.ShouldBind(user); err != nil {
+	_user := new(models.User)
+	if err := ctx.ShouldBind(_user); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	userID, err := authenticateUser(user)
+	user, err := authenticateUser(_user)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, err := middlewares.CreateJWT(userID)
+	token, err := middlewares.CreateJWT(*user.ID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
@@ -39,29 +39,29 @@ func SignIn(ctx *gin.Context) {
 }
 
 // authenticateUser verifies the user attempting to log in is a valid user.
-func authenticateUser(user *models.User) (string, error) {
+func authenticateUser(user *models.User) (*models.User, error) {
 	var err error
 
 	if user.Email == nil {
-		return "", ErrEmailNotProvided
+		return nil, ErrEmailNotProvided
 	}
 
 	if user.Password == nil {
-		return "", ErrInvalidPass
+		return nil, ErrInvalidPass
 	}
 
 	// Get user with Email from the database.
 	dbUser, err := getUserFromDB(*user.Email)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Verify the user password.
 	if err := validateUser(user, dbUser); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return *dbUser.ID, nil
+	return dbUser, nil
 }
 
 // getUserFromDB gets the user with `email` from the database.
