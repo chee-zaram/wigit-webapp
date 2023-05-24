@@ -30,7 +30,7 @@ func GetProducts(ctx *gin.Context) {
 }
 
 // GetProduct retrieves a product based on its id.
-func GetProduct(ctx *gin.Context) {
+func GetProductByID(ctx *gin.Context) {
 	id := ctx.Param("product_id")
 	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
@@ -93,19 +93,19 @@ func getTrending() ([]models.Product, error) {
 
 // AdminPostProducts adds products to the database.
 func AdminPostProducts(ctx *gin.Context) {
-	product := new(models.Product)
-	if err := ctx.ShouldBind(product); err != nil {
+	_product := new(models.Product)
+	if err := ctx.ShouldBindJSON(_product); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := validatePostProductsData(product); err != nil {
+	if err := validatePostProductsData(_product); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Create(product).Error
+		return tx.Create(_product).Error
 	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
 		return
@@ -114,38 +114,39 @@ func AdminPostProducts(ctx *gin.Context) {
 		return
 	}
 
+	product, err := getProductFromDB(*_product.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusCreated, gin.H{
-		"msg":     "Product created successfully",
-		"product": product,
+		"msg":  "Product created successfully",
+		"data": product,
 	})
 }
 
 // validatePostProductsData validates the fields provided in the json payload during
 // post request to products endpoint.
 func validatePostProductsData(product *models.Product) error {
-	if product.Name == nil || *product.Name == "" {
-		return errors.New("Invalid product name")
-	}
-
-	if product.Description == nil || *product.Description == "" {
-		return errors.New("Invalid product description")
-	}
-
-	if product.Category == nil || *product.Category == "" {
-		return errors.New("Invalid product category")
-	}
-
-	if product.Stock == nil || *product.Stock < 0 {
-		return errors.New("Invalid product stock")
-	}
-
 	if product.Price == nil || product.Price.Sign() < 0 {
 		return errors.New("Invalid product price")
 	}
 
-	if product.ImageURL == nil || *product.ImageURL == "" {
-		return errors.New("Invalid image URL")
+	return nil
+}
+
+// getProductFromDB retrieves a product from the database based the id.
+func getProductFromDB(id string) (*models.Product, error) {
+	product := new(models.Product)
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.First(product, "id = ?", id).Error
+	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("Product already exists")
+	} else if err != nil {
+		return nil, ErrInternalServer
 	}
 
-	return nil
+	return product, nil
 }

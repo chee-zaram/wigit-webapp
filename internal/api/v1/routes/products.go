@@ -8,7 +8,7 @@ import (
 // ProductsRoutes adds all routes for the product endpoint.
 func ProductsRoutes(api *gin.RouterGroup) {
 	api.GET("/products", handlers.GetProducts)
-	api.GET("/products/:product_id", handlers.GetProduct)
+	api.GET("/products/:product_id", handlers.GetProductByID)
 	api.GET("/products/categories/:category", handlers.GetProductByCategory)
 }
 
