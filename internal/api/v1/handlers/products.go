@@ -179,3 +179,63 @@ func deleteProductFromDB(id string) error {
 
 	return nil
 }
+
+// AdminPutProducts updates the columns for the product with given id.
+func AdminPutProducts(ctx *gin.Context) {
+	_product := new(models.Product)
+	id := ctx.Param("product_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
+		return
+	}
+
+	if err := ctx.ShouldBindJSON(_product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	product, err := getProductFromDB(id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := validateProductsData(_product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = updateProductInDB(product, _product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "Product updated successfully",
+		"data": product,
+	})
+}
+
+// updateProductInDB updates a given product `dbProduct` with values from `newProduct`.
+func updateProductInDB(dbProduct, newProduct *models.Product) error {
+	dbProduct.Name = newProduct.Name
+	dbProduct.Description = newProduct.Description
+	dbProduct.Category = newProduct.Category
+	dbProduct.Stock = newProduct.Stock
+	dbProduct.Price = newProduct.Price
+	dbProduct.ImageURL = newProduct.ImageURL
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Save(dbProduct).Error
+	}); err != nil {
+		return err
+	}
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.First(dbProduct, "id = ?", *dbProduct.ID).Error
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
