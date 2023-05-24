@@ -99,7 +99,7 @@ func AdminPostProducts(ctx *gin.Context) {
 		return
 	}
 
-	if err := validatePostProductsData(_product); err != nil {
+	if err := validateProductsData(_product); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -126,9 +126,9 @@ func AdminPostProducts(ctx *gin.Context) {
 	})
 }
 
-// validatePostProductsData validates the fields provided in the json payload during
+// validateProductsData validates the fields provided in the json payload during
 // post request to products endpoint.
-func validatePostProductsData(product *models.Product) error {
+func validateProductsData(product *models.Product) error {
 	if product.Price == nil || product.Price.Sign() < 0 {
 		return errors.New("Invalid product price")
 	}
