@@ -110,4 +110,5 @@ func addAuthRoutes(regularAuth *gin.RouterGroup) {}
 // Typically, this is all admin routes.
 func addAdminRoutes(admin *gin.RouterGroup) {
 	routes.AdminBookingsRoutes(admin)
+	routes.AdminProductsRoutes(admin)
 }

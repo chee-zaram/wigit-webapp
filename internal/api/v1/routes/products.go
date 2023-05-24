@@ -11,3 +11,8 @@ func ProductsRoutes(api *gin.RouterGroup) {
 	api.GET("/products/:product_id", handlers.GetProduct)
 	api.GET("/products/categories/:category", handlers.GetProductByCategory)
 }
+
+// AdminProductsRoutes adds all routes for the admin products endpoint.
+func AdminProductsRoutes(admin *gin.RouterGroup) {
+	admin.POST("/products", handlers.AdminPostProducts)
+}
