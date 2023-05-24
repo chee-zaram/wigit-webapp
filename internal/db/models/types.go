@@ -100,6 +100,9 @@ type Product struct {
 
 	// Price is the value of one unit of the Product.
 	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price"`
+
+	// ImageURL is a link to a stock photo of the product.
+	ImageURL *string `gorm:"not null;type:varchar(128)" json:"image_url"`
 }
 
 // Item is an instance of a Product within an Order.
