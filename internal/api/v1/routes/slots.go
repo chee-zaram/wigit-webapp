@@ -9,3 +9,8 @@ import (
 func SlotsRoutes(api *gin.RouterGroup) {
 	api.GET("/slots", handlers.GetSlots)
 }
+
+// AdminSlotsRoutes adds new admin routes for the slots endpoint.
+func AdminSlotsRoutes(admin *gin.RouterGroup) {
+	admin.POST("/slots", handlers.AdminPostSlots)
+}
