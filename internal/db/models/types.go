@@ -86,23 +86,23 @@ type Product struct {
 	BaseModel
 
 	// Name is the name of the Product.
-	Name *string `gorm:"not null;unique;type:varchar(45)" json:"name"`
+	Name *string `gorm:"not null;unique;type:varchar(45)" json:"name" binding:"required,min=3,max=45"`
 
 	// Description is a detailed description of the Product.
-	Description *string `gorm:"not null;type:varchar(1024)" json:"description"`
+	Description *string `gorm:"not null;type:varchar(1024)" json:"description" binding:"required,min=3,max=45"`
 
 	// Category is what group the Product belongs to.
 	// Values are ...
-	Category *string `gorm:"not null;type:varchar(45)" json:"category"`
+	Category *string `gorm:"not null;type:varchar(45)" json:"category" binding:"required,min=3,max=45"`
 
 	// Stock is the number of the product available.
-	Stock *int `gorm:"not null;type:int" json:"stock"`
+	Stock *int `gorm:"not null;type:int" json:"stock" binding:"required"`
 
 	// Price is the value of one unit of the Product.
-	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price"`
+	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price" binding:"required"`
 
 	// ImageURL is a link to a stock photo of the product.
-	ImageURL *string `gorm:"not null;type:varchar(128)" json:"image_url"`
+	ImageURL *string `gorm:"not null;type:varchar(128)" json:"image_url" binding:"required,max=128"`
 }
 
 // Item is an instance of a Product within an Order.
@@ -129,6 +129,7 @@ type Item struct {
 	Amount *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"amount"`
 }
 
+// Booking represents a booking of a service for a given user.
 type Booking struct {
 	BaseModel
 
@@ -168,10 +169,10 @@ type Service struct {
 	BaseModel
 
 	// Name is the name of the service.
-	Name *string `gorm:"not null;type:varchar(45)" json:"name" binding:"required"`
+	Name *string `gorm:"not null;unique;type:varchar(45)" json:"name" binding:"required,min=3,max=45"`
 
 	// Description is a brief description of the service.
-	Description *string `gorm:"not null;type:varchar(1024)" json:"description" binding:"required"`
+	Description *string `gorm:"not null;type:varchar(1024)" json:"description" binding:"required,min=5,max=1024"`
 
 	// Price is the cost of the service.
 	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price"`
