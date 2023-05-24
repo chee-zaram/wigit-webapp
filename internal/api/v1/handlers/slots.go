@@ -64,7 +64,7 @@ func AdminPostSlots(ctx *gin.Context) {
 // validatePostSlotsData checks the validity of the json fields provided during
 // a post request by an admin.
 func validatePostSlotsData(slot *models.Slot) error {
-	if slot.DateTime.Compare(time.Now()) < 1 {
+	if time.Now().After(*slot.DateTime) {
 		return errors.New("Date and time for slot must be in the future")
 	}
 	return nil
@@ -81,4 +81,33 @@ func getSlotFromDB(id string) (*models.Slot, error) {
 	}
 
 	return slot, nil
+}
+
+// AdminDeleteSlots handles deletion of a slot by an admin.
+func AdminDeleteSlots(ctx *gin.Context) {
+	id := ctx.Param("slot_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidSlotID.Error()})
+		return
+	}
+
+	if err := deleteSlotFromDB(id); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Slot deleted successfully",
+	})
+}
+
+// deleteSlotFromDB deletes a slot with id from database.
+func deleteSlotFromDB(id string) error {
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM slots WHERE id = ?`, id).Error
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
