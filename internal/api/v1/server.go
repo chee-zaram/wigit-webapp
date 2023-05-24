@@ -63,6 +63,8 @@ func ListenAndServer(conf config.Config) {
 	go func() {
 		if err := r.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Info().Msg("Server now closed")
+		} else if err != nil {
+			log.Error().Err(err).Msg("Something went wrong while listening")
 		}
 	}()
 
@@ -80,6 +82,12 @@ func ListenAndServer(conf config.Config) {
 
 	if err := r.Shutdown(ctx); err != nil {
 		log.Fatal().Err(err).Msg("failed to shutdown gracefully")
+	}
+
+	// Wait for the 5 second timeout
+	select {
+	case <-ctx.Done():
+		log.Info().Msg("Timeout of 5 seconds elapsed")
 	}
 
 	log.Info().Msg("Server gracefully shutdown.")
