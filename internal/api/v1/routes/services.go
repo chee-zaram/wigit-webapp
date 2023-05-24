@@ -10,3 +10,8 @@ func ServicesRoutes(api *gin.RouterGroup) {
 	api.GET("/services", handlers.GetServices)
 	api.GET("/services/:service_id", handlers.GetServiceByID)
 }
+
+// AdminServicesRoutes add protected routes for the services endpoint.
+func AdminServicesRoutes(admin *gin.RouterGroup) {
+	admin.POST("/services", handlers.AdminPostServices)
+}
