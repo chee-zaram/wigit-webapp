@@ -55,7 +55,7 @@ func PostResetPassword(ctx *gin.Context) {
 
 // PutResetPassword updates the user's password.
 func PutResetPassword(ctx *gin.Context) {
-	user, code, err := validatePutData(ctx)
+	user, code, err := validateResetPasswordPutData(ctx)
 	if err != nil {
 		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 		return
@@ -77,9 +77,9 @@ func PutResetPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"msg": "Password has been reset successfully"})
 }
 
-// validatePutData validates the fields provided for the reset of a user's password.
+// validateResetPasswordPutData validates the fields provided for the reset of a user's password.
 // It returns a user from the database, an exit code, and an error if any.
-func validatePutData(ctx *gin.Context) (*models.User, int, error) {
+func validateResetPasswordPutData(ctx *gin.Context) (*models.User, int, error) {
 	resetUser := new(ResetPassword)
 	if err := ctx.ShouldBindJSON(resetUser); err != nil {
 		return nil, http.StatusBadRequest, ErrEmailNotProvided
