@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db/models"
@@ -105,7 +106,7 @@ func AdminPostProducts(ctx *gin.Context) {
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.Create(product).Error
-	}); err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
+	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
 		return
 	} else if err != nil {
