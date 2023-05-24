@@ -86,7 +86,7 @@ type Product struct {
 	BaseModel
 
 	// Name is the name of the Product.
-	Name *string `gorm:"not null;type:varchar(45)" json:"name"`
+	Name *string `gorm:"not null;unique;type:varchar(45)" json:"name"`
 
 	// Description is a detailed description of the Product.
 	Description *string `gorm:"not null;type:varchar(1024)" json:"description"`
