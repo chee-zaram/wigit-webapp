@@ -150,3 +150,32 @@ func getProductFromDB(id string) (*models.Product, error) {
 
 	return product, nil
 }
+
+// AdminDeleteProducts deletes a product from the database.
+func AdminDeleteProducts(ctx *gin.Context) {
+	id := ctx.Param("product_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
+		return
+	}
+
+	if err := deleteProductFromDB(id); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Product delete successfully",
+	})
+}
+
+// deleteProductFromDB deletes a product from the database.
+func deleteProductFromDB(id string) error {
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM products WHERE id = ?`, id).Error
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}

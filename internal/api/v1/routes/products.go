@@ -15,4 +15,5 @@ func ProductsRoutes(api *gin.RouterGroup) {
 // AdminProductsRoutes adds all routes for the admin products endpoint.
 func AdminProductsRoutes(admin *gin.RouterGroup) {
 	admin.POST("/products", handlers.AdminPostProducts)
+	admin.DELETE("/products/:product_id", handlers.AdminDeleteProducts)
 }
