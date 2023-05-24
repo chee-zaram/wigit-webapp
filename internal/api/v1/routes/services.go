@@ -14,4 +14,5 @@ func ServicesRoutes(api *gin.RouterGroup) {
 // AdminServicesRoutes add protected routes for the services endpoint.
 func AdminServicesRoutes(admin *gin.RouterGroup) {
 	admin.POST("/services", handlers.AdminPostServices)
+	admin.DELETE("/services/:service_id", handlers.AdminDeleteServices)
 }

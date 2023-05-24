@@ -115,3 +115,32 @@ func getServiceFromDB(id string) (*models.Service, error) {
 
 	return service, nil
 }
+
+// AdminDeleteServices handles the deletion of a service from the database by an admin.
+func AdminDeleteServices(ctx *gin.Context) {
+	id := ctx.Param("service_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+		return
+	}
+
+	if err := deleteServiceFromDB(id); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Service deleted successfully",
+	})
+}
+
+// deleteServiceFromDB sends a delete query to the database to delete service with given id.
+func deleteServiceFromDB(id string) error {
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM services WHERE id = ?`, id).Error
+	}); err != nil { // Exec does not return a ErrRecordNotFound so no need to check
+		return err
+	}
+
+	return nil
+}
