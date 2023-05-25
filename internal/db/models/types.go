@@ -174,4 +174,7 @@ type Service struct {
 
 	// Price is the cost of the service.
 	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price"`
+
+	// Available says whether the service is available or not.
+	Available *bool `gorm:"not null" json:"available" binding:"required"`
 }

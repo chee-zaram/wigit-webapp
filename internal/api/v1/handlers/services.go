@@ -177,6 +177,7 @@ func updateServiceInDB(dbService, newService *models.Service) error {
 	dbService.Name = newService.Name
 	dbService.Description = newService.Description
 	dbService.Price = newService.Price
+	dbService.Available = newService.Available
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.Save(dbService).Error
