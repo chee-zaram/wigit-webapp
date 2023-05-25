@@ -87,7 +87,7 @@ func getUserByID(id string) (*models.User, error) {
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbUser, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("Not user with given ID")
+		return nil, errors.New("No user with given ID")
 	} else if err != nil {
 		return nil, errors.New("Something went wrong!")
 	}
