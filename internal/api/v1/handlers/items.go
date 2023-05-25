@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// CustomerPostItems adds a new item to the database. It is equivalent to adding an item
+// CustomerPostItem adds a new item to the database. It is equivalent to adding an item
 // to a cart.
-func CustomerPostItems(ctx *gin.Context) {
+func CustomerPostItem(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -99,8 +99,8 @@ func getItemFromDB(id string) (*models.Item, error) {
 	return item, nil
 }
 
-// CustomerDeleteItems deletes an item with given id from the database.
-func CustomerDeleteItems(ctx *gin.Context) {
+// CustomerDeleteItem deletes an item with given id from the database.
+func CustomerDeleteItem(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -147,5 +147,27 @@ func CustomerGetCart(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": items,
+	})
+}
+
+// CustomerClearCart clears all items in a user's cart.
+func CustomerClearCart(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	user := _user.(*models.User)
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM items WHERE user_id = ? AND order_id is NULL`, *user.ID).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Cart cleared successfully",
 	})
 }
