@@ -29,6 +29,17 @@ func CustomerDeleteUser(ctx *gin.Context) {
 	})
 }
 
+// CustomerPutUser updates a user's information in the database.
+func CustomerPutUser(ctx *gin.Context) {
+	_, _, err := validateUserParams(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{"msg": "Handler not implemented yet"})
+}
+
 // validateUserParams validates data sent to the `users` endpoint.
 // It is used during updating and deletion of a user or information.
 func validateUserParams(ctx *gin.Context) (*models.User, string, error) {
