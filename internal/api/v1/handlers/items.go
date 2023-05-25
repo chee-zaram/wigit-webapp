@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// PostItems adds a new item to the database. It is equivalent to adding an item
+// to a cart.
 func PostItems(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
@@ -33,10 +35,12 @@ func PostItems(ctx *gin.Context) {
 		return
 	}
 
-	if *_item.Quantity > *product.Stock {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item quantity more than product stock"})
+	// Make sure quantity for item to be carted is not more than product in stock.
+	if err := validateItemQuantity(_item, product); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	// Compute amount for item
 	amount := product.Price.Mul(decimal.NewFromInt(int64(*_item.Quantity)))
 	_item.Amount = &amount
@@ -61,6 +65,22 @@ func PostItems(ctx *gin.Context) {
 		"msg":  "Item created successfully",
 		"data": item,
 	})
+}
+
+// validateItemQuantity verifies the quantity for the item to be added is valid.
+func validateItemQuantity(item *models.Item, product *models.Product) error {
+	if item.Quantity == nil {
+		return errors.New("Item quantity must be provided")
+	} else if *item.Quantity > *product.Stock {
+		if *product.Stock == 0 {
+			return errors.New("Cannot add to cart. Product is out of stock")
+		}
+		*item.Quantity = *product.Stock
+	} else if *item.Quantity == 0 {
+		return errors.New("Item quantity cannot be 0")
+	}
+
+	return nil
 }
 
 // getItemFromDB retrieves an item from the database based on the id.
