@@ -7,6 +7,7 @@ import (
 
 // ItemsRoutes adds new routes to the items endpoint for a customer.
 func ItemsRoutes(customer *gin.RouterGroup) {
-	customer.POST("/items", handlers.PostItems)
-	customer.DELETE("/items/:item_id", handlers.DeleteItems)
+	customer.POST("/cart", handlers.CustomerPostItems)
+	customer.DELETE("/cart/:item_id", handlers.CustomerDeleteItems)
+	customer.GET("/cart", handlers.CustomerGetCart)
 }

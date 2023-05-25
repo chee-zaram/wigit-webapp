@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// PostItems adds a new item to the database. It is equivalent to adding an item
+// CustomerPostItems adds a new item to the database. It is equivalent to adding an item
 // to a cart.
-func PostItems(ctx *gin.Context) {
+func CustomerPostItems(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -99,8 +99,15 @@ func getItemFromDB(id string) (*models.Item, error) {
 	return item, nil
 }
 
-// DeleteItems deletes an item with given id from the database.
-func DeleteItems(ctx *gin.Context) {
+// CustomerDeleteItems deletes an item with given id from the database.
+func CustomerDeleteItems(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	user := _user.(*models.User)
 	id := ctx.Param("item_id")
 	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item ID missing"})
@@ -109,7 +116,7 @@ func DeleteItems(ctx *gin.Context) {
 
 	// Will delete only if the item is in the cart i.e order_id is NULL.
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM items WHERE id = ? AND order_id is NULL`, id).Error
+		return tx.Exec(`DELETE FROM items WHERE id = ? AND user_id = ? AND order_id is NULL`, id, *user.ID).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -117,5 +124,28 @@ func DeleteItems(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "Item deleted successfully",
+	})
+}
+
+// CustomerGetCart retrieves a slice of all items in a user's cart i.e without an order_id.
+func CustomerGetCart(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	user := _user.(*models.User)
+	items := new(models.Item)
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at asc").Where("user_id = ?", *user.ID).Where("order_id is NULL").Find(items).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": items,
 	})
 }
