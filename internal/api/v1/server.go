@@ -108,6 +108,7 @@ func addCustomerRoutes(customer *gin.RouterGroup) {
 	routes.CartRoutes(customer)
 	routes.OrdersRoutes(customer)
 	routes.BookingsRoutes(customer)
+	routes.UsersRoutes(customer)
 }
 
 // addAdminRoutes adds all routes that need both authentication and authorization.
