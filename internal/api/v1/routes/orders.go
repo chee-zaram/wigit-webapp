@@ -11,4 +11,7 @@ func OrdersRoutes(customer *gin.RouterGroup) {
 }
 
 // AdminOrdersRoutes adds routes for the admin in the orders endpoint.
-func AdminOrdersRoutes(admin *gin.RouterGroup) {}
+func AdminOrdersRoutes(admin *gin.RouterGroup) {
+	// Only the status field can be updated.
+	admin.PUT("/orders/:order_id/:status", handlers.AdminPutOrders)
+}

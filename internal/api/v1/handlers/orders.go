@@ -10,6 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// allowedOrderStatus is a slice of status allowed to be set for an order.
+var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "cancelled"}
+
 // PostOrders adds a new order to the database.
 func PostOrders(ctx *gin.Context) {
 	_order := new(models.Order)
@@ -106,4 +109,58 @@ func getOrderTotal(items []models.Item) *decimal.Decimal {
 	}
 
 	return &totalAmount
+}
+
+// AdminPutOrders updates the status of an order.
+func AdminPutOrders(ctx *gin.Context) {
+	order_id := ctx.Param("order_id")
+	if order_id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No order ID"})
+		return
+	}
+
+	status := ctx.Param("status")
+	if status == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No status specified"})
+		return
+	}
+
+	if !validStatus(status) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status is not valid"})
+		return
+	}
+
+	order, err := getOrderFromDB(order_id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	order.Status = &status
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Save(order).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "Order status updated successfully",
+		"data": order,
+	})
+}
+
+// validStatus validates the status to which an order is about to be updated.
+// returns true if the status is valid, or false otherwise.
+func validStatus(status string) bool {
+	var valid bool
+
+	for _, stat := range allowedOrderStatus {
+		if stat == status {
+			return true
+		}
+	}
+
+	return valid
 }
