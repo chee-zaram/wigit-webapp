@@ -8,4 +8,11 @@ import (
 // AdminBookingsRoutes adds all the routes for the bookings endpoint used by the admin.
 func AdminBookingsRoutes(admin *gin.RouterGroup) {
 	admin.GET("/bookings", handlers.AdminGetBookings)
+	// TODO
+	// admin.PUT("/bookings/:booking_id/:status", handlers.AdminPutBooking)
+}
+
+// BookingsRoutes adds new routes for the bookings endpoint for customers.
+func BookingsRoutes(customer *gin.RouterGroup) {
+	customer.POST("/bookings", handlers.CustomerPostBooking)
 }
