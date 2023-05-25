@@ -8,12 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// allowedBookingStatus is a list of all the valid status for a booking.
+var allowedBookingStatus = []string{"pending", "paid", "fulfilled", "cancelled"}
+
 // AdminGetBookings retrieves all bookings in the database.
 func AdminGetBookings(ctx *gin.Context) {
 	var bookings []models.Booking
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Find(&bookings).Error
+		return tx.Order("updated_at desc").Find(&bookings).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
@@ -77,4 +80,110 @@ func getBookingFromDB(id string) (*models.Booking, error) {
 	}
 
 	return booking, nil
+}
+
+// AdminPutBooking updates the status of a booking.
+func AdminPutBooking(ctx *gin.Context) {
+	id := ctx.Param("booking_id")
+	status := ctx.Param("status")
+	if id == "" || status == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID or Status not set"})
+		return
+	}
+
+	booking, err := getBookingFromDB(id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !validBookingStatus(booking, status) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "The status is not valid. Likely because the service is not available at the moment",
+		})
+		return
+	}
+
+	booking.Status = &status
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Save(booking).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "Booking status updated successfully",
+		"data": booking,
+	})
+}
+
+// validBookingStatus checks if the new status is for updating a booking valid.
+func validBookingStatus(booking *models.Booking, status string) bool {
+	var valid bool
+
+	for _, stat := range allowedBookingStatus {
+		if stat == status {
+			if status == "paid" {
+				if !*booking.Service.Available {
+					return false
+				}
+
+				if !*booking.Slot.IsFree {
+					return false
+				} else {
+					*booking.Slot.IsFree = false
+				}
+				return true
+			}
+			return true
+		}
+	}
+
+	return valid
+}
+
+// CustomerGetBooking retrieves booking with given id for a customer.
+func CustomerGetBooking(ctx *gin.Context) {
+	booking_id := ctx.Param("booking_id")
+	if booking_id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID not set"})
+		return
+	}
+
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+	user := _user.(*models.User)
+
+	for _, booking := range user.Bookings {
+		if *booking.ID == booking_id {
+			ctx.JSON(http.StatusOK, gin.H{
+				"data": booking,
+			})
+		}
+	}
+
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No booking with given ID for user"})
+}
+
+// AdminGetBooking retrieves booking with given id from the database for an admin.
+func AdminGetBooking(ctx *gin.Context) {
+	booking_id := ctx.Param("booking_id")
+	if booking_id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID not set"})
+		return
+	}
+
+	booking, err := getBookingFromDB(booking_id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": booking,
+	})
 }
