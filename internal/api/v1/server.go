@@ -46,8 +46,8 @@ func ListenAndServer(conf config.Config) {
 	addAdminRoutes(admin)
 
 	// Add only authentication middleware for all other users
-	regularAuth := api.Group("/", handlers.JWTAuthentication)
-	addAuthRoutes(regularAuth)
+	customer := api.Group("/", handlers.JWTAuthentication)
+	addCustomerRoutes(customer)
 
 	// 404 handler
 	router.NoRoute(func(ctx *gin.Context) { ctx.JSON(http.StatusNotFound, gin.H{}) })
@@ -103,8 +103,10 @@ func addRoutes(api *gin.RouterGroup) {
 	routes.ResetPasswordRoutes(api)
 }
 
-// addAuthRoutes adds all routes that need authentication only.
-func addAuthRoutes(regularAuth *gin.RouterGroup) {}
+// addCustomerRoutes adds all routes that need authentication only.
+func addCustomerRoutes(customer *gin.RouterGroup) {
+	routes.ItemsRoutes(customer)
+}
 
 // addAdminRoutes adds all routes that need both authentication and authorization.
 // Typically, this is all admin routes.
