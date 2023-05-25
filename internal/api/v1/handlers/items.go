@@ -78,3 +78,24 @@ func getItemFromDB(id string) (*models.Item, error) {
 
 	return item, nil
 }
+
+// DeleteItems deletes an item with given id from the database.
+func DeleteItems(ctx *gin.Context) {
+	id := ctx.Param("item_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item ID missing"})
+		return
+	}
+
+	// Will delete only if the item is in the cart i.e order_id is NULL.
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM items WHERE id = ? AND order_id is NULL`, id).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Item deleted successfully",
+	})
+}
