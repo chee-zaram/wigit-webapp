@@ -109,21 +109,16 @@ type Product struct {
 type Item struct {
 	BaseModel
 
-	// Item instance belongs to Order with OrderID
-	// Order Order `json:"-"`
-
-	// OrderID is used to autofill the Order field.
-	// OrderID is implicitly used as foreignKey.
+	// OrderID is the id of the order the item belongs to. It is autofilled when
+	// an item is appended to an order's Items list and saved to the database and serves as a
+	// foreignKey.
 	OrderID *string `json:"order_id"`
-	// OrderID *string `gorm:"not null;" json:"order_id"`
 
 	// UserID is the id of the user to which the item in a order belongs.
 	UserID *string `json:"-"`
 
-	// The Item is an instance of the Product
-	// Product Product `json:"-"`
-
-	// ProductID is used to autofill the Product field. ProductID is implicitly used as foreignKey.
+	Product Product `json:"-" binding:"-"`
+	// ProductID is used to is the id for which this item is an instance.
 	ProductID *string `gorm:"not null;type:varchar(45)" json:"product_id"`
 
 	// Quantity is the number of the item ordered. Must not be more than Product in stock.
@@ -137,23 +132,22 @@ type Item struct {
 type Booking struct {
 	BaseModel
 
-	// User is the owner of this booking.
-	User   User
+	// UserID is the ID for the user who has this booking.
 	UserID *string `gorm:"not null" json:"user_id"`
 
 	// Slot is the time associated with this booking.
-	Slot   Slot    `json:"-"`
-	SlotID *string `gorm:"not null;" json:"slot_id"`
+	Slot   Slot    `json:"slot" binding:"-"`
+	SlotID *string `gorm:"not null;" json:"slot_id" binding:"required"`
 
 	// Service is the service for which this booking has been made.
-	Service   Service `json:"-"`
-	ServiceID *string `gorm:"not null" json:"service_id"`
+	Service   Service `json:"service" binding:"-"`
+	ServiceID *string `gorm:"not null" json:"service_id" binding:"required"`
 
 	// Amount is the cost of the service.
 	Amount *decimal.Decimal `gorm:"not null" json:"amount"`
 
 	// Status is the current status of the booking.
-	// Values are `pending`, `confirmed`, `fulfilled`.
+	// Values are `pending`, `paid`, `fulfilled`, `cancelled`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status"`
 }
 
