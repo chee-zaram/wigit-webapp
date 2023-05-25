@@ -131,7 +131,7 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if !validStatus(order, status) {
+	if !validOrderStatus(order, status) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status cannot be updated. Likely because a product is out of stock"})
 		return
 	}
@@ -151,9 +151,9 @@ func AdminPutOrders(ctx *gin.Context) {
 	})
 }
 
-// validStatus validates the status to which an order is about to be updated.
+// validOrderStatus validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func validStatus(order *models.Order, status string) bool {
+func validOrderStatus(order *models.Order, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedOrderStatus {
@@ -163,7 +163,9 @@ func validStatus(order *models.Order, status string) bool {
 					if *item.Quantity > *item.Product.Stock {
 						return false
 					}
+					*item.Product.Stock = *item.Product.Stock - *item.Quantity
 				}
+				return true
 			}
 			return true
 		}
