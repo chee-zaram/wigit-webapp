@@ -1,7 +1,7 @@
 //exposes api route for product
 import { Product } from "@/app/products/interface/product";
 
-export async function GET(request: Request) {
+export async function GET(): Promise<Response> {
     const productsList: Product[] = [
         {
             name: 'bone straight',

@@ -1,24 +1,41 @@
 // The products page for the wigit web app
-"use client";
 
-import useFetch from "@app/hooks/useFetch";
-import { ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from "react";
+import ProductCard from './components/ProductCard';
+import { Product } from './interface/product';
+import Button from '@components/Button';
 
-const url: string = "https://jsonplaceholder.typicode.com/todos"
+const url: string = "https://ovyevbodi-crispy-journey-jpj7vqj7r6xfqqvp-8000.preview.app.github.dev/products";
+//"https://jsonplaceholder.typicode.com/todos";
 
-// export const metadata = { title: 'wigit products' };
+export const metadata = { title: 'wigit products' };
+
+async function getProducts(): Promise<any> {
+
+  const res = await fetch(url, {
+    headers: {"Content-Type": "application/json",
+    }
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    return data;
+  }
+  return null; // fix this
+}
 
 export default async function Products() {
-  // const res: Response = await fetch(url);
-  // const data = await res.json();
-  const data = useFetch(url);
+  const data = await getProducts();
   return (
-    <div>
-      <h1>Our wigs</h1>
+    <main>
+      <div className='flex flex-col items-center justify-start'>
+        <h1>Our wigs</h1>
         <p>Nothing but class....</p>
-        { data && data.map((item: any) => {
-          <p key={ item.id }>{ item.title }</p>
-        }) }
-    </div>
+        <div className="inner">
+          { data && data.map((item: Product) => (
+            <ProductCard { ...item } />
+          ))}
+        </div>
+      </div>
+    </main>
   )
 }
