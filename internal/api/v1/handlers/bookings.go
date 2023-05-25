@@ -19,10 +19,6 @@ func AdminGetBookings(ctx *gin.Context) {
 		return
 	}
 
-	if bookings == nil {
-		bookings = []models.Booking{}
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": bookings,
 	})

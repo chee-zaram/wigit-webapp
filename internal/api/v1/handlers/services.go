@@ -22,10 +22,6 @@ func GetServices(ctx *gin.Context) {
 		return
 	}
 
-	if services == nil {
-		services = []models.Service{}
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{"data": services})
 }
 

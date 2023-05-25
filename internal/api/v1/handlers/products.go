@@ -21,12 +21,9 @@ func GetProducts(ctx *gin.Context) {
 		return
 	}
 
-	// If no products were found
-	if products == nil {
-		products = []models.Product{}
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"data": products})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
 }
 
 // GetProduct retrieves a product based on its id.
@@ -78,12 +75,9 @@ func GetProductByCategory(ctx *gin.Context) {
 		return
 	}
 
-	// If not record was found
-	if products == nil {
-		products = []models.Product{}
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"data": products})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
 }
 
 // getTrending finds all trending products from the database.

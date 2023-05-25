@@ -21,11 +21,9 @@ func GetSlots(ctx *gin.Context) {
 		return
 	}
 
-	if slots == nil {
-		slots = []models.Slot{}
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"data": slots})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": slots,
+	})
 }
 
 // AdminPostSlots adds a new slot to the database.
