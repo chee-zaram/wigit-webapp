@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,20 +11,9 @@ import (
 
 // CustomerDeleteUser deletes the current user from the database.
 func CustomerDeleteUser(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*models.User)
-	id := ctx.Param("user_id")
-	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User ID must be set"})
-		return
-	}
-
-	if id != *user.ID {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Cannot delete another user's account"})
+	_, id, err := validateUserParams(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -37,4 +27,24 @@ func CustomerDeleteUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "User deleted successfully",
 	})
+}
+
+// validateUserParams validates data sent to the `users` endpoint.
+// It is used during updating and deletion of a user or information.
+func validateUserParams(ctx *gin.Context) (*models.User, string, error) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		return nil, "", errors.New("User not set in context")
+	}
+	user := _user.(*models.User)
+	id := ctx.Param("user_id")
+	if id == "" {
+		return nil, "", errors.New("User ID must be set")
+	}
+
+	if id != *user.ID {
+		return nil, "", errors.New("Cannot perform operation on another user's account")
+	}
+
+	return user, id, nil
 }
