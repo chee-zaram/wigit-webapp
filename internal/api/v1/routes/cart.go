@@ -5,8 +5,8 @@ import (
 	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
 )
 
-// ItemsRoutes adds new routes to the items endpoint for a customer.
-func ItemsRoutes(customer *gin.RouterGroup) {
+// CartRoutes adds new routes to the cart endpoint for a customer.
+func CartRoutes(customer *gin.RouterGroup) {
 	customer.POST("/cart", handlers.CustomerPostToCart)
 	customer.DELETE("/cart/:item_id", handlers.CustomerDeleteFromCart)
 	customer.DELETE("/cart", handlers.CustomerClearCart)
