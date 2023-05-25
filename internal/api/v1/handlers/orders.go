@@ -13,8 +13,8 @@ import (
 // allowedOrderStatus is a slice of status allowed to be set for an order.
 var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "cancelled"}
 
-// PostOrders adds a new order to the database.
-func PostOrders(ctx *gin.Context) {
+// CustomerPostOrders adds a new order to the database for a given customer.
+func CustomerPostOrders(ctx *gin.Context) {
 	_order := new(models.Order)
 	if err := ctx.ShouldBindJSON(_order); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -163,4 +163,144 @@ func validStatus(status string) bool {
 	}
 
 	return valid
+}
+
+// AdminGetOrders retrieves all the orders from the database.
+func AdminGetOrders(ctx *gin.Context) {
+	var orders []models.Order
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at desc").Preload("Items").Find(&orders).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// AdminGetOrdersByStatus gets all orders with a given status.
+func AdminGetOrdersByStatus(ctx *gin.Context) {
+	status := ctx.Param("status")
+	if status == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status not given"})
+		return
+	}
+
+	var orders []models.Order
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at desc").Where("status = ?", status).Preload("Items").Find(&orders).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// AdminGetOrdersByID gets an order with a given id from the database.
+func AdminGetOrderByID(ctx *gin.Context) {
+	id := ctx.Param("order_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Order ID not provided"})
+		return
+	}
+
+	order := new(models.Order)
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Preload("Items").First(order, "id = ?", id).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": order,
+	})
+}
+
+// CustomerGetOrders retrieves all the user's orders from the database.
+func CustomerGetOrders(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+	user := _user.(*models.User)
+	var orders []models.Order
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(orders).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// CustomerGetOrdersByStatus retrieves all the orders for the user by their status.
+func CustomerGetOrdersByStatus(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+	user := _user.(*models.User)
+
+	status := ctx.Param("status")
+	if status == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status not given"})
+		return
+	}
+
+	var orders []models.Order
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Where("status = ?", status).
+			Preload("Items").Find(orders).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// CustomerGetOrderByID retrieves a specified order for a user.
+func CustomerGetOrderByID(ctx *gin.Context) {
+	id := ctx.Param("order_id")
+	if id == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Order ID not provided"})
+		return
+	}
+
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+
+	user := _user.(*models.User)
+	order := new(models.Order)
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id = ?", id).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": order,
+	})
 }
