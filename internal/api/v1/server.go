@@ -106,6 +106,7 @@ func addRoutes(api *gin.RouterGroup) {
 // addCustomerRoutes adds all routes that need authentication only.
 func addCustomerRoutes(customer *gin.RouterGroup) {
 	routes.ItemsRoutes(customer)
+	routes.OrdersRoutes(customer)
 }
 
 // addAdminRoutes adds all routes that need both authentication and authorization.
@@ -115,4 +116,5 @@ func addAdminRoutes(admin *gin.RouterGroup) {
 	routes.AdminProductsRoutes(admin)
 	routes.AdminServicesRoutes(admin)
 	routes.AdminSlotsRoutes(admin)
+	routes.AdminOrdersRoutes(admin)
 }
