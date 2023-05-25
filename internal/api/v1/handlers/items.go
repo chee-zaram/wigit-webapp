@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// CustomerPostItem adds a new item to the database. It is equivalent to adding an item
+// CustomerPostToCart adds a new item to the database. It is equivalent to adding an item
 // to a cart.
-func CustomerPostItem(ctx *gin.Context) {
+func CustomerPostToCart(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -99,8 +99,8 @@ func getItemFromDB(id string) (*models.Item, error) {
 	return item, nil
 }
 
-// CustomerDeleteItem deletes an item with given id from the database.
-func CustomerDeleteItem(ctx *gin.Context) {
+// CustomerDeleteFromCart deletes an item with given id from the database.
+func CustomerDeleteFromCart(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
