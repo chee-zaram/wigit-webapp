@@ -60,15 +60,15 @@ type Order struct {
 	BaseModel
 
 	// Order instance belongs to User with UserID
-	User User `json:"-"`
+	// User User `json:"-"`
 
 	// UserID is used to find User instance to fill info for above user.
 	// UserID is implicitly used as a foreignKey.
 	UserID *string `gorm:"not null;" json:"user_id"`
 
-	// OrderItems is a list of all items making up the order.
+	// Items is a list of all items making up the order.
 	// Creates a one-to-many relationship with the Items table.
-	OrderItems []Item `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"items"`
+	Items []Item `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"items"`
 
 	// This is the overall amount of all items in the order.
 	TotalAmount *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"total_amount"`
@@ -77,7 +77,7 @@ type Order struct {
 	// Values are `shipping` or `pickup`.
 	DeliveryMethod *string `gorm:"not null;type:varchar(45);" json:"delivery_method"`
 
-	// This is the status of the order. Values are `pending`, `confirmed`, `shipped`, `delivered`.
+	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status"`
 }
 
@@ -110,17 +110,21 @@ type Item struct {
 	BaseModel
 
 	// Item instance belongs to Order with OrderID
-	Order Order `json:"-"`
+	// Order Order `json:"-"`
 
 	// OrderID is used to autofill the Order field.
 	// OrderID is implicitly used as foreignKey.
-	OrderID *string `gorm:"not null;" json:"order_id"`
+	OrderID *string `json:"order_id"`
+	// OrderID *string `gorm:"not null;" json:"order_id"`
+
+	// UserID is the id of the user to which the item in a order belongs.
+	UserID *string `json:"-"`
 
 	// The Item is an instance of the Product
-	Product Product `json:"-"`
+	// Product Product `json:"-"`
 
 	// ProductID is used to autofill the Product field. ProductID is implicitly used as foreignKey.
-	ProductID *string `gorm:"not null;" json:"product_id"`
+	ProductID *string `gorm:"not null;type:varchar(45)" json:"product_id"`
 
 	// Quantity is the number of the item ordered. Must not be more than Product in stock.
 	Quantity *int `gorm:"not null" json:"quantity"`
