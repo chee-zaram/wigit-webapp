@@ -136,10 +136,10 @@ func CustomerGetCart(ctx *gin.Context) {
 	}
 
 	user := _user.(*models.User)
-	items := new(models.Item)
+	var items []models.Item
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at asc").Where("user_id = ?", *user.ID).Where("order_id is NULL").Find(items).Error
+		return tx.Order("updated_at asc").Where("user_id = ?", *user.ID).Where("order_id is NULL").Find(&items).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
