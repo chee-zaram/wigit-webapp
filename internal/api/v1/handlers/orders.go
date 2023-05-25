@@ -93,7 +93,7 @@ func getItemsInCart(user_id string) ([]models.Item, error) {
 func getOrderFromDB(id string) (*models.Order, error) {
 	order := new(models.Order)
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Items").First(order, "id = ?", id).Error
+		return tx.Preload("Items.Product").First(order, "id = ?", id).Error
 	}); err != nil {
 		return nil, err
 	}
@@ -125,14 +125,14 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if !validStatus(status) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status is not valid"})
-		return
-	}
-
 	order, err := getOrderFromDB(order_id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !validStatus(order, status) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status cannot be updated. Likely because a product is out of stock"})
 		return
 	}
 
@@ -153,11 +153,18 @@ func AdminPutOrders(ctx *gin.Context) {
 
 // validStatus validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func validStatus(status string) bool {
+func validStatus(order *models.Order, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedOrderStatus {
 		if stat == status {
+			if status == "paid" {
+				for _, item := range order.Items {
+					if *item.Quantity > *item.Product.Stock {
+						return false
+					}
+				}
+			}
 			return true
 		}
 	}
