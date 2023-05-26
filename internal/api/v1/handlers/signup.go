@@ -109,6 +109,10 @@ func validateSignUpUser(user *models.User) error {
 		return ErrPassTooLong
 	}
 
+	// We don't want a user's role to be set during signup but only through
+	// the database.
+	user.Role = nil
+
 	return nil
 }
 
