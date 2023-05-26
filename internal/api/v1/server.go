@@ -22,7 +22,8 @@ import (
 // ListenAndServer starts up the gin web server to listen on host and port as
 // specified in `conf`.
 func ListenAndServer(conf config.Config) {
-	middlewares.ConfigureJWT([]byte(conf.JWTSecret))
+	middlewares.CreateSigner([]byte(conf.JWTSecret))
+	middlewares.CreateVerifier([]byte(conf.JWTSecret))
 
 	// Our link to the database
 	handlers.DBConnector = db.GetConnector(conf)
