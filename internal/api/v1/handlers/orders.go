@@ -244,7 +244,7 @@ func CustomerGetOrders(ctx *gin.Context) {
 	var orders []models.Order
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(orders).Error
+		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(&orders).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -274,7 +274,7 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Where("status = ?", status).
-			Preload("Items").Find(orders).Error
+			Preload("Items").Find(&orders).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
