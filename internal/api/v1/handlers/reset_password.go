@@ -82,15 +82,11 @@ func PutResetPassword(ctx *gin.Context) {
 func validateResetPasswordPutData(ctx *gin.Context) (*models.User, int, error) {
 	resetUser := new(ResetPassword)
 	if err := ctx.ShouldBindJSON(resetUser); err != nil {
-		return nil, http.StatusBadRequest, ErrEmailNotProvided
+		return nil, http.StatusBadRequest, errors.New("Failed to bind")
 	}
 
 	if resetUser.ResetToken == "" {
 		return nil, http.StatusBadRequest, errors.New("Reset Token not provided")
-	}
-
-	if resetUser.Email == "" {
-		return nil, http.StatusBadRequest, ErrEmailNotProvided
 	}
 
 	user, err := getUserFromDB(resetUser.Email)
