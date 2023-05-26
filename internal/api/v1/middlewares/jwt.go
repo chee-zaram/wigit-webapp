@@ -31,19 +31,23 @@ func CreateVerifier(secretKey []byte) {
 }
 
 // CreateJWT returns a new token string set up for the logged in user using userID.
-func CreateJWT(userID string) (string, error) {
+func CreateJWT(userID string) string {
+	return buildWithClaims(generateClaims(userID))
+}
+
+// buildWithClaims returns a JWT token string built using given claims.
+func buildWithClaims(claims *jwt.RegisteredClaims) string {
+	builder := jwt.NewBuilder(JWTSigner)
+	token, _ := builder.Build(claims)
+
+	return token.String()
+}
+
+// generateClaims return registered claims with ID and expiration date set.
+func generateClaims(userID string) *jwt.RegisteredClaims {
 	// Store user ID in claims
-	claims := &jwt.RegisteredClaims{
+	return &jwt.RegisteredClaims{
 		ID:        userID,
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 	}
-
-	builder := jwt.NewBuilder(JWTSigner)
-	token, err := builder.Build(claims)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to build token with claims")
-		return "", err
-	}
-
-	return token.String(), nil
 }

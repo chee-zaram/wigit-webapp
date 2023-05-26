@@ -25,16 +25,10 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	token, err := middlewares.CreateJWT(*user.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "Sign in successful",
 		"user": user,
-		"jwt":  token,
+		"jwt":  middlewares.CreateJWT(*user.ID),
 	})
 }
 

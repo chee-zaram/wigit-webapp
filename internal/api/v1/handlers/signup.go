@@ -27,15 +27,9 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 
-	token, err := middlewares.CreateJWT(*user.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
 	ctx.JSON(http.StatusCreated, gin.H{
 		"msg": "Sign up successful",
-		"jwt": token,
+		"jwt": middlewares.CreateJWT(*user.ID),
 	})
 }
 
