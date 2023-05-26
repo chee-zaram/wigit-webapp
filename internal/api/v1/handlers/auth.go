@@ -54,26 +54,44 @@ func JWTAuthentication(ctx *gin.Context) {
 // validateJWTToken checks the validity of the jwt token provided.
 // It returns the user ID stored in the claims, and any error if any occurs.
 func validateJWTToken(_token string) (string, error) {
-	// Parse token and verify the signature
-	token, err := jwt.Parse([]byte(_token), middlewares.JWTVerifier)
+	token, err := parseToken(_token)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to parse JWT token")
-		return "", errors.New("Failed to parse JWT token")
+		return "", err
 	}
 
-	// Retrieve claims stored in token
-	claims := new(jwt.RegisteredClaims)
-	if err := json.Unmarshal(token.Claims(), claims); err != nil {
-		log.Error().Err(err).Msg("failed to Unmarshal claims")
-		return "", errors.New("Failed to Unmarshal claims")
+	claims, err := retrieveTokenClaims(token)
+	if err != nil {
+		return "", err
 	}
 
-	// Validate claims
 	if !claims.IsValidAt(time.Now()) {
 		return "", errors.New("Token has expired")
 	}
 
 	return claims.ID, nil
+}
+
+// parseToken takes a token as a string and verify the signature.
+// It returns the parsed token as a pointer to a jwt.Token object.
+func parseToken(_token string) (*jwt.Token, error) {
+	token, err := jwt.Parse([]byte(_token), middlewares.JWTVerifier)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to parse JWT token")
+		return nil, errors.New("failed to parse JWT token")
+	}
+
+	return token, nil
+}
+
+// retrieveTokenClaims return the claims stored in a token and any error.
+func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
+	claims := new(jwt.RegisteredClaims)
+	if err := json.Unmarshal(token.Claims(), claims); err != nil {
+		log.Error().Err(err).Msg("failed to Unmarshal claims")
+		return nil, errors.New("failed to Unmarshal claims")
+	}
+
+	return claims, nil
 }
 
 // getUserFromDB gets the user with `email` from the database.
