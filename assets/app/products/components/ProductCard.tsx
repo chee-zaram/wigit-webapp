@@ -14,7 +14,7 @@ const ProductCard: NextPage<Product> = (props) => (
         <div>
             <h2 className='uppercase text-sm font-bold text-neutral-700'>{ props.name }</h2>
             <p className='my-1 text-neutral-500'>{ props.description }</p>
-            <p className=' text-[#AB841F] font-bold'>{ props.price }</p>
+            <p className=' text-accent font-bold'>{ props.price }</p>
             <Button text='add to cart' />
         </div>
     </div>
