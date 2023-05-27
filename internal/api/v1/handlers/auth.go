@@ -10,7 +10,6 @@ import (
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
@@ -76,7 +75,6 @@ func validateJWTToken(_token string) (string, error) {
 func parseToken(_token string) (*jwt.Token, error) {
 	token, err := jwt.Parse([]byte(_token), middlewares.JWTVerifier)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to parse JWT token")
 		return nil, errors.New("failed to parse JWT token")
 	}
 
@@ -87,7 +85,6 @@ func parseToken(_token string) (*jwt.Token, error) {
 func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 	claims := new(jwt.RegisteredClaims)
 	if err := json.Unmarshal(token.Claims(), claims); err != nil {
-		log.Error().Err(err).Msg("failed to Unmarshal claims")
 		return nil, errors.New("failed to Unmarshal claims")
 	}
 

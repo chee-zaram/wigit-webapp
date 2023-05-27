@@ -22,7 +22,6 @@ func SignUp(ctx *gin.Context) {
 	}
 
 	if err := addUser(user); err != nil {
-		log.Error().Err(err).Msg("")
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
