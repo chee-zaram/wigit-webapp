@@ -9,7 +9,7 @@ import Input from '@components/Input';
 
 const signInForm = () => {
     
-    const [ email, setEmail ] = useState('');
+    const [ email, setEmail ] = useState('mark');
     const [ password, setPassword ] = useState('');
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,4 +48,4 @@ const signInForm = () => {
     )
 };
 
-export default signInForm;
+export default{ signInForm, email, password};

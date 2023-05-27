@@ -4,6 +4,7 @@ import { useState } from 'react';
 import SignInForm from '@app/signin/components/SignInForm';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import email from '@app/signin/components/SignInForm';
 
 const signin = () => {
     // check if user is signed in
@@ -22,7 +23,7 @@ const signin = () => {
             {/* take this to rootlayout to conditionally render sign in link  */}
             <div className='welcome_message'>
                 { isSignedIn ? 
-                <h3>Welcome Ovy</h3> : 
+                <h3>Welcome back, Vee baby!</h3> : 
                 <h3>Hey there, we're glad you found us, Please sign in</h3> }
             </div>
             <SignInForm />
