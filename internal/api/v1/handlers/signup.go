@@ -54,16 +54,12 @@ func addUser(user *models.User) error {
 
 // validateSignUpUser validates all fields in the post form
 func validateSignUpUser(user *models.User) error {
-	dbUser := new(models.User)
-
 	// Verify user does not already exist
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbUser, "email = ?", *user.Email).Error
-	}); err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return ErrInternalServer
-	}
-	if dbUser != nil && dbUser.Email != nil {
+	if dbUser, err := getUserFromDB(*user.Email); errors.Is(err, ErrInvalidUser) {
+	} else if dbUser != nil {
 		return ErrDuplicateUser
+	} else if err != nil {
+		return err
 	}
 
 	if user.FirstName == nil {
