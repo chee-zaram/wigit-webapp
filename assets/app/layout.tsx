@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className='bg-zinc-100'>
         <Navbar />
         <main className={inter.className}>{children}</main>
         <Footer />
