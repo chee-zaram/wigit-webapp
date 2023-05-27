@@ -91,7 +91,7 @@ func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 	return claims, nil
 }
 
-// getUserFromDB gets the user with `email` from the database.
+// getUserByID gets the user with `email` from the database.
 func getUserByID(id string) (*models.User, error) {
 	dbUser := new(models.User)
 
