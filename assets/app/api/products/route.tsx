@@ -1,5 +1,5 @@
 //exposes api route for product
-import { Product } from "@/app/products/interface/product";
+import { Product } from "@/app/products/interfaces/product";
 
 export async function GET(): Promise<Response> {
     const productsList: Product[] = [
