@@ -5,9 +5,8 @@ import SignInForm from '@app/signin/components/SignInForm';
 
 const signin = () => {
     // check if user is signed in
-    const [ isSignedIn, setIsSignedIn] = useState(false);
-    
-    
+    const [ isSignedIn, setIsSignedIn ] = useState(false);
+
     return (
         <main className='signin_main flex flex-col justify-around items-center'>
             {/* take this to rootlayout to conditionally render sign in link  */}

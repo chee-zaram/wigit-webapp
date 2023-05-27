@@ -2,7 +2,7 @@
 
 const signInLoaing = () => (
     <main>
-        <h3>Letting you in a giffy ;)</h3>
+        <h3>Letting you in in a giffy ;)</h3>
     </main>
 );
 
