@@ -8,10 +8,10 @@ import { useState, useEffect } from 'react';
 //type check
 
 const Navbar = () => (
-  <header >
+  <header className='flex justify-between h-12 bg-neutral-900 text-white items-center'>
     <Logo />
-    <nav className="flex-between w-full pt-3">
-      <Link className='nav_link' href='/'>Home</Link>
+    <nav className="flex px-4 gap-2">
+      <Link className='nav_link font-thin' href='/'>Home</Link>
       <Link className='nav_link' href='/signin'>Sign In</Link>
       <Link className='nav_link' href='/products'>Buy Wig</Link>
       <Link className='nav_link' href='/about'>About</Link>

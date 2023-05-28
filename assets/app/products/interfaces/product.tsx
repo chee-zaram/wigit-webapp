@@ -6,4 +6,6 @@ export interface Product {
     category: "accessory" | "wavy" | "straight";
     stock: number;
     description: string;
+    price: number;
+    image_url: string;
 }

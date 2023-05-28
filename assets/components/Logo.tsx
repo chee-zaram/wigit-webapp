@@ -2,17 +2,17 @@
 
 import Image from "next/image";
 import Link from 'next/link';
+import logo from '/public/assets/images/logo.svg';
 
 const Logo = () => (
-    <div className='flex gap-2 flex-center'>
+    <div className='logo_wrap bg-white h-8'>
       <Link href='/'>
         <Image
-          src='/assests/images/logo.svg'
+          src={logo}
           alt='Wigit Company Logo'
-          width={50}
-          height={50}
+          width={70}
+          height={60}
         />
-        <p className='logo_text'>Class with sass...</p>
       </Link>
     </div>
 );

@@ -2,6 +2,7 @@ import '@styles/globals.css';
 import { Inter } from 'next/font/google';
 import Footer from '@components/Footer';
 import Navbar from '@components/Navbar';
+import ReactQueryrovider from './ReactQueryProvider';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,12 +17,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        <main className={inter.className}>{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <ReactQueryrovider>
+      <html lang="en">
+        <body className='bg-zinc-100'>
+          <Navbar />
+          <main className={inter.className}>{children}</main>
+          <Footer />
+        </body>
+      </html>
+    </ReactQueryrovider>
   )
 }
