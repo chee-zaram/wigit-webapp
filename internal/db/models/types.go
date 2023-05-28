@@ -89,7 +89,7 @@ type Product struct {
 	Name *string `gorm:"not null;unique;type:varchar(45)" json:"name" binding:"required,min=3,max=45"`
 
 	// Description is a detailed description of the Product.
-	Description *string `gorm:"not null;type:varchar(1024)" json:"description" binding:"required,min=3,max=45"`
+	Description *string `gorm:"not null;type:varchar(1024)" json:"description" binding:"required,min=3,max=1024"`
 
 	// Category is what group the Product belongs to.
 	// Values are ...
