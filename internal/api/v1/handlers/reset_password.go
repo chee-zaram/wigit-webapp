@@ -27,12 +27,9 @@ func PostResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	user, err := getUserFromDB(resetUser.Email)
-	if err != nil && errors.Is(err, ErrInvalidUser) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidUser.Error()})
-		return
-	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	user, code, err := getUserFromDB(resetUser.Email)
+	if err != nil {
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -89,11 +86,9 @@ func validateResetPasswordPutData(ctx *gin.Context) (*models.User, int, error) {
 		return nil, http.StatusBadRequest, errors.New("Reset Token not provided")
 	}
 
-	user, err := getUserFromDB(resetUser.Email)
-	if err != nil && errors.Is(err, ErrInvalidUser) {
-		return nil, http.StatusBadRequest, ErrInvalidUser
-	} else if err != nil {
-		return nil, http.StatusInternalServerError, ErrInternalServer
+	user, code, err := getUserFromDB(resetUser.Email)
+	if err != nil {
+		return nil, code, err
 	}
 
 	if user.ResetToken == "" {

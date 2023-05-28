@@ -19,9 +19,9 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	user, err := authenticateUser(_user)
+	user, code, err := authenticateUser(_user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -33,44 +33,44 @@ func SignIn(ctx *gin.Context) {
 }
 
 // authenticateUser verifies the user attempting to log in is a valid user.
-func authenticateUser(user *models.User) (*models.User, error) {
+func authenticateUser(user *models.User) (*models.User, int, error) {
 	var err error
 
 	if user.Email == nil {
-		return nil, ErrEmailNotProvided
+		return nil, http.StatusBadRequest, ErrEmailNotProvided
 	}
 
 	if user.Password == nil {
-		return nil, ErrInvalidPass
+		return nil, http.StatusBadRequest, ErrInvalidPass
 	}
 
 	// Get user with Email from the database.
-	dbUser, err := getUserFromDB(*user.Email)
+	dbUser, code, err := getUserFromDB(*user.Email)
 	if err != nil {
-		return nil, err
+		return nil, code, err
 	}
 
 	// Verify the user password.
 	if err := validateUser(user, dbUser); err != nil {
-		return nil, err
+		return nil, code, err
 	}
 
-	return dbUser, nil
+	return dbUser, code, nil
 }
 
 // getUserFromDB gets the user with `email` from the database.
-func getUserFromDB(email string) (*models.User, error) {
+func getUserFromDB(email string) (*models.User, int, error) {
 	dbUser := new(models.User)
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbUser, "email = ?", email).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, ErrInvalidUser
+		return nil, http.StatusBadGateway, ErrInvalidUser
 	} else if err != nil {
-		return nil, ErrInternalServer
+		return nil, http.StatusInternalServerError, ErrInternalServer
 	}
 
-	return dbUser, nil
+	return dbUser, http.StatusOK, nil
 }
 
 // validateUser verifies the user's password.

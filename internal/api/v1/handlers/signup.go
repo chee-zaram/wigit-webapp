@@ -55,7 +55,7 @@ func addUser(user *models.User) (int, error) {
 // validateSignUpUser validates all fields in the post form
 func validateSignUpUser(user *models.User) error {
 	// Verify user does not already exist
-	if dbUser, err := getUserFromDB(*user.Email); errors.Is(err, ErrInvalidUser) {
+	if dbUser, _, err := getUserFromDB(*user.Email); errors.Is(err, ErrInvalidUser) {
 	} else if dbUser != nil {
 		return ErrDuplicateUser
 	} else if err != nil {
