@@ -96,7 +96,7 @@ type Product struct {
 	Category *string `gorm:"not null;type:varchar(45)" json:"category" binding:"required,min=3,max=45"`
 
 	// Stock is the number of the product available.
-	Stock *int `gorm:"not null;type:int" json:"stock" binding:"required"`
+	Stock *int64 `gorm:"not null;type:int" json:"stock" binding:"required"`
 
 	// Price is the value of one unit of the Product.
 	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price" binding:"required"`
@@ -122,7 +122,7 @@ type Item struct {
 	ProductID *string `gorm:"not null;type:varchar(45)" json:"product_id" binding:"required"`
 
 	// Quantity is the number of the item ordered. Must not be more than Product in stock.
-	Quantity *int `gorm:"not null" json:"quantity" binding:"required"`
+	Quantity *int64 `gorm:"not null" json:"quantity" binding:"required"`
 
 	// Amount is the result of the Product price times the Quantity of the item ordered.
 	Amount *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"amount" binding:"-"`
