@@ -8,6 +8,7 @@ import (
 	"github.com/wigit-gh/webapp/internal/logging"
 )
 
+// usage prints out a usage message when wrong flags or values are passed to the program.
 func usage() {
 	fmt.Print(`
 This executable runs the WIG!T Web Application backend.

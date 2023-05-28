@@ -13,7 +13,7 @@ where applicable.
 
 > Admin routes carry two stars \*\*
 
-> Super Admin routes carry three start \*\*\*
+> Super Admin routes carry three stars \*\*\*
 
 ## GET
 
