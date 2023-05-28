@@ -3,6 +3,7 @@
 import { MouseEventHandler } from "react";
 
 export default interface ButtonProps {
+    type?: "reset" | "submit" | "button";
     text: string;
-    onClick: MouseEventHandler<HTMLButtonElement>;
+    onClick?: MouseEventHandler<HTMLButtonElement>;
 }

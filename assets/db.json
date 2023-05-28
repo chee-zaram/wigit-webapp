@@ -1,10 +1,10 @@
 {
   "signin": {
     "headers": {
-      "Authorization": "newBossVe",
+      "Authorization": "newBossVee",
       "Content-Type": "Application/json"
     },
-    "token": "something sent from the client side"
+    "token": "something different from the client side"
   },
   "products": [
     {

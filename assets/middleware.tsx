@@ -10,5 +10,5 @@ export function Middleware(request: NextRequest) {
     return NextResponse.next;
 }
 export const config = {
-  matcher: ['/signin/(.*)', '/profile/*'],
+  matcher: ['/signin/(.*)', '/profile/(.*/.*)'],
 };
