@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
@@ -30,6 +31,16 @@ func ListenAndServer(conf config.Config) {
 
 	// A configured router with logger and recovery middleware
 	router := gin.Default()
+
+	// Get cors config object.
+	corsConfig := middlewares.CorsConfig(
+		[]string{"*"},
+		[]string{"GET", "POST", "PUT", "DELETE"},
+		[]string{"Content-Type", "Authorization"},
+	)
+
+	// Use the cors middleware with our configuration.
+	router.Use(cors.New(corsConfig))
 
 	// We don't care about trailing slashes. /example and /example/ mean the same thing
 	router.RedirectTrailingSlash = true
