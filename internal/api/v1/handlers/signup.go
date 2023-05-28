@@ -21,8 +21,8 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 
-	if err := addUser(user); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if code, err := addUser(user); err != nil {
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -33,23 +33,23 @@ func SignUp(ctx *gin.Context) {
 }
 
 // addUser adds a new user to the database. Returns an error if any exists.
-func addUser(user *models.User) error {
+func addUser(user *models.User) (int, error) {
 	if err := validateSignUpUser(user); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	if err := hashPassword(user); err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
 	// Add the user to the database
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
 		return tx.Create(user).Error
 	}); err != nil {
-		return ErrFailedToAddUserToDB
+		return http.StatusInternalServerError, ErrFailedToAddUserToDB
 	}
 
-	return nil
+	return http.StatusCreated, nil
 }
 
 // validateSignUpUser validates all fields in the post form
