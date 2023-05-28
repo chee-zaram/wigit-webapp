@@ -27,6 +27,28 @@ func AdminGetBookings(ctx *gin.Context) {
 	})
 }
 
+// CustomerGetBookings gets a list of all the customer bookings.
+func CustomerGetBookings(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+	user := _user.(*models.User)
+	var bookings []models.Booking
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Find(&bookings).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": bookings,
+	})
+}
+
 // CustomerPostBooking adds a new booking to the database for the customer.
 func CustomerPostBooking(ctx *gin.Context) {
 	_booking := new(models.Booking)
