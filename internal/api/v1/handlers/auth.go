@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -19,23 +20,33 @@ import (
 func JWTAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
+		ctx.Header(`WWW-Authenticate`, `Bearer realm="Restricted"`)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
 		return
 	}
 
 	bearerToken := strings.Split(authHeader, " ")
 	if len(bearerToken) != 2 {
+		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
+			`Bearer realm="Restricted", error="invalid_token", error_description="Invalid Authorization header format"`,
+		))
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
 		return
 	}
 
 	if bearerToken[0] != "Bearer" {
+		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
+			`Bearer realm="Restricted", error="invalid_token", error_description="Authorization value does not contain Bearer"`,
+		))
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization value does not contain Bearer"})
 		return
 	}
 
 	userID, err := validateJWTToken(bearerToken[1])
 	if err != nil {
+		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
+			`Bearer realm="Restricted", error="invalid_token", error_description="%s"`, err.Error(),
+		))
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
@@ -125,7 +136,11 @@ func AdminAuthorization(ctx *gin.Context) {
 	}
 
 	if *user.Role != "admin" {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "You are not allowed to view this resource"})
+		err := "You are not allowed to view this resource"
+		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
+			`Bearer realm="Restricted", scope="admin", error="insufficient_scope", error_description="%s"`, err,
+		))
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
 		return
 	}
 
