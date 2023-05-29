@@ -51,7 +51,7 @@ const SignUpForm = () => {
 
     async function handleSignUp (event: any){
         event.preventDefault();
-        const newUser = { email, password, confirmPassword, firstName, lastName, phoneNumber, address };
+        const newUser = { email, password, repeat_password: confirmPassword, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
         const { data } = await axios.post("https://cheezaram.tech/api/v1/signup", newUser);
         console.log(data ? data : "error loading data...");
         // on success, redirect to home page, on error, render error message

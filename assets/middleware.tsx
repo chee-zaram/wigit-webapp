@@ -1,14 +1,15 @@
-// middleware for restricted routes
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verify } from 'jsonwebtoken';
 
-export function Middleware(request: NextRequest) {
-    // pass for now
-    if (request.nextUrl.pathname.startsWith('signin')) {
-        return NextResponse.rewrite(new URL('/mad-login', request.url));
+export function middleware(request: NextRequest) {
+    //pass
+    if (request.nextUrl.pathname.startsWith('/about')) {
+        return NextResponse.rewrite(new URL('/signin', request.url));
     }
-    return NextResponse.next;
-}
+    return NextResponse.next();
+} 
+
 export const config = {
-  matcher: ['/signin/(.*)', '/profile/(.*/.*)'],
+  matcher: '/about/:path*',
 };
