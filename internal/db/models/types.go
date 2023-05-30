@@ -155,8 +155,11 @@ type Booking struct {
 type Slot struct {
 	BaseModel
 
-	// DateTime is the date and time for which the slot has been allocated.
-	DateTime *time.Time `gorm:"not null;type:datetime" json:"date_time" binding:"required"`
+	// DateString is the date for which the slot has been allocated.
+	DateString *string `gorm:"not null;type:varchar(45)" json:"date_string" binding:"required"`
+
+	// TimeString is the time on the given date
+	TimeString *string `gorm:"not null;type:varchar(45)" json:"time_string" binding:"required"`
 
 	// IsFree says if the slot has been taken or not.
 	IsFree *bool `gorm:"not null" json:"is_free" binding:"required"`

@@ -3,7 +3,6 @@ package handlers
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db/models"
@@ -15,7 +14,7 @@ func GetSlots(ctx *gin.Context) {
 	var slots []models.Slot
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Where("is_free = ?", true).Where("date_time > CURRENT_TIMESTAMP").Find(&slots).Error
+		return tx.Where("is_free = ?", true).Find(&slots).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
@@ -59,12 +58,16 @@ func AdminPostSlots(ctx *gin.Context) {
 	})
 }
 
-// validatePostSlotsData checks the validity of the json fields provided during
-// a post request by an admin.
+// validatePostSlotsData checks that the required fields are provided.
 func validatePostSlotsData(slot *models.Slot) error {
-	if time.Now().After(*slot.DateTime) {
-		return errors.New("Date and time for slot must be in the future")
+	if slot.DateString == nil || *slot.DateString == "" {
+		return errors.New("DateString must be provided")
 	}
+
+	if slot.TimeString == nil || *slot.TimeString == "" {
+		return errors.New("TimeString must be provided")
+	}
+
 	return nil
 }
 
