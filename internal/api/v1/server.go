@@ -35,8 +35,8 @@ func ListenAndServer(conf config.Config) {
 	// Get cors config object.
 	corsConfig := middlewares.CorsConfig(
 		[]string{"*"},
-		[]string{"GET", "POST", "PUT", "DELETE"},
-		[]string{"Content-Type", "Authorization"},
+		[]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		[]string{"Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept"},
 	)
 
 	// Use the cors middleware with our configuration.
