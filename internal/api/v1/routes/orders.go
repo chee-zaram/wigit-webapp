@@ -18,6 +18,6 @@ func AdminOrdersRoutes(admin *gin.RouterGroup) {
 	// Only the status field can be updated.
 	admin.PUT("/orders/:order_id/:status", handlers.AdminPutOrders)
 	admin.GET("/orders", handlers.AdminGetOrders)
-	admin.GET("/orders/:orders_id", handlers.AdminGetOrderByID)
+	admin.GET("/orders/:order_id", handlers.AdminGetOrderByID)
 	admin.GET("/orders/status/:status", handlers.AdminGetOrdersByStatus)
 }

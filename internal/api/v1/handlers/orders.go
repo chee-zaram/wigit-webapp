@@ -222,7 +222,7 @@ func AdminGetOrderByID(ctx *gin.Context) {
 
 	order := new(models.Order)
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Items").First(order, "id = ?", id).Error
+		return tx.Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -303,7 +303,7 @@ func CustomerGetOrderByID(ctx *gin.Context) {
 	order := new(models.Order)
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id = ?", id).Error
+		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

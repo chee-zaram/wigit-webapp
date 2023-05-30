@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db/models"
@@ -96,7 +97,7 @@ func getBookingFromDB(id string) (*models.Booking, error) {
 	booking := new(models.Booking)
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Slot").Preload("Service").First(booking, "id = ?", id).Error
+		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		return nil, err
 	}
@@ -181,7 +182,7 @@ func CustomerGetBooking(ctx *gin.Context) {
 	user := _user.(*models.User)
 
 	for _, booking := range user.Bookings {
-		if *booking.ID == booking_id {
+		if strings.Contains(*booking.ID, booking_id) {
 			ctx.JSON(http.StatusOK, gin.H{
 				"data": booking,
 			})
