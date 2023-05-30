@@ -102,7 +102,7 @@ type Product struct {
 	Price *decimal.Decimal `gorm:"not null;type:decimal(10,2)" json:"price" binding:"required"`
 
 	// ImageURL is a link to a stock photo of the product.
-	ImageURL *string `gorm:"not null;type:varchar(128)" json:"image_url" binding:"required,max=128"`
+	ImageURL *string `gorm:"not null;type:varchar(255)" json:"image_url" binding:"required,max=255"`
 }
 
 // Item is an instance of a Product within an Order.

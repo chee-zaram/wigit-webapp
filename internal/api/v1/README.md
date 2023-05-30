@@ -119,7 +119,7 @@ where applicable.
       <li><strong>category</strong>: The category the product belong to. Must be 3 to 45 characters long.</li>
       <li><strong>stock</strong>: The quantity of the product in stock. An integer.</li>
       <li><strong>price</strong>: The price of the product. Decimal as a string. Will be rounded up to 2 decimal places.</li>
-      <li><strong>image_url</strong>: A link to the product display image. Not longer than 128 characters.</li>
+      <li><strong>image_url</strong>: A link to the product display image. Not longer than 255 characters.</li>
     </ul>
     On success, it will return a <b>201</b> response code with a <b>msg</b> string and a <b>data</b> object in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
