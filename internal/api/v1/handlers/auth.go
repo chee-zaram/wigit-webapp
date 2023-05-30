@@ -74,7 +74,7 @@ func validateJWTToken(_token string) (string, error) {
 		return "", err
 	}
 
-	if !claims.IsValidAt(time.Now()) {
+	if !claims.IsValidAt(time.Now().UTC()) {
 		return "", errors.New("Token has expired")
 	}
 

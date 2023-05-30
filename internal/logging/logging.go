@@ -61,7 +61,7 @@ func createLogDir() {
 
 // backupLastLog backs up the previous log file if exists using current date time.
 func backupLastLog() {
-	timeStamp := time.Now().Format("20060201_15_04_05")
+	timeStamp := time.Now().UTC().Format("20060201_15_04_05")
 	base := strings.TrimSuffix(logFileName, filepath.Ext(logFileName))
 	bkpLogName := fmt.Sprintf("%s_%s%s", base, timeStamp, filepath.Ext(logFilePath))
 	bkpLogPath := filepath.Join(logsDir, bkpLogName)

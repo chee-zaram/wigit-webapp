@@ -48,6 +48,6 @@ func generateClaims(userID string) *jwt.RegisteredClaims {
 	// Store user ID in claims
 	return &jwt.RegisteredClaims{
 		ID:        userID,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(time.Hour * 24)),
 	}
 }
