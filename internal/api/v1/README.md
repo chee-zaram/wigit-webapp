@@ -236,7 +236,7 @@ where applicable.
     </li>
 </ul>
 
-<!-- TODO add documentation for orders endpoint -->
+<!-- TODO: add documentation for orders endpoint -->
 
 ## Author
 
