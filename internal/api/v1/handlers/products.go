@@ -15,7 +15,7 @@ func GetProducts(ctx *gin.Context) {
 	var products []models.Product
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Find(&products).Error
+		return tx.Order("updated_at desc").Find(&products).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
