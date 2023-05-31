@@ -209,3 +209,19 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 		"msg": "User deleted successfully",
 	})
 }
+
+// SuperAdminGetAdmins gets all admins in the database.
+func SuperAdminGetAdmins(ctx *gin.Context) {
+	var admins []models.User
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("first_name asc").Where("role = 'admin'").Preload("Orders").Preload("Bookings").Find(&admins).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": admins,
+	})
+}
