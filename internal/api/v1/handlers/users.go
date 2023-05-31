@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -17,7 +18,7 @@ func CustomerDeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM users WHERE id = ?`, *user.ID).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -38,7 +39,7 @@ func CustomerPutUser(ctx *gin.Context) {
 	}
 
 	updateUserInfo(user, newUser)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(user).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -129,7 +130,7 @@ func AdminGetUserOrdersBookings(ctx *gin.Context) {
 func getUserFromDB(email string) (*models.User, int, error) {
 	dbUser := new(models.User)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(dbUser).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, http.StatusBadGateway, ErrInvalidUser
@@ -175,14 +176,14 @@ func SuperAdminUpdateRole(ctx *gin.Context) {
 // updateUserRole updates a given user's role and returns the updated user.
 func updateUserRole(user *models.User, role string) (*models.User, error) {
 	user.Role = &role
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(user).Error
 	}); err != nil {
 		return nil, ErrInternalServer
 	}
 
 	dbUser := new(models.User)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbUser, "id = ?", *user.ID).Error
 	}); err != nil {
 		return nil, ErrInternalServer
@@ -199,7 +200,7 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM users WHERE email = ?`, email).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -215,7 +216,7 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 func SuperAdminGetAdmins(ctx *gin.Context) {
 	var admins []models.User
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("first_name asc").Where("role = 'admin'").Preload("Orders").Preload("Bookings").Find(&admins).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -231,7 +232,7 @@ func SuperAdminGetAdmins(ctx *gin.Context) {
 func SuperAdminGetCustomers(ctx *gin.Context) {
 	var customers []models.User
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("first_name asc").Where("role = 'customer'").Preload("Orders").Preload("Bookings").Find(&customers).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

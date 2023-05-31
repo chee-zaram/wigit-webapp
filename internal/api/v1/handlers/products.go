@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -14,7 +15,7 @@ import (
 func GetProducts(ctx *gin.Context) {
 	var products []models.Product
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Find(&products).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -36,7 +37,7 @@ func GetProductByID(ctx *gin.Context) {
 
 	product := new(models.Product)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(product, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No product found"})
@@ -68,7 +69,7 @@ func GetProductByCategory(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("category = ?", category).Find(&products).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -98,7 +99,7 @@ func AdminPostProducts(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Create(_product).Error
 	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
@@ -134,7 +135,7 @@ func validateProductsData(product *models.Product) error {
 func getProductFromDB(id string) (*models.Product, error) {
 	product := new(models.Product)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(product, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("Product already exists")
@@ -165,7 +166,7 @@ func AdminDeleteProducts(ctx *gin.Context) {
 
 // deleteProductFromDB deletes a product from the database.
 func deleteProductFromDB(id string) error {
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM products WHERE id = ?`, id).Error
 	}); err != nil {
 		return err
@@ -219,13 +220,13 @@ func updateProductInDB(dbProduct, newProduct *models.Product) error {
 	dbProduct.Price = newProduct.Price
 	dbProduct.ImageURL = newProduct.ImageURL
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(dbProduct).Error
 	}); err != nil {
 		return err
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbProduct, "id = ?", *dbProduct.ID).Error
 	}); err != nil {
 		return err

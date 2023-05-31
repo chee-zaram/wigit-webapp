@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ import (
 func GetServices(ctx *gin.Context) {
 	var services []models.Service
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Find(&services).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -39,7 +40,7 @@ func GetServiceByID(ctx *gin.Context) {
 	}
 
 	service := new(models.Service)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(service, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
@@ -66,7 +67,7 @@ func AdminPostServices(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Create(_service).Error
 	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Service with this name already exists"})
@@ -101,7 +102,7 @@ func validateServicesData(service *models.Service) error {
 func getServiceFromDB(id string) (*models.Service, error) {
 	service := new(models.Service)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(service, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("failed to add service to the database")
@@ -132,7 +133,7 @@ func AdminDeleteServices(ctx *gin.Context) {
 
 // deleteServiceFromDB sends a delete query to the database to delete service with given id.
 func deleteServiceFromDB(id string) error {
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM services WHERE id = ?`, id).Error
 	}); err != nil { // Exec does not return a ErrRecordNotFound so no need to check
 		return err
@@ -179,13 +180,13 @@ func updateServiceInDB(dbService, newService *models.Service) error {
 	dbService.Price = newService.Price
 	dbService.Available = newService.Available
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(dbService).Error
 	}); err != nil {
 		return err
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbService, "id = ?", *dbService.ID).Error
 	}); err != nil {
 		return err

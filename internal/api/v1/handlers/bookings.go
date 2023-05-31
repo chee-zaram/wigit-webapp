@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,7 @@ var allowedBookingStatus = []string{"pending", "paid", "fulfilled", "cancelled"}
 func AdminGetBookings(ctx *gin.Context) {
 	var bookings []models.Booking
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Find(&bookings).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -38,7 +39,7 @@ func CustomerGetBookings(ctx *gin.Context) {
 	user := _user.(*models.User)
 	var bookings []models.Booking
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Find(&bookings).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -73,7 +74,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 
 	_booking.Amount = service.Price
 	user.Bookings = append(user.Bookings, *_booking)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(user).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -96,7 +97,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 func getBookingFromDB(id string) (*models.Booking, error) {
 	booking := new(models.Booking)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		return nil, err
@@ -128,7 +129,7 @@ func AdminPutBooking(ctx *gin.Context) {
 	}
 
 	booking.Status = &status
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(booking).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

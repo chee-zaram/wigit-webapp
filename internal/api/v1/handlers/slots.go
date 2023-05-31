@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -13,7 +14,7 @@ import (
 func GetSlots(ctx *gin.Context) {
 	var slots []models.Slot
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("is_free = ?", true).Find(&slots).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -39,7 +40,7 @@ func AdminPostSlots(ctx *gin.Context) {
 		return
 	}
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Create(_slot).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
@@ -75,7 +76,7 @@ func validatePostSlotsData(slot *models.Slot) error {
 func getSlotFromDB(id string) (*models.Slot, error) {
 	slot := new(models.Slot)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(slot, "id = ?", id).Error
 	}); err != nil {
 		return nil, ErrInternalServer
@@ -104,7 +105,7 @@ func AdminDeleteSlots(ctx *gin.Context) {
 
 // deleteSlotFromDB deletes a slot with id from database.
 func deleteSlotFromDB(id string) error {
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM slots WHERE id = ?`, id).Error
 	}); err != nil {
 		return err

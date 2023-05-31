@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -45,7 +46,7 @@ func CustomerPostToCart(ctx *gin.Context) {
 	amount := product.Price.Mul(decimal.NewFromInt(int64(*_item.Quantity)))
 	_item.Amount = &amount
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Create(_item).Error
 	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item already exists for this user"})
@@ -88,7 +89,7 @@ func validateItemQuantity(item *models.Item, product *models.Product) error {
 func getItemFromDB(id string) (*models.Item, error) {
 	item := new(models.Item)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(item, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("Item not found in database")
@@ -115,7 +116,7 @@ func CustomerDeleteFromCart(ctx *gin.Context) {
 	}
 
 	// Will delete only if the item is in the cart i.e order_id is NULL.
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM items WHERE id = ? AND user_id = ? AND order_id is NULL`, id, *user.ID).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -138,7 +139,7 @@ func CustomerGetCart(ctx *gin.Context) {
 	user := _user.(*models.User)
 	var items []models.Item
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at asc").Where("user_id = ?", *user.ID).Where("order_id is NULL").Find(&items).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -160,7 +161,7 @@ func CustomerClearCart(ctx *gin.Context) {
 
 	user := _user.(*models.User)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Exec(`DELETE FROM items WHERE user_id = ? AND order_id is NULL`, *user.ID).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

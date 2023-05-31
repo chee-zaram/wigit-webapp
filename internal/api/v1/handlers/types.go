@@ -2,12 +2,7 @@ package handlers
 
 import (
 	"errors"
-
-	"github.com/wigit-gh/webapp/internal/db"
 )
-
-// DBConnector servers as a global link to the database.
-var DBConnector *db.DB
 
 var (
 	// ErrEmailNotProvided indicates email not provided during signin.

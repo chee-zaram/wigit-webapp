@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -43,7 +44,7 @@ func addUser(user *models.User) (int, error) {
 	}
 
 	// Add the user to the database
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Create(user).Error
 	}); err != nil {
 		return http.StatusInternalServerError, ErrFailedToAddUserToDB

@@ -27,7 +27,7 @@ func ListenAndServer(conf config.Config) {
 	middlewares.CreateVerifier([]byte(conf.JWTSecret))
 
 	// Our link to the database
-	handlers.DBConnector = db.GetConnector(conf)
+	db.Connector = db.GetConnector(conf)
 
 	// A configured router with logger and recovery middleware
 	router := gin.Default()

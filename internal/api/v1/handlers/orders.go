@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-gh/webapp/internal/db"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
@@ -38,7 +39,7 @@ func CustomerPostOrders(ctx *gin.Context) {
 	_order.TotalAmount = getOrderTotal(items)
 
 	user.Orders = append(user.Orders, *_order)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(user).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -61,7 +62,7 @@ func CustomerPostOrders(ctx *gin.Context) {
 func getItemsInCart(user_id string) ([]models.Item, error) {
 	var items []models.Item
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", user_id).Where("order_id is NULL").Find(&items).Error
 	}); err != nil {
 		return nil, err
@@ -92,7 +93,7 @@ func getItemsInCart(user_id string) ([]models.Item, error) {
 // getOrderFromDB retrieves an order from the database with given id.
 func getOrderFromDB(id string) (*models.Order, error) {
 	order := new(models.Order)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Items.Product").First(order, "id = ?", id).Error
 	}); err != nil {
 		return nil, err
@@ -138,7 +139,7 @@ func AdminPutOrders(ctx *gin.Context) {
 
 	order.Status = &status
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(order).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -178,7 +179,7 @@ func validOrderStatus(order *models.Order, status string) bool {
 func AdminGetOrders(ctx *gin.Context) {
 	var orders []models.Order
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Preload("Items").Find(&orders).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -200,7 +201,7 @@ func AdminGetOrdersByStatus(ctx *gin.Context) {
 
 	var orders []models.Order
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("status = ?", status).Preload("Items").Find(&orders).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -221,7 +222,7 @@ func AdminGetOrderByID(ctx *gin.Context) {
 	}
 
 	order := new(models.Order)
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -243,7 +244,7 @@ func CustomerGetOrders(ctx *gin.Context) {
 	user := _user.(*models.User)
 	var orders []models.Order
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(&orders).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -272,7 +273,7 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 
 	var orders []models.Order
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Where("status = ?", status).
 			Preload("Items").Find(&orders).Error
 	}); err != nil {
@@ -302,7 +303,7 @@ func CustomerGetOrderByID(ctx *gin.Context) {
 	user := _user.(*models.User)
 	order := new(models.Order)
 
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

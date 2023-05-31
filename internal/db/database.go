@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db/models"
+	"github.com/wigit-gh/webapp/internal/db/migration"
 	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,6 +16,9 @@ import (
 type DB struct {
 	*gorm.DB
 }
+
+// Connector servers as a global link to the database.
+var Connector *DB
 
 // Query method is called to send request to the database within a scoped session.
 //
@@ -73,15 +76,7 @@ func createDBConnection(dsn string) (*gorm.DB, error) {
 	}
 
 	// Create or migrate tables based on the structs.
-	if err = db.AutoMigrate(
-		&models.User{},
-		&models.Product{},
-		&models.Order{},
-		&models.Item{},
-		&models.Booking{},
-		&models.Service{},
-		&models.Slot{},
-	); err != nil {
+	if err = db.AutoMigrate(migration.AutoMigrate()); err != nil {
 		return nil, fmt.Errorf("failed to automigrate tables: %w", err)
 	}
 
