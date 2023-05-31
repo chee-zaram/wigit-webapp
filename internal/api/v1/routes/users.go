@@ -19,4 +19,5 @@ func AdminUsersRoutes(admin *gin.RouterGroup) {
 // SuperAdminUsersRoutes adds new routes for manipulating user information.
 func SuperAdminUsersRoutes(superAdmin *gin.RouterGroup) {
 	superAdmin.PUT("/users/:email/:new_role", handlers.SuperAdminUpdateRole)
+	superAdmin.DELETE("/users/:email", handlers.SuperAdminDeleteUser)
 }

@@ -189,3 +189,23 @@ func updateUserRole(user *models.User, role string) (*models.User, error) {
 
 	return dbUser, nil
 }
+
+// SuperAdminDeleteUser deletes a user account.
+func SuperAdminDeleteUser(ctx *gin.Context) {
+	email := ctx.Param("email")
+	if email == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email param not set"})
+		return
+	}
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Exec(`DELETE FROM USERS WHERE email = ?`, email).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "User deleted successfully",
+	})
+}
