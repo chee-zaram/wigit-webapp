@@ -22,4 +22,5 @@ func SuperAdminUsersRoutes(superAdmin *gin.RouterGroup) {
 	superAdmin.DELETE("/users/:email", handlers.SuperAdminDeleteUser)
 	superAdmin.GET("/users/admins", handlers.SuperAdminGetAdmins)
 	superAdmin.GET("/users/customers", handlers.SuperAdminGetCustomers)
+	superAdmin.GET("/users/:email", handlers.SuperAdminGetUser)
 }

@@ -242,3 +242,22 @@ func SuperAdminGetCustomers(ctx *gin.Context) {
 		"data": customers,
 	})
 }
+
+// SuperAdminGetUser gets a user with given email from database.
+func SuperAdminGetUser(ctx *gin.Context) {
+	email := ctx.Param("email")
+	if email == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
+		return
+	}
+
+	user, code, err := getUserFromDB(email)
+	if err != nil {
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": user,
+	})
+}
