@@ -200,7 +200,7 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 	}
 
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM USERS WHERE email = ?`, email).Error
+		return tx.Exec(`DELETE FROM users WHERE email = ?`, email).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
