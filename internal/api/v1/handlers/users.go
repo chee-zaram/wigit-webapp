@@ -225,3 +225,19 @@ func SuperAdminGetAdmins(ctx *gin.Context) {
 		"data": admins,
 	})
 }
+
+// SuperAdminGetCustomers retrieves all customers.
+func SuperAdminGetCustomers(ctx *gin.Context) {
+	var customers []models.User
+
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Order("first_name asc").Where("role = 'customer'").Preload("Orders").Preload("Bookings").Find(&customers).Error
+	}); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": customers,
+	})
+}

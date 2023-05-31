@@ -21,4 +21,5 @@ func SuperAdminUsersRoutes(superAdmin *gin.RouterGroup) {
 	superAdmin.PUT("/users/:email/:new_role", handlers.SuperAdminUpdateRole)
 	superAdmin.DELETE("/users/:email", handlers.SuperAdminDeleteUser)
 	superAdmin.GET("/users/admins", handlers.SuperAdminGetAdmins)
+	superAdmin.GET("/users/customers", handlers.SuperAdminGetCustomers)
 }
