@@ -76,7 +76,7 @@ func createDBConnection(dsn string) (*gorm.DB, error) {
 	}
 
 	// Create or migrate tables based on the structs.
-	if err = db.AutoMigrate(migration.AutoMigrate()); err != nil {
+	if err = db.AutoMigrate(migration.GetSchemas()); err != nil {
 		return nil, fmt.Errorf("failed to automigrate tables: %w", err)
 	}
 

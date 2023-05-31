@@ -8,10 +8,10 @@ import (
 )
 
 // TestAutoMigrate runs tests for the AutoMigrate function.
-func TestAutoMigrate(t *testing.T) {
+func TestGetSchemas(t *testing.T) {
 	assert := assert.New(t)
 
-	user, order, booking, slot, item, product, service := AutoMigrate()
+	user, order, booking, slot, item, product, service := GetSchemas()
 	assert.IsType(&models.User{}, user)
 	assert.IsType(&models.Order{}, order)
 	assert.IsType(&models.Booking{}, booking)
