@@ -237,6 +237,8 @@ where applicable.
 </ul>
 
 <!-- TODO: add documentation for orders endpoint -->
+<!-- TODO: add documentation for super_admin endpoint -->
+<!-- TODO: add documentation for getting all user's orders and bookings -->
 
 ## Author
 
