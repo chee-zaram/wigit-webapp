@@ -5,7 +5,6 @@ import (
 	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
 )
 
-// TODO: add admin route for getting bookings belonging to a given user.
 // AdminBookingsRoutes adds all the routes for the bookings endpoint used by the admin.
 func AdminBookingsRoutes(admin *gin.RouterGroup) {
 	admin.GET("/bookings", handlers.AdminGetBookings)
