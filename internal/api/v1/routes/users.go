@@ -10,3 +10,8 @@ func UsersRoutes(customer *gin.RouterGroup) {
 	customer.DELETE("/users/:user_id", handlers.CustomerDeleteUser)
 	customer.PUT("/users/:user_id", handlers.CustomerPutUser)
 }
+
+// AdminUsersRoutes adds new routes for retrieving a user's order info.
+func AdminUsersRoutes(admin *gin.RouterGroup) {
+	admin.GET("/users/:email/orders_bookings", handlers.AdminGetUserOrdersBookings)
+}

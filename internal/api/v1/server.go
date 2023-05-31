@@ -131,4 +131,5 @@ func addAdminRoutes(admin *gin.RouterGroup) {
 	routes.AdminServicesRoutes(admin)
 	routes.AdminSlotsRoutes(admin)
 	routes.AdminOrdersRoutes(admin)
+	routes.AdminUsersRoutes(admin)
 }

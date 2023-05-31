@@ -101,3 +101,40 @@ func updateUserInfo(user, newUser *models.User) {
 		user.Phone = newUser.Phone
 	}
 }
+
+// AdminGetUserOrdersBookings gets all orders and booking belonging to a user
+// with given email.
+func AdminGetUserOrdersBookings(ctx *gin.Context) {
+	email := ctx.Param("email")
+	if email == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email param not set"})
+		return
+	}
+
+	orders, bookings, code, err := getUserOrdersBookings(email)
+	if err != nil {
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"orders":   orders,
+			"bookings": bookings,
+		},
+	})
+}
+
+// getUserOrdersBookings retrieves all a user's orders and bookings.
+func getUserOrdersBookings(email string) ([]models.Order, []models.Booking, int, error) {
+	user := new(models.User)
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(user).Error
+	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil, http.StatusBadRequest, ErrInvalidUser
+	} else if err != nil {
+		return nil, nil, http.StatusInternalServerError, err
+	}
+
+	return user.Orders, user.Bookings, http.StatusOK, nil
+}
