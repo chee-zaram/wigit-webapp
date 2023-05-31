@@ -138,3 +138,54 @@ func getUserOrdersBookings(email string) ([]models.Order, []models.Booking, int,
 
 	return user.Orders, user.Bookings, http.StatusOK, nil
 }
+
+// SuperAdminUpdateRole updates the role of a user using super admin privileges.
+func SuperAdminUpdateRole(ctx *gin.Context) {
+	email := ctx.Param("email")
+	role := ctx.Param("new_role")
+	if email == "" || role == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email or role param not set"})
+		return
+	}
+
+	if role != "admin" && role != "customer" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid user role"})
+		return
+	}
+
+	user, code, err := getUserFromDB(email)
+	if err != nil {
+		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	dbUser, err := updateUserRole(user, role)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "User role updated successfully",
+		"user": dbUser,
+	})
+}
+
+// updateUserRole updates a given user's role and returns the updated user.
+func updateUserRole(user *models.User, role string) (*models.User, error) {
+	user.Role = &role
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.Save(user).Error
+	}); err != nil {
+		return nil, ErrInternalServer
+	}
+
+	dbUser := new(models.User)
+	if err := DBConnector.Query(func(tx *gorm.DB) error {
+		return tx.First(dbUser, "id = ?", *user.ID).Error
+	}); err != nil {
+		return nil, ErrInternalServer
+	}
+
+	return dbUser, nil
+}

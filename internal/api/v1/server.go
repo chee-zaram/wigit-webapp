@@ -57,6 +57,14 @@ func ListenAndServer(conf config.Config) {
 	// Add all admin routes
 	addAdminRoutes(admin)
 
+	// Create the super admin group and add auth middlewares
+	superAdmin := api.Group(
+		"/super_admin",
+		handlers.JWTAuthentication,
+		handlers.SuperAdminAuthorization,
+	)
+	addSuperAdminRoutes(superAdmin)
+
 	// Add only authentication middleware for all other users
 	customer := api.Group("/", handlers.JWTAuthentication)
 	addCustomerRoutes(customer)
@@ -132,4 +140,9 @@ func addAdminRoutes(admin *gin.RouterGroup) {
 	routes.AdminSlotsRoutes(admin)
 	routes.AdminOrdersRoutes(admin)
 	routes.AdminUsersRoutes(admin)
+}
+
+// addSuperAdminRoutes adds all routes that need super admin priviledges.
+func addSuperAdminRoutes(superAdmin *gin.RouterGroup) {
+	routes.SuperAdminUsersRoutes(superAdmin)
 }

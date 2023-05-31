@@ -135,10 +135,36 @@ func AdminAuthorization(ctx *gin.Context) {
 		return
 	}
 
-	if *user.Role != "admin" {
+	if *user.Role != "admin" && *user.Role != "super_admin" {
 		err := "You are not allowed to view this resource"
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
-			`Bearer realm="Restricted", scope="admin", error="insufficient_scope", error_description="%s"`, err,
+			`Bearer realm="Restricted", scope="admin super_admin", error="insufficient_scope", error_description="%s"`, err,
+		))
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
+		return
+	}
+
+	ctx.Next()
+}
+
+// SuperAdminAuthorization validates if the user is the super admin.
+func SuperAdminAuthorization(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
+		return
+	}
+
+	user, ok := _user.(*models.User)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		return
+	}
+
+	if *user.Role != "super_admin" {
+		err := "You are not allowed to view this resource"
+		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
+			`Bearer realm="Restricted", scope="super_admin", error="insufficient_scope", error_description="%s"`, err,
 		))
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
 		return

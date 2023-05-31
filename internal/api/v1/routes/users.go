@@ -15,3 +15,8 @@ func UsersRoutes(customer *gin.RouterGroup) {
 func AdminUsersRoutes(admin *gin.RouterGroup) {
 	admin.GET("/users/:email/orders_bookings", handlers.AdminGetUserOrdersBookings)
 }
+
+// SuperAdminUsersRoutes adds new routes for manipulating user information.
+func SuperAdminUsersRoutes(superAdmin *gin.RouterGroup) {
+	superAdmin.PUT("/users/:email/:new_role", handlers.SuperAdminUpdateRole)
+}
