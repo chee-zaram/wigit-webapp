@@ -39,9 +39,7 @@ func AdminPostSlots(ctx *gin.Context) {
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Create(_slot).Error
-	}); err != nil {
+	if err := _slot.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
 	}

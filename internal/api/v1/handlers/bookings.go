@@ -73,9 +73,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 
 	_booking.Amount = service.Price
 	user.Bookings = append(user.Bookings, *_booking)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(user).Error
-	}); err != nil {
+	if err := user.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -128,9 +126,7 @@ func AdminPutBooking(ctx *gin.Context) {
 	}
 
 	booking.Status = &status
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(booking).Error
-	}); err != nil {
+	if err := booking.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

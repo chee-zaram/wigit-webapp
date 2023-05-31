@@ -24,5 +24,7 @@ func main() {
 	}
 
 	conf := config.NewConfig(env)
-	server.ListenAndServer(conf)
+	ginRouter := server.SetGINRouter(conf)
+	httpRouter := server.SetHTTPRouter(ginRouter, conf)
+	server.ListenAndServer(httpRouter)
 }

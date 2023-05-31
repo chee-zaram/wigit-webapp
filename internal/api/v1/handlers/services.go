@@ -66,9 +66,7 @@ func AdminPostServices(ctx *gin.Context) {
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Create(_service).Error
-	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+	if err := _service.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Service with this name already exists"})
 		return
 	} else if err != nil {
@@ -179,9 +177,7 @@ func updateServiceInDB(dbService, newService *db.Service) error {
 	dbService.Price = newService.Price
 	dbService.Available = newService.Available
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(dbService).Error
-	}); err != nil {
+	if err := dbService.SaveToDB(); err != nil {
 		return err
 	}
 

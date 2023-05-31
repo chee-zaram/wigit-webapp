@@ -38,9 +38,7 @@ func CustomerPostOrders(ctx *gin.Context) {
 	_order.TotalAmount = getOrderTotal(items)
 
 	user.Orders = append(user.Orders, *_order)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(user).Error
-	}); err != nil {
+	if err := user.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -138,9 +136,7 @@ func AdminPutOrders(ctx *gin.Context) {
 
 	order.Status = &status
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(order).Error
-	}); err != nil {
+	if err := order.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

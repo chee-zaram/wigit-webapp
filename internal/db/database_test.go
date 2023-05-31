@@ -137,9 +137,7 @@ func TestBeforeCreateHook(t *testing.T) {
 		IsFree:     isFree,
 	}
 
-	if err := db.Query(func(tx *gorm.DB) error {
-		return tx.Create(slot).Error
-	}); err != nil {
+	if err := slot.SaveToDB(); err != nil {
 		t.Fatal("failed to create slot in database")
 	}
 

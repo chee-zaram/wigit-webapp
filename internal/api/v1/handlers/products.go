@@ -98,9 +98,7 @@ func AdminPostProducts(ctx *gin.Context) {
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Create(_product).Error
-	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+	if err := _product.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
 		return
 	} else if err != nil {
@@ -219,9 +217,7 @@ func updateProductInDB(dbProduct, newProduct *db.Product) error {
 	dbProduct.Price = newProduct.Price
 	dbProduct.ImageURL = newProduct.ImageURL
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(dbProduct).Error
-	}); err != nil {
+	if err := dbProduct.SaveToDB(); err != nil {
 		return err
 	}
 

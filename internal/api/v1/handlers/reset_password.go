@@ -64,9 +64,7 @@ func PutResetPassword(ctx *gin.Context) {
 	}
 
 	user.ResetToken = ""
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(user).Error
-	}); err != nil {
+	if err := user.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
 	}

@@ -38,9 +38,7 @@ func CustomerPutUser(ctx *gin.Context) {
 	}
 
 	updateUserInfo(user, newUser)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(user).Error
-	}); err != nil {
+	if err := user.SaveToDB(); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -175,9 +173,7 @@ func SuperAdminUpdateRole(ctx *gin.Context) {
 // updateUserRole updates a given user's role and returns the updated user.
 func updateUserRole(user *db.User, role string) (*db.User, error) {
 	user.Role = &role
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Save(user).Error
-	}); err != nil {
+	if err := user.SaveToDB(); err != nil {
 		return nil, ErrInternalServer
 	}
 

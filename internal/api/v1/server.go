@@ -20,9 +20,8 @@ import (
 	"github.com/wigit-gh/webapp/internal/db"
 )
 
-// ListenAndServer starts up the gin web server to listen on host and port as
-// specified in `conf`.
-func ListenAndServer(conf config.Config) {
+// SetGINRouter configures the gin router with all necessary routes and middleware.
+func SetGINRouter(conf config.Config) *gin.Engine {
 	middlewares.CreateSigner([]byte(conf.JWTSecret))
 	middlewares.CreateVerifier([]byte(conf.JWTSecret))
 
@@ -72,14 +71,21 @@ func ListenAndServer(conf config.Config) {
 	// 404 handler
 	router.NoRoute(func(ctx *gin.Context) { ctx.JSON(http.StatusNotFound, gin.H{}) })
 
-	// Use http server to implement graceful shutdown
-	r := &http.Server{
+	return router
+}
+
+// SetHTTPRouter uses the gin router to configure a traditional http router.
+// This is to implement graceful shutdown.
+func SetHTTPRouter(router *gin.Engine, conf config.Config) *http.Server {
+	return &http.Server{
 		Handler: router,
 		Addr:    fmt.Sprintf("%s:%s", conf.GinHost, conf.GinPort),
 	}
+}
 
-	// Start the server in a go routine so the graceful shutdown mechanism below can
-	// be reached
+// ListenAndServer starts up the web server implementing graceful shutdown.
+func ListenAndServer(r *http.Server) {
+	// Start the server in go routine so graceful shutdown mechanism below can be reached
 	go func() {
 		if err := r.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Info().Msg("Server now closed")

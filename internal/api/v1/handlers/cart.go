@@ -45,9 +45,7 @@ func CustomerPostToCart(ctx *gin.Context) {
 	amount := product.Price.Mul(decimal.NewFromInt(int64(*_item.Quantity)))
 	_item.Amount = &amount
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Create(_item).Error
-	}); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+	if err := _item.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item already exists for this user"})
 		return
 	} else if err != nil {
