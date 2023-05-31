@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db/models"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 // SignIn handles post requests to the /signin route.
@@ -56,21 +54,6 @@ func authenticateUser(user *models.User) (*models.User, int, error) {
 	}
 
 	return dbUser, code, nil
-}
-
-// getUserFromDB gets the user with `email` from the database.
-func getUserFromDB(email string) (*models.User, int, error) {
-	dbUser := new(models.User)
-
-	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbUser, "email = ?", email).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, http.StatusBadGateway, ErrInvalidUser
-	} else if err != nil {
-		return nil, http.StatusInternalServerError, ErrInternalServer
-	}
-
-	return dbUser, http.StatusOK, nil
 }
 
 // validateUser verifies the user's password.

@@ -111,7 +111,7 @@ func AdminGetUserOrdersBookings(ctx *gin.Context) {
 		return
 	}
 
-	orders, bookings, code, err := getUserOrdersBookings(email)
+	user, code, err := getUserFromDB(email)
 	if err != nil {
 		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 		return
@@ -119,24 +119,25 @@ func AdminGetUserOrdersBookings(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": gin.H{
-			"orders":   orders,
-			"bookings": bookings,
+			"orders":   user.Orders,
+			"bookings": user.Bookings,
 		},
 	})
 }
 
-// getUserOrdersBookings retrieves all a user's orders and bookings.
-func getUserOrdersBookings(email string) ([]models.Order, []models.Booking, int, error) {
-	user := new(models.User)
+// getUserFromDB gets the user with `email` from the database.
+func getUserFromDB(email string) (*models.User, int, error) {
+	dbUser := new(models.User)
+
 	if err := DBConnector.Query(func(tx *gorm.DB) error {
-		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(user).Error
+		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(dbUser).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil, http.StatusBadRequest, ErrInvalidUser
+		return nil, http.StatusBadGateway, ErrInvalidUser
 	} else if err != nil {
-		return nil, nil, http.StatusInternalServerError, err
+		return nil, http.StatusInternalServerError, ErrInternalServer
 	}
 
-	return user.Orders, user.Bookings, http.StatusOK, nil
+	return dbUser, http.StatusOK, nil
 }
 
 // SuperAdminUpdateRole updates the role of a user using super admin privileges.
