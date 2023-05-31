@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -104,8 +103,8 @@ func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 }
 
 // getUserByID gets the user with `email` from the database.
-func getUserByID(id string) (*models.User, error) {
-	dbUser := new(models.User)
+func getUserByID(id string) (*db.User, error) {
+	dbUser := new(db.User)
 
 	if _, err := uuid.Parse(id); err != nil {
 		return nil, errors.New("ID not a valid uuid")
@@ -130,7 +129,7 @@ func AdminAuthorization(ctx *gin.Context) {
 		return
 	}
 
-	user, ok := _user.(*models.User)
+	user, ok := _user.(*db.User)
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
@@ -156,7 +155,7 @@ func SuperAdminAuthorization(ctx *gin.Context) {
 		return
 	}
 
-	user, ok := _user.(*models.User)
+	user, ok := _user.(*db.User)
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return

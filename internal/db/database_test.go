@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/gorm"
 )
@@ -127,12 +126,12 @@ func TestNewDBAutoMigration(t *testing.T) {
 func TestBeforeCreateHook(t *testing.T) {
 	assert := assert.New(t)
 	isFree := new(bool)
-	slot := new(models.Slot)
-	dbSlot := new(models.Slot)
+	slot := new(Slot)
+	dbSlot := new(Slot)
 
 	dateString := "Mon, 26 Jan 2024"
 	timeString := "10:50 AM"
-	*slot = models.Slot{
+	*slot = Slot{
 		DateString: &dateString,
 		TimeString: &timeString,
 		IsFree:     isFree,

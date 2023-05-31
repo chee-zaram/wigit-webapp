@@ -9,14 +9,13 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 // SignUp is the handler function for signing up users to the app.
 func SignUp(ctx *gin.Context) {
-	user := new(models.User)
+	user := new(db.User)
 	if err := ctx.ShouldBind(user); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Sign Up failed."})
 		return
@@ -34,7 +33,7 @@ func SignUp(ctx *gin.Context) {
 }
 
 // addUser adds a new user to the database. Returns an error if any exists.
-func addUser(user *models.User) (int, error) {
+func addUser(user *db.User) (int, error) {
 	if err := validateSignUpUser(user); err != nil {
 		return http.StatusBadRequest, err
 	}
@@ -54,7 +53,7 @@ func addUser(user *models.User) (int, error) {
 }
 
 // validateSignUpUser validates all fields in the post form
-func validateSignUpUser(user *models.User) error {
+func validateSignUpUser(user *db.User) error {
 	// Verify user does not already exist
 	if dbUser, _, err := getUserFromDB(*user.Email); errors.Is(err, ErrInvalidUser) {
 	} else if dbUser != nil {
@@ -107,7 +106,7 @@ func validateSignUpUser(user *models.User) error {
 }
 
 // hashPassword creates a hash of the password plus a random salt.
-func hashPassword(user *models.User) error {
+func hashPassword(user *db.User) error {
 	salt, err := generateRandomBytes()
 	if err != nil {
 		return err

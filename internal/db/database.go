@@ -6,7 +6,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db/migration"
 	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -76,7 +75,7 @@ func createDBConnection(dsn string) (*gorm.DB, error) {
 	}
 
 	// Create or migrate tables based on the structs.
-	if err = db.AutoMigrate(migration.GetSchemas()); err != nil {
+	if err = db.AutoMigrate(GetSchemas()); err != nil {
 		return nil, fmt.Errorf("failed to automigrate tables: %w", err)
 	}
 

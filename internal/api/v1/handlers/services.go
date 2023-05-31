@@ -8,13 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
 // GetServices retrieves a list of all available services.
 func GetServices(ctx *gin.Context) {
-	var services []models.Service
+	var services []db.Service
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Find(&services).Error
@@ -39,7 +38,7 @@ func GetServiceByID(ctx *gin.Context) {
 		return
 	}
 
-	service := new(models.Service)
+	service := new(db.Service)
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(service, "id = ?", id).Error
 	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -55,7 +54,7 @@ func GetServiceByID(ctx *gin.Context) {
 
 // AdminPostServices adds a new service to the database.
 func AdminPostServices(ctx *gin.Context) {
-	_service := new(models.Service)
+	_service := new(db.Service)
 
 	if err := ctx.ShouldBindJSON(_service); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -90,7 +89,7 @@ func AdminPostServices(ctx *gin.Context) {
 }
 
 // validateServicesData checks to make sure the data to be added is valid.
-func validateServicesData(service *models.Service) error {
+func validateServicesData(service *db.Service) error {
 	if service.Price == nil || service.Price.Sign() < 0 {
 		return errors.New("Price must be set and cannot be a negative value")
 	}
@@ -99,8 +98,8 @@ func validateServicesData(service *models.Service) error {
 }
 
 // getServiceFromDB retrieves a service from the database based on the id provided.
-func getServiceFromDB(id string) (*models.Service, error) {
-	service := new(models.Service)
+func getServiceFromDB(id string) (*db.Service, error) {
+	service := new(db.Service)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(service, "id = ?", id).Error
@@ -144,7 +143,7 @@ func deleteServiceFromDB(id string) error {
 
 // AdminPutServices handles put requests to the services endpoint.
 func AdminPutServices(ctx *gin.Context) {
-	_service := new(models.Service)
+	_service := new(db.Service)
 	id := ctx.Param("service_id")
 	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
@@ -174,7 +173,7 @@ func AdminPutServices(ctx *gin.Context) {
 }
 
 // updateServiceInDB updates the service's information in the database.
-func updateServiceInDB(dbService, newService *models.Service) error {
+func updateServiceInDB(dbService, newService *db.Service) error {
 	dbService.Name = newService.Name
 	dbService.Description = newService.Description
 	dbService.Price = newService.Price

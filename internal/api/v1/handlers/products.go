@@ -7,13 +7,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
 // GetProducts retrieves a list of all products.
 func GetProducts(ctx *gin.Context) {
-	var products []models.Product
+	var products []db.Product
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Find(&products).Error
@@ -35,7 +34,7 @@ func GetProductByID(ctx *gin.Context) {
 		return
 	}
 
-	product := new(models.Product)
+	product := new(db.Product)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(product, "id = ?", id).Error
@@ -52,7 +51,7 @@ func GetProductByID(ctx *gin.Context) {
 
 // GetProductByCategory retrieves a list of all products in a given category.
 func GetProductByCategory(ctx *gin.Context) {
-	var products []models.Product
+	var products []db.Product
 
 	category := ctx.Param("category")
 	if category == "" {
@@ -82,13 +81,13 @@ func GetProductByCategory(ctx *gin.Context) {
 }
 
 // getTrending finds all trending products from the database.
-func getTrending() ([]models.Product, error) {
+func getTrending() ([]db.Product, error) {
 	panic("Not yet implemented")
 }
 
 // AdminPostProducts adds products to the database.
 func AdminPostProducts(ctx *gin.Context) {
-	_product := new(models.Product)
+	_product := new(db.Product)
 	if err := ctx.ShouldBindJSON(_product); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -123,7 +122,7 @@ func AdminPostProducts(ctx *gin.Context) {
 
 // validateProductsData validates the fields provided in the json payload during
 // post request to products endpoint.
-func validateProductsData(product *models.Product) error {
+func validateProductsData(product *db.Product) error {
 	if product.Price == nil || product.Price.Sign() < 0 {
 		return errors.New("Invalid product price")
 	}
@@ -132,8 +131,8 @@ func validateProductsData(product *models.Product) error {
 }
 
 // getProductFromDB retrieves a product from the database based the id.
-func getProductFromDB(id string) (*models.Product, error) {
-	product := new(models.Product)
+func getProductFromDB(id string) (*db.Product, error) {
+	product := new(db.Product)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(product, "id = ?", id).Error
@@ -177,7 +176,7 @@ func deleteProductFromDB(id string) error {
 
 // AdminPutProducts updates the columns for the product with given id.
 func AdminPutProducts(ctx *gin.Context) {
-	_product := new(models.Product)
+	_product := new(db.Product)
 	id := ctx.Param("product_id")
 	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
@@ -212,7 +211,7 @@ func AdminPutProducts(ctx *gin.Context) {
 }
 
 // updateProductInDB updates a given product `dbProduct` with values from `newProduct`.
-func updateProductInDB(dbProduct, newProduct *models.Product) error {
+func updateProductInDB(dbProduct, newProduct *db.Product) error {
 	dbProduct.Name = newProduct.Name
 	dbProduct.Description = newProduct.Description
 	dbProduct.Category = newProduct.Category

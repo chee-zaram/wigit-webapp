@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
-	"github.com/wigit-gh/webapp/internal/db/models"
+	"github.com/wigit-gh/webapp/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // SignIn handles post requests to the /signin route.
 func SignIn(ctx *gin.Context) {
-	_user := new(models.User)
+	_user := new(db.User)
 	if err := ctx.ShouldBind(_user); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -31,7 +31,7 @@ func SignIn(ctx *gin.Context) {
 }
 
 // authenticateUser verifies the user attempting to log in is a valid user.
-func authenticateUser(user *models.User) (*models.User, int, error) {
+func authenticateUser(user *db.User) (*db.User, int, error) {
 	var err error
 
 	if user.Email == nil {
@@ -57,7 +57,7 @@ func authenticateUser(user *models.User) (*models.User, int, error) {
 }
 
 // validateUser verifies the user's password.
-func validateUser(user, dbUser *models.User) error {
+func validateUser(user, dbUser *db.User) error {
 	salted := append([]byte(*user.Password), dbUser.Salt...)
 	if err := bcrypt.CompareHashAndPassword(dbUser.HashedPassword, salted); err != nil {
 		return ErrInvalidPass

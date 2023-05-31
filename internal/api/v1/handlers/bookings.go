@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +14,7 @@ var allowedBookingStatus = []string{"pending", "paid", "fulfilled", "cancelled"}
 
 // AdminGetBookings retrieves all bookings in the database.
 func AdminGetBookings(ctx *gin.Context) {
-	var bookings []models.Booking
+	var bookings []db.Booking
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Find(&bookings).Error
@@ -36,8 +35,8 @@ func CustomerGetBookings(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
-	var bookings []models.Booking
+	user := _user.(*db.User)
+	var bookings []db.Booking
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Find(&bookings).Error
@@ -53,7 +52,7 @@ func CustomerGetBookings(ctx *gin.Context) {
 
 // CustomerPostBooking adds a new booking to the database for the customer.
 func CustomerPostBooking(ctx *gin.Context) {
-	_booking := new(models.Booking)
+	_booking := new(db.Booking)
 
 	if err := ctx.ShouldBindJSON(_booking); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -64,7 +63,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
+	user := _user.(*db.User)
 
 	service, err := getServiceFromDB(*_booking.ServiceID)
 	if err != nil {
@@ -94,8 +93,8 @@ func CustomerPostBooking(ctx *gin.Context) {
 }
 
 // getBookingFromDB retrieves a booking with id from database.
-func getBookingFromDB(id string) (*models.Booking, error) {
-	booking := new(models.Booking)
+func getBookingFromDB(id string) (*db.Booking, error) {
+	booking := new(db.Booking)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", "%"+id+"%").Error
@@ -143,7 +142,7 @@ func AdminPutBooking(ctx *gin.Context) {
 }
 
 // validBookingStatus checks if the new status is for updating a booking valid.
-func validBookingStatus(booking *models.Booking, status string) bool {
+func validBookingStatus(booking *db.Booking, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedBookingStatus {
@@ -180,7 +179,7 @@ func CustomerGetBooking(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
+	user := _user.(*db.User)
 
 	for _, booking := range user.Bookings {
 		if strings.Contains(*booking.ID, booking_id) {

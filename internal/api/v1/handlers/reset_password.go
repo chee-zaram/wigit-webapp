@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -77,7 +76,7 @@ func PutResetPassword(ctx *gin.Context) {
 
 // validateResetPasswordPutData validates the fields provided for the reset of a user's password.
 // It returns a user from the database, an exit code, and an error if any.
-func validateResetPasswordPutData(ctx *gin.Context) (*models.User, int, error) {
+func validateResetPasswordPutData(ctx *gin.Context) (*db.User, int, error) {
 	resetUser := new(ResetPassword)
 	if err := ctx.ShouldBindJSON(resetUser); err != nil {
 		return nil, http.StatusBadRequest, errors.New("Failed to bind")

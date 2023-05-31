@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -59,12 +58,12 @@ func CustomerPutUser(ctx *gin.Context) {
 
 // validateUserParams validates data sent to the `users` endpoint.
 // It is used during updating and deletion of a user or information.
-func validateUserParams(ctx *gin.Context) (*models.User, *models.User, error) {
+func validateUserParams(ctx *gin.Context) (*db.User, *db.User, error) {
 	_user, exists := ctx.Get("user")
 	if !exists {
 		return nil, nil, errors.New("User not set in context")
 	}
-	user := _user.(*models.User)
+	user := _user.(*db.User)
 	id := ctx.Param("user_id")
 	if id == "" {
 		return nil, nil, errors.New("User ID must be set")
@@ -74,7 +73,7 @@ func validateUserParams(ctx *gin.Context) (*models.User, *models.User, error) {
 		return nil, nil, errors.New("Cannot perform operation on another user's account")
 	}
 
-	newUser := new(models.User)
+	newUser := new(db.User)
 	if err := ctx.ShouldBind(newUser); err != nil {
 		return nil, nil, err
 	}
@@ -83,7 +82,7 @@ func validateUserParams(ctx *gin.Context) (*models.User, *models.User, error) {
 }
 
 // updateUserInfo updates a user's information on put request.
-func updateUserInfo(user, newUser *models.User) {
+func updateUserInfo(user, newUser *db.User) {
 	user.Email = newUser.Email
 
 	if newUser.FirstName != nil && *newUser.FirstName != "" {
@@ -127,8 +126,8 @@ func AdminGetUserOrdersBookings(ctx *gin.Context) {
 }
 
 // getUserFromDB gets the user with `email` from the database.
-func getUserFromDB(email string) (*models.User, int, error) {
-	dbUser := new(models.User)
+func getUserFromDB(email string) (*db.User, int, error) {
+	dbUser := new(db.User)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(dbUser).Error
@@ -174,7 +173,7 @@ func SuperAdminUpdateRole(ctx *gin.Context) {
 }
 
 // updateUserRole updates a given user's role and returns the updated user.
-func updateUserRole(user *models.User, role string) (*models.User, error) {
+func updateUserRole(user *db.User, role string) (*db.User, error) {
 	user.Role = &role
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Save(user).Error
@@ -182,7 +181,7 @@ func updateUserRole(user *models.User, role string) (*models.User, error) {
 		return nil, ErrInternalServer
 	}
 
-	dbUser := new(models.User)
+	dbUser := new(db.User)
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(dbUser, "id = ?", *user.ID).Error
 	}); err != nil {
@@ -214,7 +213,7 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 
 // SuperAdminGetAdmins gets all admins in the database.
 func SuperAdminGetAdmins(ctx *gin.Context) {
-	var admins []models.User
+	var admins []db.User
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("first_name asc").Where("role = 'admin'").Preload("Orders").Preload("Bookings").Find(&admins).Error
@@ -230,7 +229,7 @@ func SuperAdminGetAdmins(ctx *gin.Context) {
 
 // SuperAdminGetCustomers retrieves all customers.
 func SuperAdminGetCustomers(ctx *gin.Context) {
-	var customers []models.User
+	var customers []db.User
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("first_name asc").Where("role = 'customer'").Preload("Orders").Preload("Bookings").Find(&customers).Error

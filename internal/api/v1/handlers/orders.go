@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +15,7 @@ var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "ca
 
 // CustomerPostOrders adds a new order to the database for a given customer.
 func CustomerPostOrders(ctx *gin.Context) {
-	_order := new(models.Order)
+	_order := new(db.Order)
 	if err := ctx.ShouldBindJSON(_order); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -27,7 +26,7 @@ func CustomerPostOrders(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
+	user := _user.(*db.User)
 
 	items, err := getItemsInCart(*user.ID)
 	if err != nil || items == nil {
@@ -59,8 +58,8 @@ func CustomerPostOrders(ctx *gin.Context) {
 }
 
 // getItemsInCart returns all the items in a user's cart.
-func getItemsInCart(user_id string) ([]models.Item, error) {
-	var items []models.Item
+func getItemsInCart(user_id string) ([]db.Item, error) {
+	var items []db.Item
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", user_id).Where("order_id is NULL").Find(&items).Error
@@ -91,8 +90,8 @@ func getItemsInCart(user_id string) ([]models.Item, error) {
 }
 
 // getOrderFromDB retrieves an order from the database with given id.
-func getOrderFromDB(id string) (*models.Order, error) {
-	order := new(models.Order)
+func getOrderFromDB(id string) (*db.Order, error) {
+	order := new(db.Order)
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Items.Product").First(order, "id = ?", id).Error
 	}); err != nil {
@@ -103,7 +102,7 @@ func getOrderFromDB(id string) (*models.Order, error) {
 }
 
 // getOrderTotal computes the sum of all the items for a given order.
-func getOrderTotal(items []models.Item) *decimal.Decimal {
+func getOrderTotal(items []db.Item) *decimal.Decimal {
 	var totalAmount decimal.Decimal
 	for _, item := range items {
 		totalAmount = totalAmount.Add(*item.Amount)
@@ -154,7 +153,7 @@ func AdminPutOrders(ctx *gin.Context) {
 
 // validOrderStatus validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func validOrderStatus(order *models.Order, status string) bool {
+func validOrderStatus(order *db.Order, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedOrderStatus {
@@ -177,7 +176,7 @@ func validOrderStatus(order *models.Order, status string) bool {
 
 // AdminGetOrders retrieves all the orders from the database.
 func AdminGetOrders(ctx *gin.Context) {
-	var orders []models.Order
+	var orders []db.Order
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Preload("Items").Find(&orders).Error
@@ -199,7 +198,7 @@ func AdminGetOrdersByStatus(ctx *gin.Context) {
 		return
 	}
 
-	var orders []models.Order
+	var orders []db.Order
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("status = ?", status).Preload("Items").Find(&orders).Error
@@ -221,7 +220,7 @@ func AdminGetOrderByID(ctx *gin.Context) {
 		return
 	}
 
-	order := new(models.Order)
+	order := new(db.Order)
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
@@ -241,8 +240,8 @@ func CustomerGetOrders(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
-	var orders []models.Order
+	user := _user.(*db.User)
+	var orders []db.Order
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(&orders).Error
@@ -263,7 +262,7 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
 		return
 	}
-	user := _user.(*models.User)
+	user := _user.(*db.User)
 
 	status := ctx.Param("status")
 	if status == "" {
@@ -271,7 +270,7 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 		return
 	}
 
-	var orders []models.Order
+	var orders []db.Order
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Where("status = ?", status).
@@ -300,8 +299,8 @@ func CustomerGetOrderByID(ctx *gin.Context) {
 		return
 	}
 
-	user := _user.(*models.User)
-	order := new(models.Order)
+	user := _user.(*db.User)
+	order := new(db.Order)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error

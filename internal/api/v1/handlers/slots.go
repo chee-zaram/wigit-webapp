@@ -6,13 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
 // GetSlots retrieves a list of all available slots.
 func GetSlots(ctx *gin.Context) {
-	var slots []models.Slot
+	var slots []db.Slot
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("is_free = ?", true).Find(&slots).Error
@@ -28,7 +27,7 @@ func GetSlots(ctx *gin.Context) {
 
 // AdminPostSlots adds a new slot to the database.
 func AdminPostSlots(ctx *gin.Context) {
-	_slot := new(models.Slot)
+	_slot := new(db.Slot)
 
 	if err := ctx.ShouldBindJSON(_slot); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -60,7 +59,7 @@ func AdminPostSlots(ctx *gin.Context) {
 }
 
 // validatePostSlotsData checks that the required fields are provided.
-func validatePostSlotsData(slot *models.Slot) error {
+func validatePostSlotsData(slot *db.Slot) error {
 	if slot.DateString == nil || *slot.DateString == "" {
 		return errors.New("DateString must be provided")
 	}
@@ -73,8 +72,8 @@ func validatePostSlotsData(slot *models.Slot) error {
 }
 
 // getSlotFromDB retrieves a slot with id from the database.
-func getSlotFromDB(id string) (*models.Slot, error) {
-	slot := new(models.Slot)
+func getSlotFromDB(id string) (*db.Slot, error) {
+	slot := new(db.Slot)
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
 		return tx.First(slot, "id = ?", id).Error
