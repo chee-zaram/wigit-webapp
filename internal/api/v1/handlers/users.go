@@ -107,7 +107,7 @@ func updateUserInfo(user, newUser *models.User) {
 func AdminGetUserOrdersBookings(ctx *gin.Context) {
 	email := ctx.Param("email")
 	if email == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email param not set"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
 		return
 	}
 
@@ -195,7 +195,7 @@ func updateUserRole(user *models.User, role string) (*models.User, error) {
 func SuperAdminDeleteUser(ctx *gin.Context) {
 	email := ctx.Param("email")
 	if email == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email param not set"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
 		return
 	}
 

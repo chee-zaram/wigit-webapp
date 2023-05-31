@@ -46,4 +46,6 @@ var (
 	ErrInvalidServiceID = errors.New("Not a valid service")
 	// ErrInvalidSlotID indicates that not slot id was provided or the slot id provided is not valid.
 	ErrInvalidSlotID = errors.New("Slot ID is not valid")
+	// ErrEmailParamNotSet indicates an email param is needed and was not provided.
+	ErrEmailParamNotSet = errors.New("email param not set")
 )
