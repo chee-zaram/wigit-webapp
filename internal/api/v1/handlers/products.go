@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
@@ -60,7 +61,13 @@ func GetProductByCategory(ctx *gin.Context) {
 	}
 
 	if category == "trending" {
-		if products, err := getTrending(); err != nil {
+		items, err := getTrendingItems()
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if products, err := getTrendingProducts(items); err != nil {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{"data": products})
@@ -80,9 +87,39 @@ func GetProductByCategory(ctx *gin.Context) {
 	})
 }
 
-// getTrending finds all trending products from the database.
-func getTrending() ([]db.Product, error) {
-	panic("Not yet implemented")
+// getTrendingItems returns top ten trending products by ids.
+func getTrendingItems() ([]db.Item, error) {
+	var items []db.Item
+
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
+		return tx.Table("items").Select("product_id, SUM(quantity) as total_orders").
+			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
+			Group("product_id").
+			Order("total_orders DESC").
+			Limit(10).
+			Scan(&items).Error
+	}); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+// getTrendingProducts returns the top ten trending products.
+func getTrendingProducts(items []db.Item) ([]db.Product, error) {
+	var products []db.Product
+
+	for _, item := range items {
+		product := new(db.Product)
+		if err := db.Connector.Query(func(tx *gorm.DB) error {
+			return tx.First(product, "id = ?", *item.ProductID).Error
+		}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		} else if err != nil {
+			return nil, err
+		}
+		products = append(products, *product)
+	}
+	return products, nil
 }
 
 // AdminPostProducts adds products to the database.
