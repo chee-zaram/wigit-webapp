@@ -17,7 +17,7 @@ func GetServices(ctx *gin.Context) {
 	var services []db.Service
 
 	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Find(&services).Error
+		return tx.Order("updated_at DESC").Find(&services).Error
 	}); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
 		return
