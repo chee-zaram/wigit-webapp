@@ -81,6 +81,7 @@ func validateUserParams(ctx *gin.Context) (*db.User, *db.User, error) {
 
 // updateUserInfo updates a user's information on put request.
 func updateUserInfo(user, newUser *db.User) {
+	// TODO: validate lengths of strings
 	user.Email = newUser.Email
 
 	if newUser.FirstName != nil && *newUser.FirstName != "" {
