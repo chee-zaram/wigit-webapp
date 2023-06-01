@@ -9,6 +9,7 @@ import (
 func ServicesRoutes(api *gin.RouterGroup) {
 	api.GET("/services", handlers.GetServices)
 	api.GET("/services/:service_id", handlers.GetServiceByID)
+	api.GET("/services/trending", handlers.GetTrendingServices)
 }
 
 // AdminServicesRoutes add protected routes for the services endpoint.

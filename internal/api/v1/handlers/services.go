@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -188,4 +189,62 @@ func updateServiceInDB(dbService, newService *db.Service) error {
 	}
 
 	return nil
+}
+
+// GetTrendingServices retrieves a list of 5 trending services.
+func GetTrendingServices(ctx *gin.Context) {
+	var bookings []db.Booking
+
+	bookings, err := sortBookingsByService()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	services, err := getTrendingServices(bookings)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": services,
+	})
+}
+
+// sortBookingsByService gets service ids of the top 10 services booked in the last
+// 7 days by quering the bookings table.
+func sortBookingsByService() ([]db.Booking, error) {
+	var bookings []db.Booking
+
+	if err := db.Connector.Query(func(tx *gorm.DB) error {
+		return tx.Table("bookings").
+			Select("service_id, COUNT(*) as total_bookings").
+			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
+			Group("service_id").
+			Order("total_bookings DESC").
+			Limit(10).
+			Scan(&bookings).Error
+	}); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+// getTrendingServices retrieves the top 10 services in the last week if available.
+func getTrendingServices(bookings []db.Booking) ([]db.Service, error) {
+	var services []db.Service
+	for _, booking := range bookings {
+		service := new(db.Service)
+		if err := db.Connector.Query(func(tx *gorm.DB) error {
+			return tx.First(service, "id = ?", *booking.ServiceID).Error
+		}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		} else if err != nil {
+			return nil, err
+		}
+		services = append(services, *service)
+	}
+
+	return services, nil
 }
