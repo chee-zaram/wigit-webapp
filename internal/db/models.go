@@ -10,11 +10,11 @@ import (
 // It defines the primary fields for all models.
 type BaseModel struct {
 	// ID is the unique identifier for this object.
-	ID *string `gorm:"primaryKey;type:varchar(45)" json:"id"`
+	ID *string `gorm:"primaryKey;type:varchar(45)" json:"id" binding:"-"`
 	// CreatedAt is the time in which the object was created in the database.
-	CreatedAt *time.Time `gorm:"not null;type:datetime;default:CURRENT_TIMESTAMP" json:"created_at"`
+	CreatedAt *time.Time `gorm:"not null;type:datetime;default:CURRENT_TIMESTAMP" json:"created_at" binding:"-"`
 	// UpdatedAt is the last datetime at which the object was updated.
-	UpdatedAt *time.Time `gorm:"not null;type:datetime;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	UpdatedAt *time.Time `gorm:"not null;type:datetime;default:CURRENT_TIMESTAMP" json:"updated_at" binding:"-"`
 }
 
 // User models a unique user in the database.
