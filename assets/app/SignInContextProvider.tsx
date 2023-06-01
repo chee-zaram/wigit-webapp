@@ -1,18 +1,28 @@
 // sign in context provider
 "use client";
 
-import { SignInContext } from '@contexts/SignInContext';
-import { useState } from 'react';
+import { useState, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
-const SignInContextProvider = ( { children } : { children: React.ReactNode}) => {
-    const [ jwt, setJwt ] = useState('');
-    const [ isSignedIn, setIsSignedIn ] = useState(false);
-    
-    return (
-        <SignInContext.Provider value={{jwt, setJwt, isSignedIn, setIsSignedIn}}>
+interface SignInContextProps {
+    jwt: string;
+    setJwt: Dispatch<SetStateAction<string>>;
+    // isSignedIn: boolean;
+    // setIsSignedIn: Dispatch<SetStateAction<boolean>>;setIsSignedIn
+}
+
+export const SignInContext = createContext<SignInContextProps>({
+    jwt: 'none',
+    setJwt: (): string => '',
+    // isSignedIn: false
+});
+
+export const SignInContextProvider = ( { children } : { children: React.ReactNode}) => {
+    const [ jwt, setJwt ] = useState('')
+     return (
+        <SignInContext.Provider value={{jwt, setJwt}}>
             { children }
         </SignInContext.Provider>
     );
 };
 
-export default SignInContextProvider;
+export const useSignInContext = () => useContext(SignInContext);

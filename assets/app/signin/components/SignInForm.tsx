@@ -7,12 +7,15 @@ import Button from '@components/Button';
 import Input from '@components/Input';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useSignInContext } from '../../SignInContextProvider';;
 
 const signInForm = () => {
     
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
-    const router = useRouter();
+
+    const { jwt, setJwt} = useSignInContext();const router = useRouter()
+    ;
     const url = "https://cheezaram.tech/api/v1/";
 
 
@@ -31,12 +34,17 @@ const signInForm = () => {
     };
     async function handleAxios (event: any){
         event.preventDefault();
-        const user = { email, password }
-        const { data } = await axios.post(url + 'signin', user);
-        console.log(data ? data : "error loading data...");
-        // on success, redirect to home page, on error, render error message
+        const user = { email, password };
+        
+        const { data } = 
         router.push('/');
-        console.log(user);
+       //await prod();await axios.post(url + 'signin', user);
+    }
+    jwt);
+
+ror     messa
+    e
+        router.push('/');
        //await prod();
     }
     return (

@@ -1,14 +1,15 @@
 // sign in / sign up page
 "use client";
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import SignInForm from '@app/signin/components/SignInForm';
 import { useRouter } from 'next/navigation';
+import { useSignInContext } from '../SignInContextProvider';
 import axios from 'axios';
 
 const signin = () => {
     // check if user is signed in
-    const [ isSignedIn, setIsSignedIn ] = useState(false);
     const router = useRouter();
+    const { jwt, setJwt } = useSignInContext();
     
     // const { data, error } = useQuery({ queryKey: ['signInSubmit'], queryFn: handleAxios})
     // console.log(data);
@@ -17,7 +18,7 @@ const signin = () => {
     //     console.log(data ? data : error);
     //     setIsSignedIn(true);
     // }
-    
+      
     const toggleSignIn = (): void => {
       router.push('/signup');
     };
@@ -26,9 +27,11 @@ const signin = () => {
         <main className='signin_main flex flex-col justify-around items-center'>
             {/* take this to rootlayout to conditionally render sign in link  */}
             <div className='welcome_message'>
-                { isSignedIn ? 
+            
+                <h2>{jwt}</h2>
                 <h3>Welcome back, Vee baby!</h3> : 
-                <h3>Hey there, we're glad you found us, Please sign in</h3> }
+                <h3>Hey there, we're glad you found us, Please sign in</h3>
+                
             </div>
             <SignInForm />
             <p>First time? <span className='underline pointer text-accent font-extrabold' onClick={toggleSignIn}>sign up</span> :)</p>
