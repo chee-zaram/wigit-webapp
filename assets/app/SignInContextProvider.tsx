@@ -11,7 +11,7 @@ interface SignInContextProps {
 }
 
 export const SignInContext = createContext<SignInContextProps>({
-    jwt: 'none',
+    jwt: 'not authorized',
     setJwt: (): string => '',
     // isSignedIn: false
 });

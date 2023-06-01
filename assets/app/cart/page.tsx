@@ -15,7 +15,7 @@ const Cart = () => {
     useEffect(() => {
     fetch(url, {headers: {'Authorization': 'Bearer' + jwt}})
     .then(res => res.json())
-    .then(data => setCart(data))
+    .then(data => setCart(data.data))
     }, [])
 
     return (

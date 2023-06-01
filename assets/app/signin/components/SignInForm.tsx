@@ -22,12 +22,10 @@ const signInForm = () => {
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         setEmail(event.target.value);
-        console.log(email);
     };
     const handleSetPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         setPassword(event.target.value);
-        console.log(password);
     };
     const handleSignIn = () => {
         console.log('signed in successfully!' + email, password)
@@ -36,15 +34,11 @@ const signInForm = () => {
         event.preventDefault();
         const user = { email, password };
         
-        const { data } = 
+        const { data } = await axios.post("https://cheezaram.tech/api/v1/signin", user);
+        console.log(user);
+        setJwt(data.jwt);
         router.push('/');
        //await prod();await axios.post(url + 'signin', user);
-    }
-    jwt);
-
-ror     messa
-    e
-        router.push('/');
        //await prod();
     }
     return (
