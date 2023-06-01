@@ -8,7 +8,6 @@ import Image from 'next/image';
 const ProductCard: NextPage<Product> = (props) => (
     <div className='bg-white m-3 pb-3 flex flex-col rounded-md shadow-md shadow-zinc-400 border max-w-sm'>
         <div className=' w-32 h-32 object-cover '>
-            {/* <img src='https://images.pexels.com/photos/6383212/pexels-photo-6383212.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' /> */}
             <Image src={ props.image_url } alt={ props.name } width={70} height={85}/>
         </div>
         <div>

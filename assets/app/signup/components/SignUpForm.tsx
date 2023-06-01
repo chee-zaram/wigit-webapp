@@ -18,6 +18,8 @@ const SignUpForm = () => {
     const [ address, setAddress ] = useState('');
     const [ phoneNumber, setPhoneNumber ] = useState('');
     const router = useRouter();
+    const url = "https://cheezaram.tech/api/v1/signup";
+    const [ jwt, setJwt ] = useState();
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
@@ -48,16 +50,23 @@ const SignUpForm = () => {
         setPhoneNumber(event.target.value);
     };
     
-
     async function handleSignUp (event: any){
         event.preventDefault();
         const newUser = { email, password, repeat_password: confirmPassword, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
-        const { data } = await axios.post("https://cheezaram.tech/api/v1/signup", newUser);
+        const { data } = await axios.post(url, newUser);
         console.log(data ? data : "error loading data...");
+        setJwt(data.jwt);
         // on success, redirect to home page, on error, render error message
         router.push('/');
         console.log(newUser);
-    } 
+       //await prod();
+    }
+    
+    // async function prod() {
+    //     const { data } = await axios.get(url + 'products', { 'headers': {'Authorization': 'Bearer ' + jwt} });
+    //     console.log(data + 'new prods query');
+    // }
+    
    
     return (
         <form onSubmit={ handleSignUp } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>

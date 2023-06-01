@@ -15,7 +15,7 @@ const Navbar = () => (
       <Link className='nav_link' href='/signin'>Sign In</Link>
       <Link className='nav_link' href='/products'>Buy Wig</Link>
       <Link className='nav_link' href='/about'>About</Link>
-      <Link className='nav_link' href='/'>shopping cart</Link>
+      <Link className='nav_link' href='/cart'>shopping cart</Link>
     </nav>
   </header>
 );

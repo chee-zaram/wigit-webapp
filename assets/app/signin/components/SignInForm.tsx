@@ -13,6 +13,8 @@ const signInForm = () => {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const router = useRouter();
+    const url = "https://cheezaram.tech/api/v1/";
+
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
@@ -29,11 +31,14 @@ const signInForm = () => {
     };
     async function handleAxios (event: any){
         event.preventDefault();
-        const { data } = await axios.get("https://jel1cg-8000.csb.app/products");
+        const user = { email, password }
+        const { data } = await axios.post(url + 'signin', user);
         console.log(data ? data : "error loading data...");
         // on success, redirect to home page, on error, render error message
         router.push('/');
-    }    
+        console.log(user);
+       //await prod();
+    }
     return (
         <form onSubmit={ handleAxios } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>
             <h1>Sign In</h1>

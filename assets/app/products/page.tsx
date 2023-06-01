@@ -3,20 +3,20 @@
 import ProductCard from './components/ProductCard';
 import { Product } from './interfaces/product';
 
-const url: string = "https://jel1cg-8000.csb.app/products";
+const url = "https://cheezaram.tech/api/v1/products";
 
 export const metadata = { title: 'wigit products' };
 
 async function getProducts(): Promise<any> {
 
   const res = await fetch(url, {
-    headers: {"Content-Type": "application/json",
-    }
+    headers: {"Content-Type": "application/json"},
+    next: {"revalidate": 0}
   });
 
   const data = await res.json();
   if (res.ok) {
-    return data;
+    return data.data;
   }
   return null; // fix this
 }
@@ -28,11 +28,14 @@ export default async function Products() {
       <div className='flex flex-col items-center justify-center'>
         <h1>Our wigs</h1>
         <p>Nothing but class....</p>
-        <div className="lg:max-w-4xl flex flex-wrap justify-center bg-neutral-400">
+        { data? 
+        <div className="lg:max-w-4xl flex flex-wrap justify-center">
           { data && data.map((item: Product) => (
             <ProductCard { ...item } />
           ))}
-        </div>
+        </div> :
+        <p>no products</p>
+          }
       </div>
     </main>
   )
