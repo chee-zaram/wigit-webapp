@@ -167,7 +167,7 @@ func SuperAdminUpdateRole(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "User role updated successfully",
-		"user": dbUser,
+		"data": dbUser,
 	})
 }
 
