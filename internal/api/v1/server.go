@@ -50,11 +50,11 @@ func SetGINRouterV1(conf config.Config) *gin.Engine {
 	docs.SwaggerInfo.Title = "Wigit Web Application Backend Server"
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Description = "This is the backend server for the application."
-	// docs.SwaggerInfo.Host = "cheezaram.tech"
-	docs.SwaggerInfo.Host = "localhost:8000"
+	docs.SwaggerInfo.Host = "cheezaram.tech"
+	// docs.SwaggerInfo.Host = "localhost:8000"
 	docs.SwaggerInfo.BasePath = "/api/v1"
-	// docs.SwaggerInfo.Schemes = []string{"https"}
-	docs.SwaggerInfo.Schemes = []string{"http"}
+	docs.SwaggerInfo.Schemes = []string{"https"}
+	// docs.SwaggerInfo.Schemes = []string{"http"}
 
 	// Create the api group
 	api := router.Group("/api/v1")
