@@ -152,6 +152,11 @@ func CustomerPostOrders(ctx *gin.Context) {
 		return
 	}
 
+	if *_order.DeliveryMethod != "pickup" && *_order.DeliveryMethod != "delivery" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Invalid delivery option"))
+		return
+	}
+
 	order := newOrder(_order)
 	order.Items = items
 	order.TotalAmount = getOrderTotal(items)
