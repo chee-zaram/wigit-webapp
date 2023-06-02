@@ -251,7 +251,7 @@ func AdminGetOrdersByStatus(ctx *gin.Context) {
 //	@Tags		admin
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		booking_id		path		string					true	"ID of the order to get"
+//	@Param		order_id		path		string					true	"ID of the order to get"
 //	@Success	200				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"

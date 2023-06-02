@@ -198,7 +198,7 @@ func SuperAdminUpdateRole(ctx *gin.Context) {
 
 // SuperAdminDeleteUser Delete a user account.
 //
-//	@Summary	Allows super_admin delete another user's role.
+//	@Summary	Allows super_admin delete another user's account.
 //	@Tags		super_admin
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"

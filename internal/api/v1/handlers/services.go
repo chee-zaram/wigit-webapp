@@ -153,7 +153,7 @@ func newService(newService *NewService) *db.Service {
 //	@Success	200				{object}	map[string]interface{}	"msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
-//	@Router		/admin/service/{service_id} [delete]
+//	@Router		/admin/services/{service_id} [delete]
 func AdminDeleteServices(ctx *gin.Context) {
 	id := ctx.Param("service_id")
 	if id == "" {
@@ -232,14 +232,12 @@ func AdminPutServices(ctx *gin.Context) {
 // GetTrendingServices	Get the trending services
 //
 //	@Summary	Retrieves a list of the top ten trending services
-//	@Tags		admin
+//	@Tags		services
 //	@Produce	json
-//	@Success	201	{object}	map[string]interface{}	"data"
+//	@Success	200	{object}	map[string]interface{}	"data"
 //	@Failure	500	{object}	map[string]interface{}	"error"
-//	@Router		/admin/services/trending [get]
+//	@Router		/services/trending [get]
 func GetTrendingServices(ctx *gin.Context) {
-	var bookings []db.Booking
-
 	bookings, err := db.SortBookingsByService()
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
