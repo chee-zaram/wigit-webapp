@@ -12,6 +12,10 @@ cd webapp
 # Build the backend
 GOOS=linux GOARCH=amd64 go build -o wwapp_be
 
+# Add key to ssh-agent
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
 # Copy the binary to the servers and resart the service
 scp -i ~/.ssh/id_rsa wwapp_be "$BACKEND01":~/webapp/
 ssh -i ~/.ssh/id_rsa "$BACKEND01" "sudo service wwapp_be restart"
