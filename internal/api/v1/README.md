@@ -306,8 +306,8 @@ where applicable.
     On success, it will return a <b>200</b> response code with a <b>msg</b> string in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
-    <li><h4>/users/{user_id} *</h4>
-    Delete the current user account with user_id.
+    <li><h4>/users/{email} *</h4>
+    Delete the current user account with email.
     On success, it will return a <b>200</b> response code with a <b>msg</b> string in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
