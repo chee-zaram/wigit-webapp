@@ -131,7 +131,7 @@ func CustomerGetOrder(ctx *gin.Context) {
 //	@Success	201				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
-//	@Router		/order [post]
+//	@Router		/orders [post]
 func CustomerPostOrders(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
