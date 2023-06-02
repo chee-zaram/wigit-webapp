@@ -8,6 +8,8 @@ import (
 	"github.com/wigit-gh/webapp/internal/flags"
 )
 
+// main Entry point to the program
+//
 //	@contact.name	API Support
 //	@contact.url	www.cheezaram.tech/contact
 //	@contact.email	ecokeke21@gmail.com
