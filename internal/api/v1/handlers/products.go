@@ -3,22 +3,44 @@ package handlers
 import (
 	"errors"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/internal/db"
 	"gorm.io/gorm"
 )
 
-// GetProducts retrieves a list of all products.
-func GetProducts(ctx *gin.Context) {
-	var products []db.Product
+// NewProduct binds to the new product in the body of the request.
+type NewProduct struct {
+	Name        *string          `json:"name" binding:"required,min=3,max=45"`
+	Description *string          `json:"description" binding:"required,min=3,max=1024"`
+	Category    *string          `json:"category" binding:"required,min=3,max=45"`
+	Stock       *int64           `json:"stock" binding:"required"`
+	Price       *decimal.Decimal `json:"price" binding:"required"`
+	ImageURL    *string          `json:"image_url" binding:"required,min=3,max=255"`
+}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Find(&products).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+// validateData validates the fields provided in the json body during when adding new product.
+func (product *NewProduct) validateData() error {
+	if product.Price == nil || product.Price.Sign() < 0 {
+		return errors.New("Invalid product price")
+	}
+
+	return nil
+}
+
+// GetProducts	Gets a list of all products
+//
+//	@Summary	Retrieves a list of all product objects
+//	@Tags		products
+//	@Produce	json
+//	@Success	200	{object}	map[string]interface{}	"data"
+//	@Failure	500	{object}	map[string]interface{}	"error"
+//	@Router		/products [get]
+func GetProducts(ctx *gin.Context) {
+	products, err := db.AllProducts()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -27,58 +49,74 @@ func GetProducts(ctx *gin.Context) {
 	})
 }
 
-// GetProduct retrieves a product based on its id.
+// GetProductByID	Gets a product by ID
+//
+//	@Summary	Retrieves the product with the given ID
+//	@Tags		products
+//	@Produce	json
+//	@Param		product_id	path		string					true	"Product ID"
+//	@Success	200			{object}	map[string]interface{}	"data"
+//	@Failure	400			{object}	map[string]interface{}	"error"
+//	@Failure	500			{object}	map[string]interface{}	"error"
+//	@Router		/products/{product_id} [get]
 func GetProductByID(ctx *gin.Context) {
 	id := ctx.Param("product_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidProductID)
 		return
 	}
 
 	product := new(db.Product)
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(product, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No product found"})
+	if err := product.LoadFromDB(id); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("No product found"))
 		return
 	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": product})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": product,
+	})
 }
 
-// GetProductByCategory retrieves a list of all products in a given category.
-func GetProductByCategory(ctx *gin.Context) {
+// GetProductsByCategory	Get products by category
+//
+//	@Summary	Retrieves a list of all products in given category
+//	@Tags		products
+//	@Produce	json
+//	@Param		category	path		string					true	"Product Category"
+//	@Success	200			{object}	map[string]interface{}	"data"
+//	@Failure	400			{object}	map[string]interface{}	"error"
+//	@Failure	500			{object}	map[string]interface{}	"error"
+//	@Router		/products/categories/{category} [get]
+func GetProductsByCategory(ctx *gin.Context) {
 	var products []db.Product
 
 	category := ctx.Param("category")
 	if category == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidCategory.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidCategory)
 		return
 	}
 
 	if category == "trending" {
-		items, err := getTrendingItems()
+		items, err := db.TrendingItems()
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			AbortCtx(ctx, http.StatusInternalServerError, err)
 			return
 		}
 
-		if products, err := getTrendingProducts(items); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if products, err := db.TrendingProducts(items); err != nil {
+			AbortCtx(ctx, http.StatusInternalServerError, err)
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{"data": products})
 		}
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("category = ?", category).Find(&products).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	products, err := db.ProductCategory(category)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -87,65 +125,33 @@ func GetProductByCategory(ctx *gin.Context) {
 	})
 }
 
-// getTrendingItems returns top ten trending products by ids.
-func getTrendingItems() ([]db.Item, error) {
-	var items []db.Item
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Table("items").Select("product_id, SUM(quantity) as total_orders").
-			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
-			Group("product_id").
-			Order("total_orders DESC").
-			Limit(10).
-			Scan(&items).Error
-	}); err != nil {
-		return nil, err
-	}
-
-	return items, nil
-}
-
-// getTrendingProducts returns the top ten trending products.
-func getTrendingProducts(items []db.Item) ([]db.Product, error) {
-	var products []db.Product
-
-	for _, item := range items {
-		product := new(db.Product)
-		if err := db.Connector.Query(func(tx *gorm.DB) error {
-			return tx.First(product, "id = ?", *item.ProductID).Error
-		}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		} else if err != nil {
-			return nil, err
-		}
-		products = append(products, *product)
-	}
-	return products, nil
-}
-
-// AdminPostProducts adds products to the database.
+// AdminPostProducts	Post product
+//
+//	@Summary	Allows the admin add products to the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		product			body		NewProduct				true	"Add product"
+//	@Success	201				{object}	map[string]interface{}	"data, msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/products [post]
 func AdminPostProducts(ctx *gin.Context) {
-	_product := new(db.Product)
-	if err := ctx.ShouldBindJSON(_product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	_newProduct := new(NewProduct)
+	if err := ctx.ShouldBindJSON(_newProduct); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := validateProductsData(_product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := _newProduct.validateData(); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := _product.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Product already exists"})
-		return
-	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
-	product, err := getProductFromDB(*_product.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	product := newProduct(_newProduct)
+	if err := product.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -155,41 +161,40 @@ func AdminPostProducts(ctx *gin.Context) {
 	})
 }
 
-// validateProductsData validates the fields provided in the json payload during
-// post request to products endpoint.
-func validateProductsData(product *db.Product) error {
-	if product.Price == nil || product.Price.Sign() < 0 {
-		return errors.New("Invalid product price")
-	}
-
-	return nil
-}
-
-// getProductFromDB retrieves a product from the database based the id.
-func getProductFromDB(id string) (*db.Product, error) {
+// newProduct gets a pointer to a new db.Product object.
+func newProduct(newProduct *NewProduct) *db.Product {
 	product := new(db.Product)
+	product.Name = newProduct.Name
+	product.Category = newProduct.Category
+	product.Description = newProduct.Description
+	product.ImageURL = newProduct.ImageURL
+	product.Price = newProduct.Price
+	product.Stock = newProduct.Stock
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(product, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("Product already exists")
-	} else if err != nil {
-		return nil, ErrInternalServer
-	}
-
-	return product, nil
+	return product
 }
 
-// AdminDeleteProducts deletes a product from the database.
+// AdminDeleteProducts	Deletes a product
+//
+//	@Summary	Allows admins delete a product from the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		product_id		path		string					true	"Product id to delete"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/products/{product_id} [delete]
 func AdminDeleteProducts(ctx *gin.Context) {
 	id := ctx.Param("product_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidProductID)
 		return
 	}
 
-	if err := deleteProductFromDB(id); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteProduct(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -198,44 +203,50 @@ func AdminDeleteProducts(ctx *gin.Context) {
 	})
 }
 
-// deleteProductFromDB deletes a product from the database.
-func deleteProductFromDB(id string) error {
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM products WHERE id = ?`, id).Error
-	}); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// AdminPutProducts updates the columns for the product with given id.
+// AdminPutProducts		Update product
+//
+//	@Summary	Allows the admin update the product with given product_id
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		product_id		path		string					true	"The id of the product to update"
+//	@Param		product			body		NewProduct				true	"Update Product"
+//	@Success	200				{object}	map[string]interface{}	"data, msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/products/{product_id} [put]
 func AdminPutProducts(ctx *gin.Context) {
-	_product := new(db.Product)
+	_newProduct := new(NewProduct)
 	id := ctx.Param("product_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidProductID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidProductID)
 		return
 	}
 
-	if err := ctx.ShouldBindJSON(_product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(_newProduct); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	product, err := getProductFromDB(id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := _newProduct.validateData(); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := validateProductsData(_product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	product := new(db.Product)
+	if err := product.LoadFromDB(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	if err = updateProductInDB(product, _product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	createdAt := product.CreatedAt
+	product = newProduct(_newProduct)
+	product.ID = &id
+	product.CreatedAt = createdAt
+
+	if err := product.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -243,26 +254,4 @@ func AdminPutProducts(ctx *gin.Context) {
 		"msg":  "Product updated successfully",
 		"data": product,
 	})
-}
-
-// updateProductInDB updates a given product `dbProduct` with values from `newProduct`.
-func updateProductInDB(dbProduct, newProduct *db.Product) error {
-	dbProduct.Name = newProduct.Name
-	dbProduct.Description = newProduct.Description
-	dbProduct.Category = newProduct.Category
-	dbProduct.Stock = newProduct.Stock
-	dbProduct.Price = newProduct.Price
-	dbProduct.ImageURL = newProduct.ImageURL
-
-	if err := dbProduct.SaveToDB(); err != nil {
-		return err
-	}
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbProduct, "id = ?", *dbProduct.ID).Error
-	}); err != nil {
-		return err
-	}
-
-	return nil
 }

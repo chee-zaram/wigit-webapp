@@ -10,10 +10,8 @@ import (
 
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
 
 // JWTAuthentication validates a user's signin JWT token set in the `Authorization` header.
@@ -21,7 +19,7 @@ func JWTAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		ctx.Header(`WWW-Authenticate`, `Bearer realm="Restricted"`)
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Authorization header missing"))
 		return
 	}
 
@@ -30,7 +28,7 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Invalid Authorization header format"`,
 		))
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
+		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Invalid Authorization header format"))
 		return
 	}
 
@@ -38,7 +36,7 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Authorization value does not contain Bearer"`,
 		))
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization value does not contain Bearer"})
+		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Authorization value does not contain Bearer"))
 		return
 	}
 
@@ -47,13 +45,13 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="%s"`, err.Error(),
 		))
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	user, err := getUserByID(userID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	user := new(db.User)
+	if err := user.LoadByID(userID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -102,36 +100,12 @@ func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 	return claims, nil
 }
 
-// getUserByID gets the user with `email` from the database.
-func getUserByID(id string) (*db.User, error) {
-	dbUser := new(db.User)
-
-	if _, err := uuid.Parse(id); err != nil {
-		return nil, errors.New("ID not a valid uuid")
-	}
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbUser, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("No user with given ID")
-	} else if err != nil {
-		return nil, errors.New("Something went wrong!")
-	}
-
-	return dbUser, nil
-}
-
 // Authorization validates if the user has admin privileges or not.
 func AdminAuthorization(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-
 	user, ok := _user.(*db.User)
-	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
@@ -140,7 +114,7 @@ func AdminAuthorization(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="admin super_admin", error="insufficient_scope", error_description="%s"`, err,
 		))
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
+		AbortCtx(ctx, http.StatusForbidden, errors.New(err))
 		return
 	}
 
@@ -150,14 +124,9 @@ func AdminAuthorization(ctx *gin.Context) {
 // SuperAdminAuthorization validates if the user is the super admin.
 func SuperAdminAuthorization(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-
 	user, ok := _user.(*db.User)
-	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
@@ -166,7 +135,7 @@ func SuperAdminAuthorization(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="super_admin", error="insufficient_scope", error_description="%s"`, err,
 		))
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
+		AbortCtx(ctx, http.StatusForbidden, errors.New(err))
 		return
 	}
 

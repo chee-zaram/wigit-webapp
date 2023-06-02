@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"errors"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -43,4 +45,13 @@ var (
 	ErrInvalidSlotID = errors.New("Slot ID is not valid")
 	// ErrEmailParamNotSet indicates an email param is needed and was not provided.
 	ErrEmailParamNotSet = errors.New("email param not set")
+	// ErrUserCtx indicates the user is not set in the current context.
+	ErrUserCtx = errors.New("User not set in context")
+	// ErrStatusCtx indicates the status is not set in the current context.
+	ErrStatusCtx = errors.New("Status not set")
 )
+
+// AbortCtx ends the current context with status.
+func AbortCtx(ctx *gin.Context, responseCode int, err error) {
+	ctx.AbortWithStatusJSON(responseCode, err.Error())
+}

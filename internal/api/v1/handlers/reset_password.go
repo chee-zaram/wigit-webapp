@@ -7,69 +7,99 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
 
 // ResetPassword is used to obtain the post and put data during password reset.
 type ResetPassword struct {
 	Email             string `json:"email" binding:"required,email,min=5,max=45"`
-	NewPassword       string `json:"new_password"`
-	RepeatNewPassword string `json:"repeat_new_password"`
-	ResetToken        string `json:"reset_token"`
+	NewPassword       string `json:"new_password" binding:"required,min=8,max=45"`
+	RepeatNewPassword string `json:"repeat_new_password" binding:"required,min=8,max=45"`
+	ResetToken        string `json:"reset_token" binding:"required"`
 }
 
-// PostResetPassword sends a reset password request with user email.
+// PostEmail binds to the post request body made to the `reset_password` endpoint.
+type PostEmail struct {
+	Email string `json:"email" binding:"required,email,min=5,max=45"`
+}
+
+// PostResetPassword Sends a request for a password update
+//
+//	@Summary	Allows to send a request for password update. A token is returned.
+//	@Tags		reset_password
+//	@Accept		json
+//	@Produce	json
+//	@Param		reset	body		PostEmail				true	"Email body"
+//	@Success	201		{object}	map[string]interface{}	"reset_token"
+//	@Failure	400		{object}	map[string]interface{}	"error"
+//	@Failure	500		{object}	map[string]interface{}	"error"
+//	@Router		/reset_password [post]
 func PostResetPassword(ctx *gin.Context) {
-	resetUser := new(ResetPassword)
+	resetUser := new(PostEmail)
 
 	if err := ctx.ShouldBind(resetUser); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailNotProvided.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	user, code, err := getUserFromDB(resetUser.Email)
-	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+	user := new(db.User)
+	if code, err := user.LoadByEmail(resetUser.Email); err != nil {
+		AbortCtx(ctx, code, err)
 		return
 	}
 
 	_token, err := generateRandomBytes()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 	token := base64.URLEncoding.EncodeToString(_token)[:len(_token)]
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Model(user).Update("reset_token", token).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	if err := user.UpdateResetToken(token); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"reset_token": token})
+	ctx.JSON(http.StatusCreated, gin.H{
+		"reset_token": user.ResetToken,
+	})
 }
 
-// PutResetPassword updates the user's password.
+// PutResetPassword Send a new password
+//
+//	@Summary	Allows to send new password details
+//	@Tags		reset_password
+//	@Accept		json
+//	@Produce	json
+//	@Param		reset	body		ResetPassword			true	"Reset password"
+//	@Success	200		{object}	map[string]interface{}	"msg"
+//	@Failure	400		{object}	map[string]interface{}	"error"
+//	@Failure	500		{object}	map[string]interface{}	"error"
+//	@Router		/reset_password [put]
 func PutResetPassword(ctx *gin.Context) {
 	user, code, err := validateResetPasswordPutData(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		AbortCtx(ctx, code, err)
 		return
 	}
 
-	if err := hashPassword(user); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	passHash, salt, err := hashPassword(user)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
+	user.HashedPassword = passHash
+	user.Salt = salt
 	user.ResetToken = ""
+
 	if err := user.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"msg": "Password has been reset successfully"})
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Password has been reset successfully",
+	})
 }
 
 // validateResetPasswordPutData validates the fields provided for the reset of a user's password.
@@ -80,12 +110,8 @@ func validateResetPasswordPutData(ctx *gin.Context) (*db.User, int, error) {
 		return nil, http.StatusBadRequest, errors.New("Failed to bind")
 	}
 
-	if resetUser.ResetToken == "" {
-		return nil, http.StatusBadRequest, errors.New("Reset Token not provided")
-	}
-
-	user, code, err := getUserFromDB(resetUser.Email)
-	if err != nil {
+	user := new(db.User)
+	if code, err := user.LoadByEmail(resetUser.Email); err != nil {
 		return nil, code, err
 	}
 
@@ -99,14 +125,6 @@ func validateResetPasswordPutData(ctx *gin.Context) (*db.User, int, error) {
 
 	if resetUser.RepeatNewPassword != resetUser.NewPassword {
 		return nil, http.StatusBadRequest, ErrPassMismatch
-	}
-
-	if len(resetUser.NewPassword) < 8 {
-		return nil, http.StatusBadRequest, ErrPassTooShort
-	}
-
-	if len(resetUser.NewPassword) > 45 {
-		return nil, http.StatusBadRequest, ErrPassTooLong
 	}
 
 	user.Password = &resetUser.NewPassword

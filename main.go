@@ -8,7 +8,9 @@ import (
 	"github.com/wigit-gh/webapp/internal/flags"
 )
 
-// main is the entry point of the program.
+//	@contact.name	API Support
+//	@contact.url	www.cheezaram.tech/contact
+//	@contact.email	ecokeke21@gmail.com
 func main() {
 	env := flags.Parse()
 	// NOTE: in production we will specify the environment variables in our service file
@@ -24,7 +26,7 @@ func main() {
 	}
 
 	conf := config.NewConfig(env)
-	ginRouter := server.SetGINRouter(conf)
+	ginRouter := server.SetGINRouterV1(conf)
 	httpRouter := server.SetHTTPRouter(ginRouter, conf)
 	server.ListenAndServer(httpRouter)
 }

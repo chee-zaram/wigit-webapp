@@ -4,80 +4,124 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/internal/db"
 	"gorm.io/gorm"
 )
 
-// GetServices retrieves a list of all available services.
-func GetServices(ctx *gin.Context) {
-	var services []db.Service
+// NewService binds to the request body during a post request.
+type NewService struct {
+	// Name is the name of the service.
+	Name *string `json:"name" binding:"required,min=3,max=45"`
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at DESC").Find(&services).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	// Description is a brief description of the service.
+	Description *string `json:"description" binding:"required,min=5,max=1024"`
+
+	// Price is the cost of the service.
+	Price *decimal.Decimal `json:"price" binding:"required"`
+
+	// Available says whether the service is available or not.
+	Available *bool `json:"available" binding:"required"`
+}
+
+// validateData checks to make sure the data to be added is valid.
+func (service *NewService) validateData() error {
+	if service.Price == nil || service.Price.Sign() < 0 {
+		return errors.New("Price must be set and cannot be a negative value")
+	}
+
+	return nil
+}
+
+// GetServices	Gets all services
+//
+//	@Summary	Retrieves a list of all product objects
+//	@Tags		services
+//	@Produce	json
+//	@Success	200	{object}	map[string]interface{}	"data"
+//	@Failure	500	{object}	map[string]interface{}	"error"
+//	@Router		/services [get]
+func GetServices(ctx *gin.Context) {
+	services, err := db.AllServices()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": services})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": services,
+	})
 }
 
-// GetServiceByID retrieves a service from the database based on given service id.
+// GetServiceByID	Gets a service by ID
+//
+//	@Summary	Retrieves the service with the given ID
+//	@Tags		services
+//	@Produce	json
+//	@Param		service_id	path		string					true	"Service ID"
+//	@Success	200			{object}	map[string]interface{}	"data"
+//	@Failure	400			{object}	map[string]interface{}	"error"
+//	@Failure	500			{object}	map[string]interface{}	"error"
+//	@Router		/services/{service_id} [get]
 func GetServiceByID(ctx *gin.Context) {
 	id := ctx.Param("service_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
-		return
-	}
-
-	if _, err := uuid.Parse(id); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
 		return
 	}
 
 	service := new(db.Service)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(service, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+	if err := service.LoadFromDB(id); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
 		return
 	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": service})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": service,
+	})
 }
 
-// AdminPostServices adds a new service to the database.
+// AdminPostServices	Add service
+//
+//	@Summary	Allows the admin add services to the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		service			body		NewService				true	"Add service"
+//	@Success	201				{object}	map[string]interface{}	"data, msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/services [post]
 func AdminPostServices(ctx *gin.Context) {
-	_service := new(db.Service)
+	_service := new(NewService)
 
 	if err := ctx.ShouldBindJSON(_service); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := validateServicesData(_service); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := _service.validateData(); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := _service.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Service with this name already exists"})
+	service := newService(_service)
+	if err := service.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Service with this name already exists"))
 		return
 	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	service, err := getServiceFromDB(*_service.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := service.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -87,40 +131,38 @@ func AdminPostServices(ctx *gin.Context) {
 	})
 }
 
-// validateServicesData checks to make sure the data to be added is valid.
-func validateServicesData(service *db.Service) error {
-	if service.Price == nil || service.Price.Sign() < 0 {
-		return errors.New("Price must be set and cannot be a negative value")
-	}
-
-	return nil
-}
-
-// getServiceFromDB retrieves a service from the database based on the id provided.
-func getServiceFromDB(id string) (*db.Service, error) {
+// newService fills up the fields for db.Service object.
+func newService(newService *NewService) *db.Service {
 	service := new(db.Service)
+	service.Name = newService.Name
+	service.Description = newService.Description
+	service.Available = newService.Available
+	service.Price = newService.Price
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(service, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("failed to add service to the database")
-	} else if err != nil {
-		return nil, ErrInternalServer
-	}
-
-	return service, nil
+	return service
 }
 
-// AdminDeleteServices handles the deletion of a service from the database by an admin.
+// AdminDeleteServices	Deletes a service
+//
+//	@Summary	Allows admins delete a service from the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		service_id		path		string					true	"Service ID to delete"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/service/{service_id} [delete]
 func AdminDeleteServices(ctx *gin.Context) {
 	id := ctx.Param("service_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
 		return
 	}
 
-	if err := deleteServiceFromDB(id); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteService(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -129,39 +171,55 @@ func AdminDeleteServices(ctx *gin.Context) {
 	})
 }
 
-// deleteServiceFromDB sends a delete query to the database to delete service with given id.
-func deleteServiceFromDB(id string) error {
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM services WHERE id = ?`, id).Error
-	}); err != nil { // Exec does not return a ErrRecordNotFound so no need to check
-		return err
-	}
-
-	return nil
-}
-
-// AdminPutServices handles put requests to the services endpoint.
+// AdminPutServices		Update product
+//
+//	@Summary	Allows the admin update the service with given service_id
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		service_id		path		string					true	"Service ID to update"
+//	@Param		service			body		NewService				true	"Update service"
+//	@Success	200				{object}	map[string]interface{}	"data, msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/services/{service_id} [put]
 func AdminPutServices(ctx *gin.Context) {
-	_service := new(db.Service)
+	_service := new(NewService)
 	id := ctx.Param("service_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidServiceID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
 		return
 	}
 
 	if err := ctx.ShouldBindJSON(_service); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	service, err := getServiceFromDB(id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := _service.validateData(); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := updateServiceInDB(service, _service); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	service := new(db.Service)
+	if err := service.LoadFromDB(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	created_at := service.CreatedAt
+	service = newService(_service)
+	service.ID = &id
+	service.CreatedAt = created_at
+
+	if err := service.SaveToDB(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := service.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -171,80 +229,30 @@ func AdminPutServices(ctx *gin.Context) {
 	})
 }
 
-// updateServiceInDB updates the service's information in the database.
-func updateServiceInDB(dbService, newService *db.Service) error {
-	dbService.Name = newService.Name
-	dbService.Description = newService.Description
-	dbService.Price = newService.Price
-	dbService.Available = newService.Available
-
-	if err := dbService.SaveToDB(); err != nil {
-		return err
-	}
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbService, "id = ?", *dbService.ID).Error
-	}); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// GetTrendingServices retrieves a list of 5 trending services.
+// GetTrendingServices	Get the trending services
+//
+//	@Summary	Retrieves a list of the top ten trending services
+//	@Tags		admin
+//	@Produce	json
+//	@Success	201	{object}	map[string]interface{}	"data"
+//	@Failure	500	{object}	map[string]interface{}	"error"
+//	@Router		/admin/services/trending [get]
 func GetTrendingServices(ctx *gin.Context) {
 	var bookings []db.Booking
 
-	bookings, err := sortBookingsByService()
+	bookings, err := db.SortBookingsByService()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	services, err := getTrendingServices(bookings)
+	services, err := db.GetTrendingServices(bookings)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": services,
 	})
-}
-
-// sortBookingsByService gets service ids of the top 10 services booked in the last
-// 7 days by quering the bookings table.
-func sortBookingsByService() ([]db.Booking, error) {
-	var bookings []db.Booking
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Table("bookings").
-			Select("service_id, COUNT(*) as total_bookings").
-			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
-			Group("service_id").
-			Order("total_bookings DESC").
-			Limit(10).
-			Scan(&bookings).Error
-	}); err != nil {
-		return nil, err
-	}
-
-	return bookings, nil
-}
-
-// getTrendingServices retrieves the top 10 services in the last week if available.
-func getTrendingServices(bookings []db.Booking) ([]db.Service, error) {
-	var services []db.Service
-	for _, booking := range bookings {
-		service := new(db.Service)
-		if err := db.Connector.Query(func(tx *gorm.DB) error {
-			return tx.First(service, "id = ?", *booking.ServiceID).Error
-		}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		} else if err != nil {
-			return nil, err
-		}
-		services = append(services, *service)
-	}
-
-	return services, nil
 }

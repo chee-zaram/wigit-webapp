@@ -7,45 +7,163 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
+
+// NewOrder binds to the json body during a post request for a new order.
+type NewOrder struct {
+	// DeliveryMethod is the method in which the order should be deliver.
+	//
+	// Allowed values are `pending`(default), `paid`, `shipped`, `delivered`, `cancelled`.
+	DeliveryMethod *string `json:"delivery_method" binding:"required"`
+}
 
 // allowedOrderStatus is a slice of status allowed to be set for an order.
 var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "cancelled"}
 
-// CustomerPostOrders adds a new order to the database for a given customer.
-func CustomerPostOrders(ctx *gin.Context) {
-	_order := new(db.Order)
-	if err := ctx.ShouldBindJSON(_order); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+// CustomerGetOrders Get all given customer's orders.
+//
+//	@Summary	Allows the customer retrieve all their orders from the database.
+//	@Tags		orders
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/orders [get]
+func CustomerGetOrders(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-
-	items, err := getItemsInCart(*user.ID)
-	if err != nil || items == nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_order.Items = items
-	_order.TotalAmount = getOrderTotal(items)
-
-	user.Orders = append(user.Orders, *_order)
-	if err := user.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	order, err := getOrderFromDB(*user.Orders[len(user.Orders)-1].ID)
+	orders, err := db.CustomerOrders(*user.ID)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// CustomerGetOrdersByStatus Get orders by status.
+//
+//	@Summary	Allows the customer retrieve all the orders from the database with given status.
+//	@Tags		orders
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		status			path		string					true	"The status of orders to retrieve"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/orders/status/{status} [get]
+func CustomerGetOrdersByStatus(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
+	status := ctx.Param("status")
+	if status == "" {
+		AbortCtx(ctx, http.StatusBadRequest, ErrStatusCtx)
+		return
+	}
+
+	orders, err := db.CustomerOrdersByStatus(*user.ID, status)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// CustomerGetOrder Customer get an order with given ID
+//
+//	@Summary	Allows customer retrieve an order with given ID from database
+//	@Tags		orders
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		order_id		path		string					true	"ID of the order to get"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/orders/{order_id} [get]
+func CustomerGetOrder(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+	id := ctx.Param("order_id")
+	if id == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Order ID not provided"))
+		return
+	}
+
+	order := new(db.Order)
+	if err := order.CustomerLoadFromDB(*user.ID, id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": order,
+	})
+}
+
+// CustomerPostOrders Add order to the database
+//
+//	@Summary	Allows the current user place a new order
+//	@Tags		orders
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		order			body		NewOrder				true	"A new customer order"
+//	@Success	201				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/order [post]
+func CustomerPostOrders(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
+	_order := new(NewOrder)
+	if err := ctx.ShouldBindJSON(_order); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	items, err := db.GetItemsInCartForOrder(*user.ID)
+	if err != nil || items == nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	order := newOrder(_order)
+	order.Items = items
+	order.TotalAmount = getOrderTotal(items)
+	user.Orders = append(user.Orders, *order)
+
+	if err := user.SaveToDB(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := order.LoadFromDB(*user.Orders[len(user.Orders)-1].ID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -55,48 +173,12 @@ func CustomerPostOrders(ctx *gin.Context) {
 	})
 }
 
-// getItemsInCart returns all the items in a user's cart.
-func getItemsInCart(user_id string) ([]db.Item, error) {
-	var items []db.Item
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("user_id = ?", user_id).Where("order_id is NULL").Find(&items).Error
-	}); err != nil {
-		return nil, err
-	}
-
-	if len(items) == 0 {
-		return nil, errors.New("No items in cart")
-	}
-
-	for _, item := range items {
-		product, err := getProductFromDB(*item.ProductID)
-		if err != nil {
-			return nil, err
-		}
-
-		if *item.Quantity > *product.Stock {
-			*item.Quantity = *product.Stock
-		}
-
-		// Compute amount for item
-		amount := product.Price.Mul(decimal.NewFromInt(int64(*item.Quantity)))
-		item.Amount = &amount
-	}
-
-	return items, nil
-}
-
-// getOrderFromDB retrieves an order from the database with given id.
-func getOrderFromDB(id string) (*db.Order, error) {
+// newOrder fills up fields in the db.Order object from NewOrder and returns it.
+func newOrder(newOrder *NewOrder) *db.Order {
 	order := new(db.Order)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Items.Product").First(order, "id = ?", id).Error
-	}); err != nil {
-		return nil, err
-	}
+	order.DeliveryMethod = newOrder.DeliveryMethod
 
-	return order, nil
+	return order
 }
 
 // getOrderTotal computes the sum of all the items for a given order.
@@ -109,35 +191,125 @@ func getOrderTotal(items []db.Item) *decimal.Decimal {
 	return &totalAmount
 }
 
-// AdminPutOrders updates the status of an order.
+// AdminGetOrders Get all database orders.
+//
+//	@Summary	Allows admin retrieves all orders from the database
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/orders [get]
+func AdminGetOrders(ctx *gin.Context) {
+	orders, err := db.AllOrders()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// AdminGetOrdersByStatus Get all orders with given status
+//
+//	@Summary	Allows admin retrieves all orders with given status from the database
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		status			path		string					true	"Status of orders to retrieve"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/orders/status/{status} [get]
+func AdminGetOrdersByStatus(ctx *gin.Context) {
+	status := ctx.Param("status")
+	if status == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("No status specified"))
+		return
+	}
+
+	orders, err := db.OrdersByStatus(status)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": orders,
+	})
+}
+
+// AdminGetOrder Get order with ID
+//
+//	@Summary	Allows admin retrieve an order with given ID from database
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		booking_id		path		string					true	"ID of the order to get"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/orders/{order_id} [get]
+func AdminGetOrder(ctx *gin.Context) {
+	id := ctx.Param("order_id")
+	if id == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Order ID not provided"))
+		return
+	}
+
+	order := new(db.Order)
+	if err := order.LoadFromDB(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": order,
+	})
+}
+
+// AdminPutOrders Update the status of an order.
+//
+//	@Summary		Allows admin update the status of an existing order.
+//	@Description	Allowed status are `pending`(default), `paid`, `shipped`, `delivered`, `cancelled`
+//	@Tags			admin
+//	@Produce		json
+//	@Param			Authorization	header		string					true	"Bearer <token>"
+//	@Param			order_id		path		string					true	"ID of order to update"
+//	@Param			status			path		string					true	"New status of the order"
+//	@Success		200				{object}	map[string]interface{}	"data"
+//	@Failure		400				{object}	map[string]interface{}	"error"
+//	@Failure		500				{object}	map[string]interface{}	"error"
+//	@Router			/admin/orders/{order_id}/{status} [put]
 func AdminPutOrders(ctx *gin.Context) {
 	order_id := ctx.Param("order_id")
 	if order_id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No order ID"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("No order ID"))
 		return
 	}
 
 	status := ctx.Param("status")
 	if status == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No status specified"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("No status specified"))
 		return
 	}
 
-	order, err := getOrderFromDB(order_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	order := new(db.Order)
+	if err := order.LoadFromDB(order_id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	if !validOrderStatus(order, status) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status cannot be updated. Likely because a product is out of stock"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New(
+			"Status cannot be updated. Likely because a product is out of stock",
+		))
 		return
 	}
 
-	order.Status = &status
-
-	if err := order.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := order.UpdateStatus(status); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -168,144 +340,4 @@ func validOrderStatus(order *db.Order, status string) bool {
 	}
 
 	return valid
-}
-
-// AdminGetOrders retrieves all the orders from the database.
-func AdminGetOrders(ctx *gin.Context) {
-	var orders []db.Order
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Preload("Items").Find(&orders).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
-	})
-}
-
-// AdminGetOrdersByStatus gets all orders with a given status.
-func AdminGetOrdersByStatus(ctx *gin.Context) {
-	status := ctx.Param("status")
-	if status == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status not given"})
-		return
-	}
-
-	var orders []db.Order
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("status = ?", status).Preload("Items").Find(&orders).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
-	})
-}
-
-// AdminGetOrdersByID gets an order with a given id from the database.
-func AdminGetOrderByID(ctx *gin.Context) {
-	id := ctx.Param("order_id")
-	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Order ID not provided"})
-		return
-	}
-
-	order := new(db.Order)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": order,
-	})
-}
-
-// CustomerGetOrders retrieves all the user's orders from the database.
-func CustomerGetOrders(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-	var orders []db.Order
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Preload("Items").Find(&orders).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
-	})
-}
-
-// CustomerGetOrdersByStatus retrieves all the orders for the user by their status.
-func CustomerGetOrdersByStatus(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-
-	status := ctx.Param("status")
-	if status == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Status not given"})
-		return
-	}
-
-	var orders []db.Order
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Where("status = ?", status).
-			Preload("Items").Find(&orders).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
-	})
-}
-
-// CustomerGetOrderByID retrieves a specified order for a user.
-func CustomerGetOrderByID(ctx *gin.Context) {
-	id := ctx.Param("order_id")
-	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Order ID not provided"})
-		return
-	}
-
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-
-	user := _user.(*db.User)
-	order := new(db.Order)
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("user_id = ?", *user.ID).Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": order,
-	})
 }

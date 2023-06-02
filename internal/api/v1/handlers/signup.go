@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"crypto/rand"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,16 +11,65 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// SignUp is the handler function for signing up users to the app.
+// SignUpUser binds to a user during signup.
+type SignUpUser struct {
+	FirstName      *string `json:"first_name" binding:"required,min=3,max=45"`
+	LastName       *string `json:"last_name" binding:"required,min=3,max=45"`
+	Email          *string `json:"email" binding:"required,email,min=3,max=45"`
+	Password       *string `json:"password" binding:"required,min=8,max=45"`
+	RepeatPassword *string `json:"repeat_password" binding:"required,min=8,max=45"`
+	Address        *string `json:"address" binding:"required,min=3,max=255"`
+	Phone          *string `json:"phone" binding:"required,min=8,max=11"`
+}
+
+// validateSignUpUser validates all fields in the post request.
+func (user *SignUpUser) validate() error {
+	dbUser := new(db.User)
+	if code, err := dbUser.LoadByEmail(*user.Email); code == http.StatusBadRequest {
+	} else if dbUser.Email != nil {
+		return ErrDuplicateUser
+	} else if err != nil {
+		return err
+	}
+
+	if *user.Password != *user.RepeatPassword {
+		return ErrPassMismatch
+	}
+
+	return nil
+}
+
+// SignUp		Sign up a user
+//
+//	@Summary	Add a new user account
+//	@Tags		signup
+//	@Accept		json
+//	@Produce	json
+//	@Param		user	body		SignUpUser				true	"Add user account"
+//	@Success	201		{object}	map[string]interface{}	"jwt, msg"
+//	@Failure	400		{object}	map[string]interface{}	"error"
+//	@Failure	500		{object}	map[string]interface{}	"error"
+//	@Router		/signup [post]
 func SignUp(ctx *gin.Context) {
-	user := new(db.User)
-	if err := ctx.ShouldBind(user); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Sign Up failed."})
+	signUpUser := new(SignUpUser)
+	if err := ctx.ShouldBind(signUpUser); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if code, err := addUser(user); err != nil {
+	if err := signUpUser.validate(); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, code, err := newUser(signUpUser)
+	if err != nil {
 		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := user.SaveToDB(); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -31,93 +79,42 @@ func SignUp(ctx *gin.Context) {
 	})
 }
 
-// addUser adds a new user to the database. Returns an error if any exists.
-func addUser(user *db.User) (int, error) {
-	if err := validateSignUpUser(user); err != nil {
-		return http.StatusBadRequest, err
-	}
+// newUser fills up the initial user fields from the SignUpUser struct.
+// It returns a new user object, a status code, and an error if any.
+func newUser(signUpUser *SignUpUser) (*db.User, int, error) {
+	user := new(db.User)
+	user.Email = signUpUser.Email
+	user.Password = signUpUser.Password
+	user.RepeatPassword = signUpUser.RepeatPassword
+	user.FirstName = signUpUser.FirstName
+	user.LastName = signUpUser.LastName
+	user.Address = signUpUser.Address
+	user.Phone = signUpUser.Phone
 
-	if err := hashPassword(user); err != nil {
-		return http.StatusInternalServerError, err
-	}
-
-	// Add the user to the database
-	if err := user.SaveToDB(); err != nil {
-		return http.StatusInternalServerError, ErrFailedToAddUserToDB
-	}
-
-	return http.StatusCreated, nil
-}
-
-// validateSignUpUser validates all fields in the post form
-func validateSignUpUser(user *db.User) error {
-	// Verify user does not already exist
-	if dbUser, _, err := getUserFromDB(*user.Email); errors.Is(err, ErrInvalidUser) {
-	} else if dbUser != nil {
-		return ErrDuplicateUser
-	} else if err != nil {
-		return err
-	}
-
-	if user.FirstName == nil {
-		return ErrInvalidFirstName
-	}
-
-	if user.LastName == nil {
-		return ErrInvalidLastName
-	}
-
-	if user.Address == nil {
-		return ErrInvalidAddress
-	}
-
-	if user.Phone == nil {
-		return ErrNoPhone
-	}
-
-	if len(*user.Phone) < 9 || len(*user.Phone) > 11 {
-		return ErrInvalidPhone
-	}
-
-	if user.Password == nil || user.RepeatPassword == nil {
-		return ErrInvalidPass
-	}
-
-	if *user.Password != *user.RepeatPassword {
-		return ErrPassMismatch
-	}
-
-	if len(*user.RepeatPassword) < 8 {
-		return ErrPassTooShort
-	}
-
-	if len(*user.Password) > 45 {
-		return ErrPassTooLong
-	}
-
-	// We don't want a user's role to be set during signup but only through
-	// the database.
-	user.Role = nil
-
-	return nil
-}
-
-// hashPassword creates a hash of the password plus a random salt.
-func hashPassword(user *db.User) error {
-	salt, err := generateRandomBytes()
+	passHash, salt, err := hashPassword(user)
 	if err != nil {
-		return err
-	}
-
-	passHash, err := createHash([]byte(*user.Password), salt)
-	if err != nil {
-		return err
+		return nil, http.StatusInternalServerError, err
 	}
 
 	user.HashedPassword = passHash
 	user.Salt = salt
 
-	return nil
+	return user, http.StatusCreated, nil
+}
+
+// hashPassword creates a hash of the password plus a random salt.
+func hashPassword(user *db.User) (passHash []byte, salt []byte, err error) {
+	salt, err = generateRandomBytes()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	passHash, err = createHash([]byte(*user.Password), salt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return passHash, salt, nil
 }
 
 // generateRandomBytes generates a random 16 byte slice.

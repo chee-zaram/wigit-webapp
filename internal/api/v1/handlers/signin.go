@@ -9,17 +9,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// SignIn handles post requests to the /signin route.
+// SignInUser binds to the json body during signin.
+type SignInUser struct {
+	// Email is the user's email.
+	Email *string `json:"email" binding:"required,email,min=3,max=45"`
+	// Password is the user's password.
+	Password *string `json:"password" binding:"required,min=8,max=45"`
+}
+
+// SignIn		Sign a user in
+//
+//	@Summary	Logs a user into their account
+//	@Tags		signin
+//	@Accept		json
+//	@Produce	json
+//	@Param		user	body		SignInUser				true	"Sign user in"
+//	@Success	200		{object}	map[string]interface{}	"jwt, msg, user"
+//	@Failure	400		{object}	map[string]interface{}	"error"
+//	@Failure	500		{object}	map[string]interface{}	"error"
+//	@Router		/signin [post]
 func SignIn(ctx *gin.Context) {
-	_user := new(db.User)
+	_user := new(SignInUser)
 	if err := ctx.ShouldBind(_user); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	user, code, err := authenticateUser(_user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		AbortCtx(ctx, code, err)
 		return
 	}
 
@@ -31,33 +49,23 @@ func SignIn(ctx *gin.Context) {
 }
 
 // authenticateUser verifies the user attempting to log in is a valid user.
-func authenticateUser(user *db.User) (*db.User, int, error) {
-	var err error
-
-	if user.Email == nil {
-		return nil, http.StatusBadRequest, ErrEmailNotProvided
-	}
-
-	if user.Password == nil {
-		return nil, http.StatusBadRequest, ErrInvalidPass
-	}
-
+func authenticateUser(user *SignInUser) (*db.User, int, error) {
 	// Get user with Email from the database.
-	dbUser, code, err := getUserFromDB(*user.Email)
-	if err != nil {
+	dbUser := new(db.User)
+	if code, err := dbUser.LoadByEmail(*user.Email); err != nil {
 		return nil, code, err
 	}
 
 	// Verify the user password.
 	if err := validateUser(user, dbUser); err != nil {
-		return nil, code, err
+		return nil, http.StatusBadRequest, err
 	}
 
-	return dbUser, code, nil
+	return dbUser, http.StatusOK, nil
 }
 
 // validateUser verifies the user's password.
-func validateUser(user, dbUser *db.User) error {
+func validateUser(user *SignInUser, dbUser *db.User) error {
 	salted := append([]byte(*user.Password), dbUser.Salt...)
 	if err := bcrypt.CompareHashAndPassword(dbUser.HashedPassword, salted); err != nil {
 		return ErrInvalidPass

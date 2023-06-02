@@ -13,6 +13,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
+	docs "github.com/wigit-gh/webapp/docs"
 	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/api/v1/routes"
@@ -20,8 +23,8 @@ import (
 	"github.com/wigit-gh/webapp/internal/db"
 )
 
-// SetGINRouter configures the gin router with all necessary routes and middleware.
-func SetGINRouter(conf config.Config) *gin.Engine {
+// SetGINRouterV1 configures the gin router with all necessary routes and middleware.
+func SetGINRouterV1(conf config.Config) *gin.Engine {
 	middlewares.CreateSigner([]byte(conf.JWTSecret))
 	middlewares.CreateVerifier([]byte(conf.JWTSecret))
 
@@ -43,6 +46,15 @@ func SetGINRouter(conf config.Config) *gin.Engine {
 
 	// We don't care about trailing slashes. /example and /example/ mean the same thing
 	router.RedirectTrailingSlash = true
+
+	docs.SwaggerInfo.Title = "Wigit Web Application Backend Server"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Description = "This is the backend server for the application."
+	// docs.SwaggerInfo.Host = "cheezaram.tech"
+	docs.SwaggerInfo.Host = "localhost:8000"
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	// docs.SwaggerInfo.Schemes = []string{"https"}
+	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	// Create the api group
 	api := router.Group("/api/v1")
@@ -67,6 +79,9 @@ func SetGINRouter(conf config.Config) *gin.Engine {
 	// Add only authentication middleware for all other users
 	customer := api.Group("/", handlers.JWTAuthentication)
 	addCustomerRoutes(customer)
+
+	// Specify route for swagger
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 404 handler
 	router.NoRoute(func(ctx *gin.Context) { ctx.JSON(http.StatusNotFound, gin.H{}) })

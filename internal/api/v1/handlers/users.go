@@ -9,18 +9,35 @@ import (
 	"gorm.io/gorm"
 )
 
-// CustomerDeleteUser deletes the current user from the database.
+// UpdateUser binds to the request sent to update a user's information.
+type UpdateUser struct {
+	Email     *string `json:"email" binding:"required,email,min=5,max=45"`
+	Phone     *string `json:"phone" binding:"required,min=8,max=11"`
+	Address   *string `json:"address" binding:"required,max=255"`
+	FirstName *string `json:"first_name" binding:"required,max=45"`
+	LastName  *string `json:"last_name" binding:"required,max=45"`
+}
+
+// CustomerDeleteUser Deletes the current user from the database.
+//
+//	@Summary	Allows the current user delete their account.
+//	@Tags		users
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		email			path		string					true	"User's email"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/users/{user_id} [delete]
 func CustomerDeleteUser(ctx *gin.Context) {
 	user, _, err := validateUserParams(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM users WHERE id = ?`, *user.ID).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteUser(*user.Email); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -29,49 +46,60 @@ func CustomerDeleteUser(ctx *gin.Context) {
 	})
 }
 
-// CustomerPutUser updates a user's information in the database.
+// CustomerPutUser Updates a user's information in the database.
+//
+//	@Summary	Allows the current user update their account information.
+//	@Tags		users
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		user			body		UpdateUser				true	"User information"
+//	@Success	200				{object}	map[string]interface{}	"data,msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/users [put]
 func CustomerPutUser(ctx *gin.Context) {
 	user, newUser, err := validateUserParams(ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	updateUserInfo(user, newUser)
-	if err := user.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := user.UpdateInfo(
+		*newUser.Email,
+		*newUser.Address,
+		*newUser.Phone,
+		*newUser.FirstName,
+		*newUser.LastName); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
-	}
-
-	updatedUser, err := getUserByID(*user.ID)
-	if err != nil {
-		updatedUser = user
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "User updated successfully",
-		"data": updatedUser,
+		"data": user,
 	})
 }
 
 // validateUserParams validates data sent to the `users` endpoint.
 // It is used during updating and deletion of a user or information.
-func validateUserParams(ctx *gin.Context) (*db.User, *db.User, error) {
+func validateUserParams(ctx *gin.Context) (*db.User, *UpdateUser, error) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		return nil, nil, errors.New("User not set in context")
-	}
-	user := _user.(*db.User)
-	id := ctx.Param("user_id")
-	if id == "" {
-		return nil, nil, errors.New("User ID must be set")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		return nil, nil, ErrUserCtx
 	}
 
-	if id != *user.ID {
+	email := ctx.Param("email")
+	if email == "" {
+		return nil, nil, ErrEmailParamNotSet
+	}
+
+	if email != *user.Email {
 		return nil, nil, errors.New("Cannot perform operation on another user's account")
 	}
 
-	newUser := new(db.User)
+	newUser := new(UpdateUser)
 	if err := ctx.ShouldBind(newUser); err != nil {
 		return nil, nil, err
 	}
@@ -79,40 +107,27 @@ func validateUserParams(ctx *gin.Context) (*db.User, *db.User, error) {
 	return user, newUser, nil
 }
 
-// updateUserInfo updates a user's information on put request.
-func updateUserInfo(user, newUser *db.User) {
-	// TODO: validate lengths of strings
-	user.Email = newUser.Email
-
-	if newUser.FirstName != nil && *newUser.FirstName != "" {
-		user.FirstName = newUser.FirstName
-	}
-
-	if newUser.LastName != nil && *newUser.LastName != "" {
-		user.LastName = newUser.LastName
-	}
-
-	if newUser.Address != nil && *newUser.Address != "" {
-		user.Address = newUser.Address
-	}
-
-	if newUser.Phone != nil && *newUser.Phone != "" {
-		user.Phone = newUser.Phone
-	}
-}
-
-// AdminGetUserOrdersBookings gets all orders and booking belonging to a user
-// with given email.
+// AdminGetUserOrdersBookings Get orders and bookings
+//
+//	@Summary	Allows admin get all orders and bookings belonging to user with email.
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		email			path		string					true	"User's email"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/users/{email}/orders_bookings [get]
 func AdminGetUserOrdersBookings(ctx *gin.Context) {
 	email := ctx.Param("email")
 	if email == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrEmailParamNotSet)
 		return
 	}
 
-	user, code, err := getUserFromDB(email)
-	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+	user := new(db.User)
+	if code, err := user.LoadByEmail(email); err != nil {
+		AbortCtx(ctx, code, err)
 		return
 	}
 
@@ -139,67 +154,68 @@ func getUserFromDB(email string) (*db.User, int, error) {
 	return dbUser, http.StatusOK, nil
 }
 
-// SuperAdminUpdateRole updates the role of a user using super admin privileges.
+// SuperAdminUpdateRole Update a user role.
+//
+//	@Summary	Allows super_admin update another user's role
+//	@Tags		super_admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		email			path		string					true	"User's email"
+//	@Param		new_role		path		string					true	"User's new role"
+//	@Success	200				{object}	map[string]interface{}	"msg,data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/super_admin/users/{email}/{new_role} [put]
 func SuperAdminUpdateRole(ctx *gin.Context) {
 	email := ctx.Param("email")
 	role := ctx.Param("new_role")
 	if email == "" || role == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "email or role param not set"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("email or role param not set"))
 		return
 	}
 
 	if role != "admin" && role != "customer" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid user role"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Invalid user role"))
 		return
 	}
 
-	user, code, err := getUserFromDB(email)
-	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+	user := new(db.User)
+	if code, err := user.LoadByEmail(email); err != nil {
+		AbortCtx(ctx, code, err)
 		return
 	}
 
-	dbUser, err := updateUserRole(user, role)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := user.UpdateRole(role); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "User role updated successfully",
-		"data": dbUser,
+		"data": user,
 	})
 }
 
-// updateUserRole updates a given user's role and returns the updated user.
-func updateUserRole(user *db.User, role string) (*db.User, error) {
-	user.Role = &role
-	if err := user.SaveToDB(); err != nil {
-		return nil, ErrInternalServer
-	}
-
-	dbUser := new(db.User)
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(dbUser, "id = ?", *user.ID).Error
-	}); err != nil {
-		return nil, ErrInternalServer
-	}
-
-	return dbUser, nil
-}
-
-// SuperAdminDeleteUser deletes a user account.
+// SuperAdminDeleteUser Delete a user account.
+//
+//	@Summary	Allows super_admin delete another user's role.
+//	@Tags		super_admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		email			path		string					true	"User's email"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/super_admin/users/{email} [delete]
 func SuperAdminDeleteUser(ctx *gin.Context) {
 	email := ctx.Param("email")
 	if email == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrEmailParamNotSet)
 		return
 	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM users WHERE email = ?`, email).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteUser(email); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -208,14 +224,19 @@ func SuperAdminDeleteUser(ctx *gin.Context) {
 	})
 }
 
-// SuperAdminGetAdmins gets all admins in the database.
+// SuperAdminGetAdmins Gets all admins in the database.
+//
+//	@Summary	Allows super_admin retrieve all admins in the database.
+//	@Tags		super_admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/super_admin/users/admins [get]
 func SuperAdminGetAdmins(ctx *gin.Context) {
-	var admins []db.User
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("first_name asc").Where("role = 'admin'").Preload("Orders").Preload("Bookings").Find(&admins).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	admins, err := db.Admins()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -224,14 +245,19 @@ func SuperAdminGetAdmins(ctx *gin.Context) {
 	})
 }
 
-// SuperAdminGetCustomers retrieves all customers.
+// SuperAdminGetCustomers Get all customers
+//
+//	@Summary	Allows super_admin retrieve all customers in the database.
+//	@Tags		super_admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/super_admin/users/customers [get]
 func SuperAdminGetCustomers(ctx *gin.Context) {
-	var customers []db.User
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("first_name asc").Where("role = 'customer'").Preload("Orders").Preload("Bookings").Find(&customers).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customers, err := db.Customers()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -240,17 +266,27 @@ func SuperAdminGetCustomers(ctx *gin.Context) {
 	})
 }
 
-// SuperAdminGetUser gets a user with given email from database.
+// SuperAdminGetUser Get a user with email
+//
+//	@Summary	Allows super_admin retrieve another user with given email
+//	@Tags		super_admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		email			path		string					true	"User's email"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/super_admin/users/{email} [get]
 func SuperAdminGetUser(ctx *gin.Context) {
 	email := ctx.Param("email")
 	if email == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrEmailParamNotSet.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrEmailParamNotSet)
 		return
 	}
 
-	user, code, err := getUserFromDB(email)
-	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+	user := new(db.User)
+	if code, err := user.LoadByEmail(email); err != nil {
+		AbortCtx(ctx, code, err)
 		return
 	}
 

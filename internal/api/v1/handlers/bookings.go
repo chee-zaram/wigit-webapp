@@ -1,25 +1,46 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
+
+// NewBooking binds to the request body on post to bookings routes.
+type NewBooking struct {
+	// ServiceID is the ID of the service requested.
+	ServiceID *string `json:"service_id" binding:"required"`
+	// SlotID is the ID of the slot the user is requesting to be booked for.
+	SlotID *string `json:"slot_id" binding:"required"`
+}
 
 // allowedBookingStatus is a list of all the valid status for a booking.
 var allowedBookingStatus = []string{"pending", "paid", "fulfilled", "cancelled"}
 
-// AdminGetBookings retrieves all bookings in the database.
-func AdminGetBookings(ctx *gin.Context) {
-	var bookings []db.Booking
+// CustomerGetBookings Customer get all bookings
+//
+//	@Summary	Allows customer retrieves all their bookings from the database
+//	@Tags		bookings
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/bookings [get]
+func CustomerGetBookings(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Find(&bookings).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	bookings, err := db.CustomerBookings(*user.ID)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -28,59 +49,84 @@ func AdminGetBookings(ctx *gin.Context) {
 	})
 }
 
-// CustomerGetBookings gets a list of all the customer bookings.
-func CustomerGetBookings(ctx *gin.Context) {
+// CustomerGetBooking Customer get a booking with given ID
+//
+//	@Summary	Allows customer retrieve a booking with given ID from database
+//	@Tags		bookings
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		booking_id		path		string					true	"ID of the booking to get"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/bookings/{booking_id} [get]
+func CustomerGetBooking(ctx *gin.Context) {
+	booking_id := ctx.Param("booking_id")
+	if booking_id == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Booking ID not set"))
+		return
+	}
+
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-	var bookings []db.Booking
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", *user.ID).Find(&bookings).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": bookings,
-	})
+	for _, booking := range user.Bookings {
+		if strings.Contains(*booking.ID, booking_id) {
+			ctx.JSON(http.StatusOK, gin.H{
+				"data": booking,
+			})
+		}
+	}
+
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No booking with given ID for user"})
 }
 
 // CustomerPostBooking adds a new booking to the database for the customer.
+//
+//	@Summary	Allows customer add a new booking.
+//	@Tags		bookings
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		booking			body		NewBooking				true	"A new customer booking"
+//	@Success	201				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/bookings [post]
 func CustomerPostBooking(ctx *gin.Context) {
-	_booking := new(db.Booking)
-
-	if err := ctx.ShouldBindJSON(_booking); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-
-	service, err := getServiceFromDB(*_booking.ServiceID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_booking.Amount = service.Price
-	user.Bookings = append(user.Bookings, *_booking)
+	_booking := new(NewBooking)
+	if err := ctx.ShouldBindJSON(_booking); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	service := new(db.Service)
+	if err := service.LoadFromDB(*_booking.ServiceID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	booking := newBooking(_booking)
+	booking.Amount = service.Price
+	user.Bookings = append(user.Bookings, *booking)
 	if err := user.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	booking, err := getBookingFromDB(*user.Bookings[len(user.Bookings)-1].ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := booking.LoadFromDB(*user.Bookings[len(user.Bookings)-1].ID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -90,44 +136,102 @@ func CustomerPostBooking(ctx *gin.Context) {
 	})
 }
 
-// getBookingFromDB retrieves a booking with id from database.
-func getBookingFromDB(id string) (*db.Booking, error) {
+// newBooking fills up the neccessary fields in db.Booking object from NewBooking
+// object and returns it.
+func newBooking(newBooking *NewBooking) *db.Booking {
 	booking := new(db.Booking)
+	booking.SlotID = newBooking.SlotID
+	booking.ServiceID = newBooking.ServiceID
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", "%"+id+"%").Error
-	}); err != nil {
-		return nil, err
-	}
-
-	return booking, nil
+	return booking
 }
 
-// AdminPutBooking updates the status of a booking.
+// AdminGetBookings	Get all database bookings
+//
+//	@Summary	Allows admin retrieves all bookings from the database
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/bookings [get]
+func AdminGetBookings(ctx *gin.Context) {
+	bookings, err := db.AllBookings()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": bookings,
+	})
+}
+
+// AdminGetBooking Admin get a booking with given ID
+//
+//	@Summary	Allows admin retrieve a booking with given ID from database
+//	@Tags		admin
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		booking_id		path		string					true	"ID of the booking to get"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/bookings/{booking_id} [get]
+func AdminGetBooking(ctx *gin.Context) {
+	id := ctx.Param("booking_id")
+	if id == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Booking ID not set"))
+		return
+	}
+
+	booking := new(db.Booking)
+	if err := booking.LoadFromDB(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": booking,
+	})
+}
+
+// AdminPutBooking Update the status of a booking.
+//
+//	@Summary		Allows admin update the status of an existing booking.
+//	@Description	Allowed status are `pending`(default), `paid`, `fulfilled`, `cancelled`
+//	@Tags			admin
+//	@Produce		json
+//	@Param			Authorization	header		string					true	"Bearer <token>"
+//	@Param			booking_id		path		string					true	"ID of booking to update"
+//	@Param			status			path		string					true	"New status of the booking"
+//	@Success		200				{object}	map[string]interface{}	"data"
+//	@Failure		400				{object}	map[string]interface{}	"error"
+//	@Failure		500				{object}	map[string]interface{}	"error"
+//	@Router			/admin/bookings/{booking_id}/{status} [put]
 func AdminPutBooking(ctx *gin.Context) {
 	id := ctx.Param("booking_id")
 	status := ctx.Param("status")
 	if id == "" || status == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID or Status not set"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Booking ID or Status not set"))
 		return
 	}
 
-	booking, err := getBookingFromDB(id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	booking := new(db.Booking)
+	if err := booking.LoadFromDB(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	if !validBookingStatus(booking, status) {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "The status is not valid. Likely because the service is not available at the moment",
-		})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New(
+			"The status is not valid. Likely because the service is not available at the moment",
+		))
 		return
 	}
 
-	booking.Status = &status
-	if err := booking.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := booking.UpdateStatus(status); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -160,49 +264,4 @@ func validBookingStatus(booking *db.Booking, status string) bool {
 	}
 
 	return valid
-}
-
-// CustomerGetBooking retrieves booking with given id for a customer.
-func CustomerGetBooking(ctx *gin.Context) {
-	booking_id := ctx.Param("booking_id")
-	if booking_id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID not set"})
-		return
-	}
-
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in context"})
-		return
-	}
-	user := _user.(*db.User)
-
-	for _, booking := range user.Bookings {
-		if strings.Contains(*booking.ID, booking_id) {
-			ctx.JSON(http.StatusOK, gin.H{
-				"data": booking,
-			})
-		}
-	}
-
-	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No booking with given ID for user"})
-}
-
-// AdminGetBooking retrieves booking with given id from the database for an admin.
-func AdminGetBooking(ctx *gin.Context) {
-	booking_id := ctx.Param("booking_id")
-	if booking_id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Booking ID not set"})
-		return
-	}
-
-	booking, err := getBookingFromDB(booking_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": booking,
-	})
 }

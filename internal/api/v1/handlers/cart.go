@@ -3,59 +3,95 @@ package handlers
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
 
-// CustomerPostToCart adds a new item to the database. It is equivalent to adding an item
-// to a cart.
+// NewItem binds to the json body on post request to cart.
+type NewItem struct {
+	// ProductID is the id of the product the item represents.
+	ProductID *string `json:"product_id" binding:"required"`
+	// Quantity is the number of the product for this order.
+	Quantity *int64 `json:"quantity" binding:"required"`
+}
+
+// CustomerGetCart Get all items in a user's cart
+//
+//	@Summary	Allows the customer retrieve all the items in their cart
+//	@Tags		cart
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/cart [get]
+func CustomerGetCart(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
+	items, err := db.GetItemsInCart(*user.ID)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": items,
+	})
+}
+
+// CustomerPostToCart Add a new item to cart
+//
+//	@Summary	Allows the current user to add a new item to the cart
+//	@Tags		cart
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		item			body		NewItem					true	"A new item to add to cart"
+//	@Success	201				{object}	map[string]interface{}	"data"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/cart [post]
 func CustomerPostToCart(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	user := _user.(*db.User)
-	_item := new(db.Item)
-
-	if err := ctx.ShouldBindJSON(_item); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	_newItem := new(NewItem)
+	if err := ctx.ShouldBindJSON(_newItem); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	_item.UserID = user.ID
-	product, err := getProductFromDB(*_item.ProductID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	item := newItem(_newItem)
+	item.UserID = user.ID
+	product := new(db.Product)
+	if err := product.LoadFromDB(*item.ProductID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	// Make sure quantity for item to be carted is not more than product in stock.
-	if err := validateItemQuantity(_item, product); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := validateItemQuantity(item, product); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	// Compute amount for item
-	amount := product.Price.Mul(decimal.NewFromInt(int64(*_item.Quantity)))
-	_item.Amount = &amount
+	amount := product.Price.Mul(decimal.NewFromInt(*item.Quantity))
+	item.Amount = &amount
 
-	if err := _item.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item already exists for this user"})
-		return
-	} else if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
-	item, err := getItemFromDB(*_item.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := item.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -63,6 +99,15 @@ func CustomerPostToCart(ctx *gin.Context) {
 		"msg":  "Item created successfully",
 		"data": item,
 	})
+}
+
+// newItem fills up a new db.Item object with bound fields from NewItem object.
+func newItem(newItem *NewItem) *db.Item {
+	item := new(db.Item)
+	item.Quantity = newItem.Quantity
+	item.ProductID = newItem.ProductID
+
+	return item
 }
 
 // validateItemQuantity verifies the quantity for the item to be added is valid.
@@ -81,42 +126,33 @@ func validateItemQuantity(item *db.Item, product *db.Product) error {
 	return nil
 }
 
-// getItemFromDB retrieves an item from the database based on the id.
-// It returns an error if any occured.
-func getItemFromDB(id string) (*db.Item, error) {
-	item := new(db.Item)
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(item, "id = ?", id).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("Item not found in database")
-	} else if err != nil {
-		return nil, err
-	}
-
-	return item, nil
-}
-
-// CustomerDeleteFromCart deletes an item with given id from the database.
+// CustomerDeleteFromCart Deletes an item with given id from the database.
+//
+//	@Summary	Allows the current user delete an item from the cart.
+//	@Tags		cart
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		item_id			path		string					true	"The ID of the item to delete"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/cart/{item_id} [delete]
 func CustomerDeleteFromCart(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	user := _user.(*db.User)
 	id := ctx.Param("item_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Item ID missing"})
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Item ID missing"))
 		return
 	}
 
-	// Will delete only if the item is in the cart i.e order_id is NULL.
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM items WHERE id = ? AND user_id = ? AND order_id is NULL`, id, *user.ID).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteItem(*user.ID, id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -125,43 +161,26 @@ func CustomerDeleteFromCart(ctx *gin.Context) {
 	})
 }
 
-// CustomerGetCart retrieves a slice of all items in a user's cart i.e without an order_id.
-func CustomerGetCart(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
-	user := _user.(*db.User)
-	var items []db.Item
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at asc").Where("user_id = ?", *user.ID).Where("order_id is NULL").Find(&items).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": items,
-	})
-}
-
-// CustomerClearCart clears all items in a user's cart.
+// CustomerClearCart Clear the user's cart
+//
+//	@Summary	Allows the current user all items in their cart.
+//	@Tags		cart
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/cart [delete]
 func CustomerClearCart(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	user := _user.(*db.User)
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM items WHERE user_id = ? AND order_id is NULL`, *user.ID).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.ClearCart(*user.ID); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
