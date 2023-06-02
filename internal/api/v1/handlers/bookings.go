@@ -79,6 +79,7 @@ func CustomerGetBooking(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{
 				"data": booking,
 			})
+			return
 		}
 	}
 
