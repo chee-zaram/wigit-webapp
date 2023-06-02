@@ -58,7 +58,6 @@ func CustomerGetBookings(ctx *gin.Context) {
 //	@Param		booking_id		path		string					true	"ID of the booking to get"
 //	@Success	200				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
-//	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/bookings/{booking_id} [get]
 func CustomerGetBooking(ctx *gin.Context) {
 	booking_id := ctx.Param("booking_id")
