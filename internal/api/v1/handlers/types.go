@@ -53,5 +53,5 @@ var (
 
 // AbortCtx ends the current context with status.
 func AbortCtx(ctx *gin.Context, responseCode int, err error) {
-	ctx.AbortWithStatusJSON(responseCode, err.Error())
+	ctx.AbortWithStatusJSON(responseCode, gin.H{"error": err.Error()})
 }
