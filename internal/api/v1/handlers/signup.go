@@ -26,6 +26,10 @@ type SignUpUser struct {
 
 // validateSignUpUser validates all fields in the post request.
 func (user *SignUpUser) validate() (int, error) {
+	if user == nil {
+		return http.StatusInternalServerError, db.ErrNilPointer
+	}
+
 	dbUser := new(db.User)
 	if code, err := dbUser.LoadByEmail(*user.Email); errors.Is(err, gorm.ErrRecordNotFound) {
 	} else if dbUser.Email != nil {
