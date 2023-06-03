@@ -2,7 +2,6 @@
 
 import ProductCard from './components/ProductCard';
 import { Product } from './interfaces/product';
-import { addToCart } from '@app/products/components/ProductCard';
 
 const url = "https://cheezaram.tech/api/v1/products";
 
@@ -23,15 +22,15 @@ async function getProducts(): Promise<any> {
 }
 
 export default async function Products() {
-  const data = await getProducts();
+  const product_obj = await getProducts();
   return (
     <main>
       <div className='flex flex-col items-center justify-center'>
         <h1>Our wigs</h1>
         <p>Nothing but class....</p>
-        { data? 
+        { product_obj? 
         <div className="lg:max-w-4xl flex flex-wrap justify-center">
-          { data && data.map((item: Product) => (
+          { product_obj && product_obj.map((item: Product) => (
             <ProductCard { ...item } />
           ))}
         </div> :
