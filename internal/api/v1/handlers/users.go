@@ -27,7 +27,7 @@ type UpdateUser struct {
 //	@Success	200				{object}	map[string]interface{}	"msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
-//	@Router		/users/{user_id} [delete]
+//	@Router		/users/{email} [delete]
 func CustomerDeleteUser(ctx *gin.Context) {
 	user, _, err := validateUserParams(ctx)
 	if err != nil {

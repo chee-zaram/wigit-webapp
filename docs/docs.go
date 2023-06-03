@@ -2028,7 +2028,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/users/{email}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -2056,6 +2056,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/handlers.UpdateUser"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "User email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2081,9 +2088,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/users/{user_id}": {
+            },
             "delete": {
                 "produces": [
                     "application/json"

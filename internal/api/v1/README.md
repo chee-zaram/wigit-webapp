@@ -238,14 +238,14 @@ where applicable.
     On success, it will return a <b>200</b> response code with a <b>msg</b> string in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
-    <li><h4>/users/{user_id} *</h4>
-    Update the information for the current user with user_id.
+    <li><h4>/users/{email} *</h4>
+    Update the information for the current user with email.
     <ul>
       <li><strong>email</strong>: This is the user's existing email or new email. Between 5 to 45 characters.</li>
       <li><strong>first_name</strong>: This is the existing or new first name of the user. Not empty and not more than 45 characters.</li>
       <li><strong>last_name</strong>: This is the existing or new last_name of the user. Not empty and not more than 45 characters.</li>
       <li><strong>address</strong>: This is the existing or new address of the user. Not empty and not more than 255 characters.</li>
-      <li><strong>phone</strong>: This is the existing or new user's phone number. Not empty and not more than 11 characters.</li>
+      <li><strong>phone</strong>: This is the existing or new user's phone number. Not empty and between 8 and 11 characters.</li>
     </ul>
     On success, it will return a <b>200</b> response code with a <b>msg</b> string and a <b>data</b> object in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
