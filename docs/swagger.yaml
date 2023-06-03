@@ -89,6 +89,23 @@ definitions:
     - name
     - price
     type: object
+  handlers.NewSlot:
+    properties:
+      date_string:
+        description: DateString is the date as a string. Format `Wednesday, 06 Jan
+          1999`
+        type: string
+      is_free:
+        description: IsFree is a boolean that says if the slot is free or not.
+        type: boolean
+      time_string:
+        description: TimeString is the time as a string. Format `04:00 AM`
+        type: string
+    required:
+    - date_string
+    - is_free
+    - time_string
+    type: object
   handlers.PostEmail:
     properties:
       email:
@@ -144,7 +161,7 @@ definitions:
         type: string
       email:
         maxLength: 45
-        minLength: 3
+        minLength: 5
         type: string
       first_name:
         maxLength: 45
@@ -205,7 +222,7 @@ info:
   contact:
     email: ecokeke21@gmail.com
     name: API Support
-    url: contact
+    url: /contact
 paths:
   /admin/bookings:
     get:
@@ -228,7 +245,7 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Allows admin retrieves all bookings from the database
+      summary: Allows admin retrieve all bookings from the database
       tags:
       - admin
   /admin/bookings/{booking_id}:
@@ -664,6 +681,79 @@ paths:
             additionalProperties: true
             type: object
       summary: Allows the admin update the service with given service_id
+      tags:
+      - admin
+  /admin/slots:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Add product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.NewSlot'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: data, msg
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Allows the admin add slots to the database
+      tags:
+      - admin
+  /admin/slots/{slot_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Slot ID to delete
+        in: path
+        name: slot_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: msg
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Allows admins delete a slot from the database
       tags:
       - admin
   /admin/users/{email}/orders_bookings:
@@ -1323,6 +1413,24 @@ paths:
       summary: Add a new user account
       tags:
       - signup
+  /slots:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieves a list of all slot objects
+      tags:
+      - slots
   /super_admin/users/{email}:
     delete:
       parameters:

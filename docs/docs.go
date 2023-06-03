@@ -12,7 +12,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "url": "contact",
+            "url": "/contact",
             "email": "ecokeke21@gmail.com"
         },
         "version": "{{.Version}}"
@@ -28,7 +28,7 @@ const docTemplate = `{
                 "tags": [
                     "admin"
                 ],
-                "summary": "Allows admin retrieves all bookings from the database",
+                "summary": "Allows admin retrieve all bookings from the database",
                 "parameters": [
                     {
                         "type": "string",
@@ -665,6 +665,114 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Service ID to delete",
                         "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "msg",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/slots": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Allows the admin add slots to the database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Add product",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.NewSlot"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "data, msg",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/slots/{slot_id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Allows admins delete a slot from the database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Slot ID to delete",
+                        "name": "slot_id",
                         "in": "path",
                         "required": true
                     }
@@ -1666,6 +1774,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/slots": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slots"
+                ],
+                "summary": "Retrieves a list of all slot objects",
+                "responses": {
+                    "200": {
+                        "description": "data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/super_admin/users/admins": {
             "get": {
                 "produces": [
@@ -2116,6 +2251,28 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.NewSlot": {
+            "type": "object",
+            "required": [
+                "date_string",
+                "is_free",
+                "time_string"
+            ],
+            "properties": {
+                "date_string": {
+                    "description": "DateString is the date as a string. Format ` + "`" + `Wednesday, 06 Jan 1999` + "`" + `",
+                    "type": "string"
+                },
+                "is_free": {
+                    "description": "IsFree is a boolean that says if the slot is free or not.",
+                    "type": "boolean"
+                },
+                "time_string": {
+                    "description": "TimeString is the time as a string. Format ` + "`" + `04:00 AM` + "`" + `",
+                    "type": "string"
+                }
+            }
+        },
         "handlers.PostEmail": {
             "type": "object",
             "required": [
@@ -2199,7 +2356,7 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "maxLength": 45,
-                    "minLength": 3
+                    "minLength": 5
                 },
                 "first_name": {
                     "type": "string",
