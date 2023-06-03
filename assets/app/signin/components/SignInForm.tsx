@@ -16,7 +16,8 @@ const signInForm = () => {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    const { jwt, setJwt} = useSignInContext();const router = useRouter()
+    const { setJwt } = useSignInContext();
+    const router = useRouter()
     ;
     const url = "https://cheezaram.tech/api/v1/signin";
 
@@ -45,8 +46,8 @@ const signInForm = () => {
     const handleResetPassword = async () => {
         //event.preventDefault();
         await axios.post("https://cheezaram.tech/api/v1/reset_password", { email });
-        alert("A password reset link has been sent to your email");
         router.push('/');
+        alert("A password reset link has been sent to your email");
     };
 
     return (

@@ -2,6 +2,7 @@
 
 import ProductCard from './components/ProductCard';
 import { Product } from './interfaces/product';
+import { addToCart } from '@app/products/components/ProductCard';
 
 const url = "https://cheezaram.tech/api/v1/products";
 

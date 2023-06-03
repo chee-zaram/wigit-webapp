@@ -24,7 +24,7 @@ const Cart = () => {
             <p>Sha pay and checkout</p>
             <p>{jwt}</p>
             { cart && cart.map((item: any) => (
-                <p>{item.name}</p>
+                <p>{item.amount}</p>
             )) }
         </main>
     )
