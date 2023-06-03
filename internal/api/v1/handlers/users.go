@@ -53,10 +53,11 @@ func CustomerDeleteUser(ctx *gin.Context) {
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
 //	@Param		user			body		UpdateUser				true	"User information"
+//	@Param		email			path		string					true	"User email"
 //	@Success	200				{object}	map[string]interface{}	"data,msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
-//	@Router		/users [put]
+//	@Router		/users/{email} [put]
 func CustomerPutUser(ctx *gin.Context) {
 	user, newUser, err := validateUserParams(ctx)
 	if err != nil {

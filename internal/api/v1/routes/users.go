@@ -8,7 +8,7 @@ import (
 // UsersRoutes adds adds new routes for deleting user and updating user information.
 func UsersRoutes(customer *gin.RouterGroup) {
 	customer.DELETE("/users/:email", handlers.CustomerDeleteUser)
-	customer.PUT("/users/:user_id", handlers.CustomerPutUser)
+	customer.PUT("/users/:email", handlers.CustomerPutUser)
 }
 
 // AdminUsersRoutes adds new routes for retrieving a user's order info.
