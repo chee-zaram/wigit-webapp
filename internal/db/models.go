@@ -30,9 +30,9 @@ type User struct {
 
 	// Password is the password entered by the user during signup or signin.
 	// It is not stored in the database.
-	Password *string `gorm:"-" json:"password"`
+	Password *string `gorm:"-" json:"-"`
 
-	RepeatPassword *string `gorm:"-" json:"repeat_password"`
+	RepeatPassword *string `gorm:"-" json:"-"`
 
 	// ResetToken is used to validate the user to allow them reset their password.
 	ResetToken string `gorm:"type:varchar(16)" json:"-" binding:"-"`
