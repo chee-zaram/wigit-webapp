@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
 
 // UpdateUser binds to the request sent to update a user's information.
@@ -137,21 +136,6 @@ func AdminGetUserOrdersBookings(ctx *gin.Context) {
 			"bookings": user.Bookings,
 		},
 	})
-}
-
-// getUserFromDB gets the user with `email` from the database.
-func getUserFromDB(email string) (*db.User, int, error) {
-	dbUser := new(db.User)
-
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("email = ?", email).Preload("Orders.Items").Preload("Bookings.Slot").First(dbUser).Error
-	}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, http.StatusBadGateway, ErrInvalidUser
-	} else if err != nil {
-		return nil, http.StatusInternalServerError, ErrInternalServer
-	}
-
-	return dbUser, http.StatusOK, nil
 }
 
 // SuperAdminUpdateRole Update a user role.

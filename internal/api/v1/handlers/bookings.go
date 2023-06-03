@@ -148,7 +148,7 @@ func newBooking(newBooking *NewBooking) *db.Booking {
 
 // AdminGetBookings	Get all database bookings
 //
-//	@Summary	Allows admin retrieves all bookings from the database
+//	@Summary	Allows admin retrieve all bookings from the database
 //	@Tags		admin
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
