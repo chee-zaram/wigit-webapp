@@ -1,22 +1,34 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/internal/db"
-	"gorm.io/gorm"
 )
 
-// GetSlots retrieves a list of all available slots.
-func GetSlots(ctx *gin.Context) {
-	var slots []db.Slot
+// NewSlot binds to the request json body during a post to /slots
+type NewSlot struct {
+	// DateString is the date as a string. Format `Wednesday, 06 Jan 1999`
+	DateString *string `json:"date_string" binding:"required"`
+	// TimeString is the time as a string. Format `04:00 AM`
+	TimeString *string `json:"time_string" binding:"required"`
+	// IsFree is a boolean that says if the slot is free or not.
+	IsFree *bool `json:"is_free" binding:"required"`
+}
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("is_free = ?", true).Find(&slots).Error
-	}); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
+// GetSlots Gets a list of all available slots
+//
+//	@Summary	Retrieves a list of all slot objects
+//	@Tags		slots
+//	@Produce	json
+//	@Success	200	{object}	map[string]interface{}	"data"
+//	@Failure	500	{object}	map[string]interface{}	"error"
+//	@Router		/slots [get]
+func GetSlots(ctx *gin.Context) {
+	slots, err := db.AllSlots()
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -25,28 +37,29 @@ func GetSlots(ctx *gin.Context) {
 	})
 }
 
-// AdminPostSlots adds a new slot to the database.
+// AdminPostSlots Add a new slot
+//
+//	@Summary	Allows the admin add slots to the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		product			body		NewSlot					true	"Add product"
+//	@Success	201				{object}	map[string]interface{}	"data, msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/slots [post]
 func AdminPostSlots(ctx *gin.Context) {
-	_slot := new(db.Slot)
+	_slot := new(NewSlot)
 
 	if err := ctx.ShouldBindJSON(_slot); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := validatePostSlotsData(_slot); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := _slot.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": ErrInternalServer.Error()})
-		return
-	}
-
-	slot, err := getSlotFromDB(*_slot.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	slot := newSlot(_slot)
+	if err := slot.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -56,57 +69,41 @@ func AdminPostSlots(ctx *gin.Context) {
 	})
 }
 
-// validatePostSlotsData checks that the required fields are provided.
-func validatePostSlotsData(slot *db.Slot) error {
-	if slot.DateString == nil || *slot.DateString == "" {
-		return errors.New("DateString must be provided")
-	}
-
-	if slot.TimeString == nil || *slot.TimeString == "" {
-		return errors.New("TimeString must be provided")
-	}
-
-	return nil
-}
-
-// getSlotFromDB retrieves a slot with id from the database.
-func getSlotFromDB(id string) (*db.Slot, error) {
+// newSlot fills a new db.Slot object with fields from NewSlot.
+func newSlot(newSlot *NewSlot) *db.Slot {
 	slot := new(db.Slot)
+	slot.DateString = newSlot.DateString
+	slot.TimeString = newSlot.TimeString
+	slot.IsFree = newSlot.IsFree
 
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(slot, "id = ?", id).Error
-	}); err != nil {
-		return nil, ErrInternalServer
-	}
-
-	return slot, nil
+	return slot
 }
 
-// AdminDeleteSlots handles deletion of a slot by an admin.
+// AdminDeleteSlots Deletes a slot
+//
+//	@Summary	Allows admins delete a slot from the database
+//	@Tags		admin
+//	@Accept		json
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		slot_id			path		string					true	"Slot ID to delete"
+//	@Success	200				{object}	map[string]interface{}	"msg"
+//	@Failure	400				{object}	map[string]interface{}	"error"
+//	@Failure	500				{object}	map[string]interface{}	"error"
+//	@Router		/admin/slots/{slot_id} [delete]
 func AdminDeleteSlots(ctx *gin.Context) {
 	id := ctx.Param("slot_id")
 	if id == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": ErrInvalidSlotID.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidSlotID)
 		return
 	}
 
-	if err := deleteSlotFromDB(id); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := db.DeleteSlot(id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "Slot deleted successfully",
 	})
-}
-
-// deleteSlotFromDB deletes a slot with id from database.
-func deleteSlotFromDB(id string) error {
-	if err := db.Connector.Query(func(tx *gorm.DB) error {
-		return tx.Exec(`DELETE FROM slots WHERE id = ?`, id).Error
-	}); err != nil {
-		return err
-	}
-
-	return nil
 }
