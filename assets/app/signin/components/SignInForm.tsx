@@ -41,7 +41,14 @@ const signInForm = () => {
         router.push('/');
        //await prod();await axios.post(url + 'signin', user);
        //await prod();
-    }
+    };
+    const handleResetPassword = async () => {
+        //event.preventDefault();
+        await axios.post("https://cheezaram.tech/api/v1/reset_password", { email });
+        alert("A password reset link has been sent to your email");
+        router.push('/');
+    };
+
     return (
         <form onSubmit={ handleAxios } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>
             <h1>Sign In</h1>
@@ -62,6 +69,8 @@ const signInForm = () => {
                 required={ true }
             />
             <Button type='submit' text='sign in' />
+            <p>Forgot password? <span className='underline pointer text-accent font-extrabold' onClick={handleResetPassword}>reset it here</span></p>
+
         </form>
     )
 };
