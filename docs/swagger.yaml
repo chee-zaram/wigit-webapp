@@ -205,7 +205,7 @@ info:
   contact:
     email: ecokeke21@gmail.com
     name: API Support
-    url: www.cheezaram.tech/contact
+    url: contact
 paths:
   /admin/bookings:
     get:

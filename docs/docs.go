@@ -12,7 +12,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "url": "www.cheezaram.tech/contact",
+            "url": "contact",
             "email": "ecokeke21@gmail.com"
         },
         "version": "{{.Version}}"
