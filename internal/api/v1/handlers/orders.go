@@ -13,8 +13,21 @@ import (
 type NewOrder struct {
 	// DeliveryMethod is the method in which the order should be deliver.
 	//
-	// Allowed values are `pending`(default), `paid`, `shipped`, `delivered`, `cancelled`.
+	// Allowed values are `pickup`, `delivery`.
 	DeliveryMethod *string `json:"delivery_method" binding:"required"`
+}
+
+// validate validates the values of the fields in the NewOrder body.
+func (order *NewOrder) validate() error {
+	if order == nil {
+		return db.ErrNilPointer
+	}
+
+	if *order.DeliveryMethod != "pickup" && *order.DeliveryMethod != "delivery" {
+		return errors.New("Invalid delivery option")
+	}
+
+	return nil
 }
 
 // allowedOrderStatus is a slice of status allowed to be set for an order.
@@ -146,14 +159,14 @@ func CustomerPostOrders(ctx *gin.Context) {
 		return
 	}
 
-	items, err := db.GetItemsInCartForOrder(*user.ID)
-	if err != nil || items == nil {
-		AbortCtx(ctx, http.StatusInternalServerError, err)
+	if err := _order.validate(); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if *_order.DeliveryMethod != "pickup" && *_order.DeliveryMethod != "delivery" {
-		AbortCtx(ctx, http.StatusBadRequest, errors.New("Invalid delivery option"))
+	items, err := db.GetItemsInCartForOrder(*user.ID)
+	if err != nil || items == nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
