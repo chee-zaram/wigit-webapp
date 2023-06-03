@@ -16,7 +16,6 @@ import (
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 	docs "github.com/wigit-gh/webapp/docs"
-	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/api/v1/routes"
 	"github.com/wigit-gh/webapp/internal/config"
@@ -63,7 +62,11 @@ func SetGINRouterV1(conf config.Config) *gin.Engine {
 	addRoutes(api)
 
 	// Create the admin group and add auth middlewares
-	admin := api.Group("/admin", handlers.JWTAuthentication, handlers.AdminAuthorization)
+	admin := api.Group(
+		"/admin",
+		middlewares.JWTAuthentication,
+		middlewares.AdminAuthorization,
+	)
 
 	// Add all admin routes
 	addAdminRoutes(admin)
@@ -71,13 +74,15 @@ func SetGINRouterV1(conf config.Config) *gin.Engine {
 	// Create the super admin group and add auth middlewares
 	superAdmin := api.Group(
 		"/super_admin",
-		handlers.JWTAuthentication,
-		handlers.SuperAdminAuthorization,
+		middlewares.JWTAuthentication,
+		middlewares.SuperAdminAuthorization,
 	)
 	addSuperAdminRoutes(superAdmin)
 
 	// Add only authentication middleware for all other users
-	customer := api.Group("/", handlers.JWTAuthentication)
+	customer := api.Group("/",
+		middlewares.JWTAuthentication,
+	)
 	addCustomerRoutes(customer)
 
 	// Specify route for swagger

@@ -1,4 +1,4 @@
-package handlers
+package middlewares
 
 import (
 	"encoding/json"
@@ -10,7 +10,6 @@ import (
 
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
 )
 
@@ -19,7 +18,7 @@ func JWTAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		ctx.Header(`WWW-Authenticate`, `Bearer realm="Restricted"`)
-		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Authorization header missing"))
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
 		return
 	}
 
@@ -28,7 +27,7 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Invalid Authorization header format"`,
 		))
-		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Invalid Authorization header format"))
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
 		return
 	}
 
@@ -36,7 +35,7 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Authorization value does not contain Bearer"`,
 		))
-		AbortCtx(ctx, http.StatusUnauthorized, errors.New("Authorization value does not contain Bearer"))
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization value does not contain Bearer"})
 		return
 	}
 
@@ -45,13 +44,13 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="%s"`, err.Error(),
 		))
-		AbortCtx(ctx, http.StatusUnauthorized, err)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := new(db.User)
 	if err := user.LoadByID(userID); err != nil {
-		AbortCtx(ctx, http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -82,7 +81,7 @@ func validateJWTToken(_token string) (string, error) {
 // parseToken takes a token as a string and verify the signature.
 // It returns the parsed token as a pointer to a jwt.Token object.
 func parseToken(_token string) (*jwt.Token, error) {
-	token, err := jwt.Parse([]byte(_token), middlewares.JWTVerifier)
+	token, err := jwt.Parse([]byte(_token), JWTVerifier)
 	if err != nil {
 		return nil, errors.New("failed to parse JWT token")
 	}
@@ -100,12 +99,12 @@ func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 	return claims, nil
 }
 
-// Authorization validates if the user has admin privileges or not.
+// AdminAuthorization validates if the user has admin privileges or not.
 func AdminAuthorization(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
 	if !exists || !ok {
-		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in ctx"})
 		return
 	}
 
@@ -114,7 +113,7 @@ func AdminAuthorization(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="admin super_admin", error="insufficient_scope", error_description="%s"`, err,
 		))
-		AbortCtx(ctx, http.StatusForbidden, errors.New(err))
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
 		return
 	}
 
@@ -126,7 +125,7 @@ func SuperAdminAuthorization(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
 	if !exists || !ok {
-		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in ctx"})
 		return
 	}
 
@@ -135,7 +134,7 @@ func SuperAdminAuthorization(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="super_admin", error="insufficient_scope", error_description="%s"`, err,
 		))
-		AbortCtx(ctx, http.StatusForbidden, errors.New(err))
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err})
 		return
 	}
 
