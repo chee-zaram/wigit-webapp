@@ -2181,7 +2181,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "delivery_method": {
-                    "description": "DeliveryMethod is the method in which the order should be deliver.\n\nAllowed values are ` + "`" + `pending` + "`" + `(default), ` + "`" + `paid` + "`" + `, ` + "`" + `shipped` + "`" + `, ` + "`" + `delivered` + "`" + `, ` + "`" + `cancelled` + "`" + `.",
+                    "description": "DeliveryMethod is the method in which the order should be deliver.\n\nAllowed values are ` + "`" + `pickup` + "`" + `, ` + "`" + `delivery` + "`" + `.",
                     "type": "string"
                 }
             }

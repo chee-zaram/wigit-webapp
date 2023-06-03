@@ -30,7 +30,7 @@ definitions:
         description: |-
           DeliveryMethod is the method in which the order should be deliver.
 
-          Allowed values are `pending`(default), `paid`, `shipped`, `delivered`, `cancelled`.
+          Allowed values are `pickup`, `delivery`.
         type: string
     required:
     - delivery_method
