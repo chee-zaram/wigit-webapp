@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"crypto/rand"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // SignUpUser binds to a user during signup.
@@ -23,20 +25,20 @@ type SignUpUser struct {
 }
 
 // validateSignUpUser validates all fields in the post request.
-func (user *SignUpUser) validate() error {
+func (user *SignUpUser) validate() (int, error) {
 	dbUser := new(db.User)
-	if code, err := dbUser.LoadByEmail(*user.Email); code == http.StatusBadRequest {
+	if code, err := dbUser.LoadByEmail(*user.Email); errors.Is(err, gorm.ErrRecordNotFound) {
 	} else if dbUser.Email != nil {
-		return ErrDuplicateUser
+		return code, ErrDuplicateUser
 	} else if err != nil {
-		return err
+		return code, err
 	}
 
 	if *user.Password != *user.RepeatPassword {
-		return ErrPassMismatch
+		return http.StatusBadRequest, ErrPassMismatch
 	}
 
-	return nil
+	return http.StatusAccepted, nil
 }
 
 // SignUp		Sign up a user
@@ -53,23 +55,23 @@ func (user *SignUpUser) validate() error {
 func SignUp(ctx *gin.Context) {
 	signUpUser := new(SignUpUser)
 	if err := ctx.ShouldBind(signUpUser); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := signUpUser.validate(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if code, err := signUpUser.validate(); err != nil {
+		AbortCtx(ctx, code, err)
 		return
 	}
 
 	user, code, err := newUser(signUpUser)
 	if err != nil {
-		ctx.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
+		AbortCtx(ctx, code, err)
 		return
 	}
 
 	if err := user.SaveToDB(); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -99,7 +101,7 @@ func newUser(signUpUser *SignUpUser) (*db.User, int, error) {
 	user.HashedPassword = passHash
 	user.Salt = salt
 
-	return user, http.StatusCreated, nil
+	return user, http.StatusAccepted, nil
 }
 
 // hashPassword creates a hash of the password plus a random salt.
