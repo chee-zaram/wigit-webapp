@@ -15,7 +15,7 @@ This executable runs the WIG!T Web Application backend.
 
 Usage:
 
-wwapp [arguments]
+wwapp_be [arguments]
 
 Supported arguments:
 
