@@ -9,7 +9,7 @@ import axios from 'axios';
 const signin = () => {
     // check if user is signed in
     const router = useRouter();
-    const { jwt, setJwt } = useSignInContext();
+    const { jwt } = useSignInContext();
     
     // const { data, error } = useQuery({ queryKey: ['signInSubmit'], queryFn: handleAxios})
     // console.log(data);

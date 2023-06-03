@@ -18,6 +18,7 @@ export const SignInContext = createContext<SignInContextProps>({
 
 export const SignInContextProvider = ( { children } : { children: React.ReactNode}) => {
     const [ jwt, setJwt ] = useState('')
+
      return (
         <SignInContext.Provider value={{jwt, setJwt}}>
             { children }

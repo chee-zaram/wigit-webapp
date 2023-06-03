@@ -6,14 +6,14 @@ import { useSignInContext } from '../SignInContextProvider';
 import axios from 'axios';
 
 let data: null | [{name: string;}] = null;
-const url = 'https://13cecq-8000.csb.app/cart';
+const url = 'https://cheezaram.tech/api/v1/cart';
 
 const Cart = () => {
     const [cart, setCart] = useState<any> ([]);
     const { jwt} = useSignInContext();
 
     useEffect(() => {
-    fetch(url, {headers: {'Authorization': 'Bearer' + jwt}})
+    fetch(url, {headers: {'Authorization': 'Bearer ' + jwt}})
     .then(res => res.json())
     .then(data => setCart(data.data))
     }, [])

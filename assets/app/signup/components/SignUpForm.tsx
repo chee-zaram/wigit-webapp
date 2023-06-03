@@ -8,6 +8,8 @@ import Input from '@components/Input';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+export const metadata = { title: 'sign up wigit' };
+
 const SignUpForm = () => {
     
     const [ email, setEmail ] = useState('');

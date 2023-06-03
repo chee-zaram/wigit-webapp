@@ -7,7 +7,9 @@ import Button from '@components/Button';
 import Input from '@components/Input';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useSignInContext } from '../../SignInContextProvider';;
+import { useSignInContext } from '../../SignInContextProvider';
+
+export const metadata = { title: 'sign in wigit' };
 
 const signInForm = () => {
     
@@ -16,7 +18,7 @@ const signInForm = () => {
 
     const { jwt, setJwt} = useSignInContext();const router = useRouter()
     ;
-    const url = "https://cheezaram.tech/api/v1/";
+    const url = "https://cheezaram.tech/api/v1/signin";
 
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,8 +36,7 @@ const signInForm = () => {
         event.preventDefault();
         const user = { email, password };
         
-        const { data } = await axios.post("https://cheezaram.tech/api/v1/signin", user);
-        console.log(user);
+        const { data } = await axios.post(url, user);
         setJwt(data.jwt);
         router.push('/');
        //await prod();await axios.post(url + 'signin', user);
