@@ -1,9 +1,12 @@
 # API V1
 
-This is the first version of the backend API for the WIGIT Web Application.
+This is the first version of the backend API for the **WIG!T Web Application**.
+You can view the
+[Swagger docs](https://cheezaram.tech/api/v1/swagger/index.html) to see more
+details and test out the routes.
 
 The following are endpoints implemented and the data needed in the JSON payload
-where applicable.
+where applicable, as well as response codes and types.
 
 > NB: All routes should carry the prefix `/api/v1`.
 
@@ -249,6 +252,9 @@ where applicable.
     </ul>
     On success, it will return a <b>200</b> response code with a <b>msg</b> string and a <b>data</b> object in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
+    </li>
+    <li><h4>/cart/{item_id}/{quantity} *</h4>
+    Update the quantity of the item with item_id in cart to quantity given in path.
     </li>
     <li><h4>/admin/products/{product_id} **</h4>
     Update the information for a given product with product_id.
