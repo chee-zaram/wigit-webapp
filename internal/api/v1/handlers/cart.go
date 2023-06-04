@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
@@ -124,6 +125,69 @@ func validateItemQuantity(item *db.Item, product *db.Product) error {
 	}
 
 	return nil
+}
+
+// getItemAmount Computes amount for an item.
+func getItemAmount(product *db.Product, quantity int64) *decimal.Decimal {
+	amount := product.Price.Mul(decimal.NewFromInt(quantity))
+	return &amount
+}
+
+// CustomerPutQuantity Changes the quantity of an item in the cart
+//
+//	@Summary	Allows a customer edit the quantity of an item in the cart
+//	@Tags		cart
+//	@Produce	json
+//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		item_id			path		string					true	"ID of the item"
+//	@Param		quantity		path		string					true	"New item quantity"
+//	@Success	200				{object}	map[string]interface{}	"msg,data"
+//	@Success	400				{object}	map[string]interface{}	"error"
+//	@Success	500				{object}	map[string]interface{}	"error"
+//	@Router		/cart/{item_id}/{quantity} [put]
+func CustomerPutQuantity(ctx *gin.Context) {
+	item_id := ctx.Param("item_id")
+	if item_id == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Invalid Item ID not set"))
+		return
+	}
+
+	_quantity := ctx.Param("quantity")
+	if _quantity == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Invalid quantity"))
+		return
+	}
+
+	quantity, err := strconv.Atoi(_quantity)
+	if err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Quantity must be an integer"))
+		return
+	}
+
+	item := new(db.Item)
+	if err := item.LoadFromDB(item_id); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	quantity64 := int64(quantity)
+	item.Quantity = &quantity64
+	if err := validateItemQuantity(item, &item.Product); err != nil {
+		AbortCtx(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	item.Amount = getItemAmount(&item.Product, *item.Quantity)
+
+	if err := item.Reload(); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "Item updated successfully",
+		"data": item,
+	})
 }
 
 // CustomerDeleteFromCart Deletes an item with given id from the database.

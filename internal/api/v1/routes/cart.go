@@ -11,4 +11,5 @@ func CartRoutes(customer *gin.RouterGroup) {
 	customer.DELETE("/cart/:item_id", handlers.CustomerDeleteFromCart)
 	customer.DELETE("/cart", handlers.CustomerClearCart)
 	customer.GET("/cart", handlers.CustomerGetCart)
+	customer.PUT("/cart/:item_id/:quantity", handlers.CustomerPutQuantity)
 }

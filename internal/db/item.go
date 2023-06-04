@@ -30,7 +30,7 @@ func (item *Item) LoadFromDB(id string) error {
 	}
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.First(item, "id = ?", id).Error
+		return tx.Preload("Product").First(item, "id = ?", id).Error
 	}); err != nil {
 		return err
 	}
