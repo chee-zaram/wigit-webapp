@@ -87,9 +87,12 @@ func CustomerPostToCart(ctx *gin.Context) {
 		return
 	}
 
-	// Compute amount for item
-	amount := product.Price.Mul(decimal.NewFromInt(*item.Quantity))
-	item.Amount = &amount
+	item.Amount = getItemAmount(product, *item.Quantity)
+
+	if item.IsDuplicate() {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Item already in cart"))
+		return
+	}
 
 	if err := item.Reload(); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
@@ -115,13 +118,15 @@ func newItem(newItem *NewItem) *db.Item {
 func validateItemQuantity(item *db.Item, product *db.Product) error {
 	if item.Quantity == nil {
 		return errors.New("Item quantity must be provided")
-	} else if *item.Quantity > *product.Stock {
+	}
+
+	if *item.Quantity > *product.Stock {
 		if *product.Stock == 0 {
 			return errors.New("Cannot add to cart. Product is out of stock")
 		}
 		*item.Quantity = *product.Stock
-	} else if *item.Quantity == 0 {
-		return errors.New("Item quantity cannot be 0")
+	} else if *item.Quantity < 1 {
+		return errors.New("Item quantity cannot be less than 1")
 	}
 
 	return nil

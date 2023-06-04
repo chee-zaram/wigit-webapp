@@ -55,6 +55,20 @@ func (item *Item) Reload() error {
 	return nil
 }
 
+// IsDuplicate says if the item to be added to cart is a duplicate.
+func (item *Item) IsDuplicate() bool {
+	if err := Connector.Query(func(tx *gorm.DB) error {
+		return tx.Where("product_id = ?", *item.ProductID).
+			Where("user_id = ?", *item.UserID).
+			Where("order_id IS NULL").
+			First(&Item{}).Error
+	}); err != nil || errors.Is(err, gorm.ErrRecordNotFound) {
+		return false
+	}
+
+	return true
+}
+
 // TrendingItems returns top ten trending products in the last 7 days by ids.
 func TrendingItems() ([]Item, error) {
 	var items []Item
