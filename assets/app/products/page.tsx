@@ -32,7 +32,9 @@ export default async function Products() {
         { product_obj? 
         <div className="lg:max-w-4xl flex flex-wrap justify-center">
           { product_obj && product_obj.map((item: Product) => (
-            <ProductCard { ...item } />
+            <div key={product_obj.id}>
+              <ProductCard { ...item } />
+            </div>
           ))}
         </div> :
         <p>no products</p>

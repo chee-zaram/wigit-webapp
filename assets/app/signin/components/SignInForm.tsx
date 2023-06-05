@@ -17,8 +17,7 @@ const signInForm = () => {
     const [ password, setPassword ] = useState('');
 
     const { setJwt } = useSignInContext();
-    const router = useRouter()
-    ;
+    const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signin";
 
 
