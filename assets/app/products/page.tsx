@@ -23,6 +23,7 @@ async function getProducts(): Promise<any> {
 
 export default async function Products() {
   const product_obj = await getProducts();
+  
   return (
     <main>
       <div className='flex flex-col items-center justify-center'>
