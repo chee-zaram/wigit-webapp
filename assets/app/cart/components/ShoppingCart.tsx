@@ -6,6 +6,7 @@ import { useSignInContext } from '@app/SignInContextProvider';
 import axios from 'axios';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
 import { NextPage } from 'next';
+import { useRouter } from 'next/navigation';
 
 const ShoppingCart: NextPage<Item> = async (props) => {
     const [ newQty, setNewQty ] = useState(props.quantity);
@@ -33,6 +34,12 @@ const ShoppingCart: NextPage<Item> = async (props) => {
         const { data, status } = await axios.put(qtyUrl, newQty, {headers: headers});
         console.log(newQty);
     };
+    const handleRemoveItem = async() => {
+        await axios.delete('https://cheezaram.tech/api/v1/cart/' + props.id, {headers: headers});
+        router.push('/');
+        router.push('/cart');
+        
+    };
 
     return (
         <main className='md:container'>
@@ -42,9 +49,9 @@ const ShoppingCart: NextPage<Item> = async (props) => {
                 <h2>qty = { newQty }</h2>
 
                 {/* <p>{ productObj. name }</p> */}
-                <button onClick={ handleQtyMinus } className='border p-4 rounded-full bg-blue-500'>-</button>
-                <button onClick={ handleQtyPlus } className='border p-4 rounded-full bg-blue-500'>+</button>
-                <button className='border p-4 rounded-full bg-blue-500'>remove</button>
+                <button onClick={ handleQtyMinus } className='border p-4 rounded-full bg-slate-400'>-</button>
+                <button onClick={ handleQtyPlus } className='border p-4 rounded-full bg-blue-400'>+</button>
+                <button onClick={ handleRemoveItem } className='border p-4 rounded-full bg-red-500'>remove</button>
             </div>
         </main>
     )

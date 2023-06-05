@@ -6,6 +6,9 @@ import { useState, createContext, useContext, Dispatch, SetStateAction } from 'r
 interface SignInContextProps {
     jwt: string;
     setJwt: Dispatch<SetStateAction<string>>;
+    role: string;
+    setRole: Dispatch<SetStateAction<string>>;
+    
     // isSignedIn: boolean;
     // setIsSignedIn: Dispatch<SetStateAction<boolean>>;setIsSignedIn
 }
@@ -13,14 +16,18 @@ interface SignInContextProps {
 export const SignInContext = createContext<SignInContextProps>({
     jwt: 'not authorized',
     setJwt: (): string => '',
+    role: 'customer',
+    setRole: (): string => ''
     // isSignedIn: false
 });
 
 export const SignInContextProvider = ( { children } : { children: React.ReactNode}) => {
-    const [ jwt, setJwt ] = useState('')
+    const [ jwt, setJwt ] = useState('not authorized');
+    const [ role, setRole ] = useState('Guest');
+    
 
      return (
-        <SignInContext.Provider value={{jwt, setJwt}}>
+        <SignInContext.Provider value={{jwt, setJwt, role, setRole}}>
             { children }
         </SignInContext.Provider>
     );

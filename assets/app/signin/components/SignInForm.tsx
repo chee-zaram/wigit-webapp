@@ -16,7 +16,7 @@ const signInForm = () => {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    const { setJwt } = useSignInContext();
+    const { setJwt, setRole } = useSignInContext();
     const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signin";
 
@@ -38,9 +38,8 @@ const signInForm = () => {
         
         const { data } = await axios.post(url, user);
         setJwt(data.jwt);
+        setRole(data.user.role);
         router.push('/');
-       //await prod();await axios.post(url + 'signin', user);
-       //await prod();
     };
     const handleResetPassword = async () => {
         //event.preventDefault();

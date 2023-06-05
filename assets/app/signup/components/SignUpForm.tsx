@@ -60,8 +60,6 @@ const SignUpForm = () => {
         setJwt(data.jwt);
         // on success, redirect to home page, on error, render error message
         router.push('/');
-        console.log(newUser);
-       //await prod();
     }
     
     // async function prod() {

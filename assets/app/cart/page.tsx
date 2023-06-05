@@ -14,7 +14,7 @@ const orderUrl = 'https://cheezaram.tech/api/v1/orders';
 
 const Cart = () => {
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
-    const { jwt } = useSignInContext();
+    const { jwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
@@ -51,14 +51,20 @@ const Cart = () => {
         
         // }
     };
+    const handleEmptyCart = async() => {
+        await axios.delete(url, {headers: headers});
+        router.push('/');
+        
+    };
     
     useEffect(getCart, []);
 
     return (
         <main>
+            <button onClick={handleEmptyCart}>empty cart</button>
             <h2>shopping cart</h2>
             <p>Sha pay and checkout</p>
-            <p>{jwt}</p>
+            <p>{role}</p>
             { cart ?
             <div>
                 { cart && cart.map((item) => (
