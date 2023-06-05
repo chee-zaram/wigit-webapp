@@ -2,15 +2,14 @@ package handlers
 
 import (
 	"crypto/rand"
-	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
 	"github.com/wigit-gh/webapp/internal/db"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 // SignUpUser binds to a user during signup.
@@ -28,14 +27,6 @@ type SignUpUser struct {
 func (user *SignUpUser) validate() (int, error) {
 	if user == nil {
 		return http.StatusInternalServerError, db.ErrNilPointer
-	}
-
-	dbUser := new(db.User)
-	if code, err := dbUser.LoadByEmail(*user.Email); errors.Is(err, gorm.ErrRecordNotFound) {
-	} else if dbUser.Email != nil {
-		return code, ErrDuplicateUser
-	} else if err != nil {
-		return code, err
 	}
 
 	if *user.Password != *user.RepeatPassword {
@@ -74,7 +65,10 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 
-	if err := user.SaveToDB(); err != nil {
+	if err := user.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate") {
+		AbortCtx(ctx, http.StatusBadRequest, ErrDuplicateUser)
+		return
+	} else if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
