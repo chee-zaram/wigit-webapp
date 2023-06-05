@@ -7,10 +7,6 @@ import (
 )
 
 var (
-	// ErrEmailNotProvided indicates email not provided during signin.
-	ErrEmailNotProvided = errors.New("Email required")
-	// ErrInvalidUser indicates the user does not exist during signin.
-	ErrInvalidUser = errors.New("Invalid Email")
 	// ErrInternalServer indicates some server side error occured that can't be handled.
 	ErrInternalServer = errors.New("Something went wrong!")
 	// ErrDuplicateUser indicates that User with email already exists during signup.
