@@ -104,6 +104,7 @@ jobs:
 
       - name: Set up SSH key
         env:
+          DEPLOY_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           BE_SERVER_01_KNOWN_HOSTS: ${{ secrets.BE_SERVER_01_KNOWN_HOSTS }}
           BE_SERVER_02_KNOWN_HOSTS: ${{ secrets.BE_SERVER_02_KNOWN_HOSTS }}
         run: |
@@ -116,7 +117,6 @@ jobs:
       - name: Deploy to Servers
         env:
           BE_EXEC: ${{ secrets.BE_EXEC }}
-          DEPLOY_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           BE_SERVER_01: ${{ secrets.BE_SERVER_01 }}
           BE_SERVER_02: ${{ secrets.BE_SERVER_02 }}
