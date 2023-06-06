@@ -24,7 +24,8 @@ func (order *Order) LoadFromDB(id string) error {
 	}
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Items.Product").First(order, "id LIKE ?", "%"+id+"%").Error
+		return tx.Preload("Items.Product").
+			First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		return err
 	}
@@ -39,7 +40,9 @@ func (order *Order) CustomerLoadFromDB(userID, id string) error {
 	}
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Where("user_id = ?", userID).Preload("Items").First(order, "id LIKE ?", "%"+id+"%").Error
+		return tx.Where("user_id = ?", userID).
+			Preload("Items.Product").
+			First(order, "id LIKE ?", "%"+id+"%").Error
 	}); err != nil {
 		return err
 	}
@@ -79,7 +82,10 @@ func CustomerOrders(userID string) ([]Order, error) {
 	var orders []Order
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", userID).Preload("Items").Find(&orders).Error
+		return tx.Order("updated_at desc").
+			Where("user_id = ?", userID).
+			Preload("Items.Product").
+			Find(&orders).Error
 	}); err != nil {
 		return nil, err
 	}
@@ -93,8 +99,11 @@ func CustomerOrdersByStatus(userID, status string) ([]Order, error) {
 	var orders []Order
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Where("user_id = ?", userID).Where("status = ?", status).
-			Preload("Items").Find(&orders).Error
+		return tx.Order("updated_at desc").
+			Where("user_id = ?", userID).
+			Where("status = ?", status).
+			Preload("Items.Product").
+			Find(&orders).Error
 	}); err != nil {
 		return nil, err
 	}
@@ -107,7 +116,9 @@ func AllOrders() ([]Order, error) {
 	var orders []Order
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at desc").Preload("Items").Find(&orders).Error
+		return tx.Order("updated_at desc").
+			Preload("Items.Product").
+			Find(&orders).Error
 	}); err != nil {
 		return nil, err
 	}
@@ -122,7 +133,8 @@ func OrdersByStatus(status string) ([]Order, error) {
 	if err := Connector.Query(func(tx *gorm.DB) error {
 		return tx.Order("updated_at desc").
 			Where("status = ?", status).
-			Preload("Items").Find(&orders).Error
+			Preload("Items.Product").
+			Find(&orders).Error
 	}); err != nil {
 		return nil, err
 	}

@@ -95,6 +95,7 @@ func GetItemsInCart(userID string) ([]Item, error) {
 		return tx.Order("updated_at asc").
 			Where("user_id = ?", userID).
 			Where("order_id is NULL").
+			Preload("Product").
 			Find(&items).Error
 	}); err != nil {
 		return nil, err
