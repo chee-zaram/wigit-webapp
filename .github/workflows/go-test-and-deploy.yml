@@ -85,7 +85,7 @@ jobs:
   deploy:
     name: Deploy Backend
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request' && github.event.pull_request.merged
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -103,12 +103,23 @@ jobs:
           check-latest: true
 
       - name: Set up SSH key
+        env:
+          BE_SERVER_01_KNOWN_HOSTS: ${{ secrets.BE_SERVER_01_KNOWN_HOSTS }}
+          BE_SERVER_02_KNOWN_HOSTS: ${{ secrets.BE_SERVER_02_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh
-          echo "$DEPLOYMENT_SECRET_KEY" > ~/.ssh/id_rsa
+          echo "$DEPLOY_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "$BE_SERVER_01_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          echo "$BE_SERVER_02_KNOWN_HOSTS" >> ~/.ssh/known_hosts
 
       - name: Deploy to Servers
+        env:
+          BE_EXEC: ${{ secrets.BE_EXEC }}
+          DEPLOY_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          BE_SERVER_01: ${{ secrets.BE_SERVER_01 }}
+          BE_SERVER_02: ${{ secrets.BE_SERVER_02 }}
         run: |
           chmod +x scripts/deploy.sh
           ./scripts/deploy.sh

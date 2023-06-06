@@ -11,14 +11,14 @@ git clone https://github.com/wigit-gh/webapp.git
 cd webapp
 
 # Build the backend
-GOOS=linux GOARCH=amd64 go build -o wwapp_be
+GOOS=linux GOARCH=amd64 go build -o "$BE_EXEC"
 
 # Add key to ssh-agent
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
 
 # Copy the binary to the servers and resart the service
-scp -i ~/.ssh/id_rsa wwapp_be "$BACKEND01":~/webapp/
-ssh -i ~/.ssh/id_rsa "$BACKEND01" "sudo service wwapp_be restart"
-scp -i ~/.ssh/id_rsa wwapp_be "$BACKEND02":~/webapp/
-ssh -i ~/.ssh/id_rsa "$BACKEND02" "sudo service wwapp_be restart"
+scp -i ~/.ssh/id_rsa "$BE_EXEC" "$DEPLOY_USER"@"$BE_SERVER_01":~/webapp/
+ssh -i ~/.ssh/id_rsa "$DEPLOY_USER"@"$BE_SERVER_01" "sudo service wwapp_be restart"
+scp -i ~/.ssh/id_rsa "$BE_EXEC" "$DEPLOY_USER"@"$BE_SERVER_02":~/webapp/
+ssh -i ~/.ssh/id_rsa "$DEPLOY_USER"@"$BE_SERVER_02" "sudo service wwapp_be restart"
