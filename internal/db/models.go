@@ -117,7 +117,7 @@ type Item struct {
 	// UserID is the id of the user to which the item in a order belongs.
 	UserID *string `json:"-" binding:"-"`
 
-	Product Product `json:"-" binding:"-"`
+	Product Product `json:"product" binding:"-"`
 	// ProductID is used to is the id for which this item is an instance.
 	ProductID *string `gorm:"not null;type:varchar(45)" json:"product_id" binding:"required"`
 
