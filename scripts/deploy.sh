@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script builds backend for the wigit web app and deploys to remote servers
 
 # Exit if any command fails
 set -e
