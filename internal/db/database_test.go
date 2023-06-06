@@ -3,11 +3,10 @@ package db
 import (
 	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db/models"
+	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +24,7 @@ var (
 	dsn = NewDatabaseDSN(conf)
 
 	// Database object
-	db, _ = NewDB(dsn)
+	db = GetConnector(conf)
 
 	// All table names
 	tableNames = struct {
@@ -46,11 +45,10 @@ var (
 // It sets all environment variables to ensure all tests can be carried out,
 // and resets the variables when tests are done.
 func TestMain(m *testing.M) {
+	logging.ConfigureLogger("dev")
+
 	// Drop all existing tables to start from clean slate
-	db.Raw("DROP TABLES IF EXISTS ?, ?, ?, ?, ?, ?, ?;",
-		tableNames.users, tableNames.products, tableNames.orders, tableNames.bookings,
-		tableNames.items, tableNames.services, tableNames.slots,
-	)
+	db.Exec("DROP TABLES IF EXISTS users, orders, bookings, services, slots, products, items;")
 
 	// Call NewDB to perform automigration
 	db, _ = NewDB(dsn)
@@ -127,15 +125,16 @@ func TestNewDBAutoMigration(t *testing.T) {
 // TestBeforeCreateHook performs a create operation on the database.
 func TestBeforeCreateHook(t *testing.T) {
 	assert := assert.New(t)
-	slotTime := new(time.Time)
 	isFree := new(bool)
-	slot := new(models.Slot)
-	dbSlot := new(models.Slot)
+	slot := new(Slot)
+	dbSlot := new(Slot)
 
-	*slotTime = time.Now()
-	*slot = models.Slot{
-		DateTime: slotTime,
-		IsFree:   isFree,
+	dateString := "Mon, 26 Jan 2024"
+	timeString := "10:50 AM"
+	*slot = Slot{
+		DateString: &dateString,
+		TimeString: &timeString,
+		IsFree:     isFree,
 	}
 
 	if err := db.Query(func(tx *gorm.DB) error {

@@ -8,13 +8,14 @@ import (
 	"github.com/wigit-gh/webapp/internal/logging"
 )
 
+// usage prints out a usage message when wrong flags or values are passed to the program.
 func usage() {
 	fmt.Print(`
 This executable runs the WIG!T Web Application backend.
 
 Usage:
 
-wwapp [arguments]
+wwapp_be [arguments]
 
 Supported arguments:
 
@@ -35,9 +36,9 @@ func Parse() string {
 	flag.Parse()
 
 	// Configure global logger with specified environment.
-	logging.ConfigureLogger(*env)
-	if *env == "prod" {
-		logging.SetGinLogToFile()
+	logFile := logging.ConfigureLogger(*env)
+	if *env == "prod" && logFile != nil {
+		logging.SetGinLogToFile(logFile)
 	}
 
 	return *env

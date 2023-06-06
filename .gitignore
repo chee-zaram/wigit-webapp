@@ -25,3 +25,6 @@
 
 # log files
 /logs/
+
+# test coverage file
+coverage.txt

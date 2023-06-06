@@ -4,8 +4,9 @@ import (
 	"fmt"
 	// _ "time/tzdata" if we make use of select time zone we may have to uncomment this and move to main
 
+	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db/models"
+	"github.com/wigit-gh/webapp/internal/logging"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -14,6 +15,9 @@ import (
 type DB struct {
 	*gorm.DB
 }
+
+// Connector servers as a global link to the database.
+var Connector *DB
 
 // Query method is called to send request to the database within a scoped session.
 //
@@ -65,21 +69,13 @@ func NewDB(dsn string) (*DB, error) {
 // It returns the session and an error if any occured.
 func createDBConnection(dsn string) (*gorm.DB, error) {
 	// Open connection to database
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logging.SetGORMLogToFile()})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
 	// Create or migrate tables based on the structs.
-	if err = db.AutoMigrate(
-		&models.User{},
-		&models.Product{},
-		&models.Order{},
-		&models.Item{},
-		&models.Booking{},
-		&models.Service{},
-		&models.Slot{},
-	); err != nil {
+	if err = db.AutoMigrate(GetSchemas()); err != nil {
 		return nil, fmt.Errorf("failed to automigrate tables: %w", err)
 	}
 
@@ -90,4 +86,14 @@ func createDBConnection(dsn string) (*gorm.DB, error) {
 	}
 
 	return session, nil
+}
+
+// GetConnector returns a ready connector to the database.
+func GetConnector(conf config.Config) *DB {
+	dbConnector, err := NewDB(NewDatabaseDSN(conf))
+	if err != nil {
+		log.Panic().Err(err).Msg("failed to get db connector")
+	}
+
+	return dbConnector
 }
