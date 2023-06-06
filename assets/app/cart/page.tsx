@@ -7,6 +7,7 @@ import ShoppingCart from '@app/cart/components/ShoppingCart';
 import axios from 'axios';
 import Button from '@components/Button';
 import { useRouter } from 'next/navigation';
+import Item from '@app/cart/interfaces/ShoppingCartProps';
 
 
 const url = 'https://cheezaram.tech/api/v1/cart';
@@ -18,9 +19,11 @@ const Cart = () => {
     const { jwt, setJwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
 
+if (typeof window !== 'undefined') {
     if (window.sessionStorage.getItem('jwt')) {
         setJwt(window.sessionStorage.getItem('jwt'));
     }
+}
     
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
@@ -75,7 +78,7 @@ const Cart = () => {
             <p>{role}</p>
             { cart ?
             <div>
-                { cart && cart.map((item) => (
+                { cart && cart.map((item: Item) => (
                 <div key={item.id}>
                     <ShoppingCart { ...item } />
                 </div>

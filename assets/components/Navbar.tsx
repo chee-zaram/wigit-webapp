@@ -8,7 +8,12 @@ import { useSignInContext } from '@app/SignInContextProvider';
 //type check
 
 const Navbar = () => {
-    const { jwt, role } = useSignInContext();
+    const { jwt, role, setRole } = useSignInContext();
+if (typeof window !== 'undefined') {
+    if (window.sessionStorage.getItem('role')) {
+        setRole(window.sessionStorage.getItem('role'));
+    }
+}
 
   return (
     <header className='flex justify-between h-12 bg-neutral-900 text-white items-center'>
@@ -20,7 +25,7 @@ const Navbar = () => {
         <Link className='nav_link' href='/about'>About</Link>
         {
           role === 'admin' ?
-          <Link>Dashboard </Link> :
+          <Link className='nav_link' href='/dashboard'>Dashboard</Link> :
         <Link className='nav_link' href='/cart'>shopping cart</Link>
         }
       </nav>

@@ -40,6 +40,8 @@ const signInForm = () => {
         setJwt(data.jwt);
         setRole(data.user.role);
         window.sessionStorage.setItem('jwt', data.jwt);
+        window.sessionStorage.setItem('role', data.user.role);
+        console.log(data);
         router.push('/');
     };
     const handleResetPassword = async () => {
