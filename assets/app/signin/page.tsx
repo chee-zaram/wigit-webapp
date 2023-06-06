@@ -22,7 +22,6 @@ const signin = () => {
     const toggleSignIn = (): void => {
       router.push('/signup');
     };
-    
 
     return (
         <main className='signin_main flex flex-col justify-around items-center'>
@@ -34,7 +33,10 @@ const signin = () => {
                 <h3>Hey there, we're glad you found us, Please sign in</h3>
                 
             </div>
-            <SignInForm />
+            { window.sessionStorage.getItem('jwt') ? 
+                <h2> user profile, yaay! { window.sessionStorage.getItem('jwt') }</h2> :
+                <SignInForm />
+            }
             <p>First time? <span className='underline pointer text-accent font-extrabold' onClick={toggleSignIn}>sign up</span> :)</p>
 
         </main>

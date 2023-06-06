@@ -13,13 +13,21 @@ const url = 'https://cheezaram.tech/api/v1/cart';
 const orderUrl = 'https://cheezaram.tech/api/v1/orders';
 
 const Cart = () => {
+    
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
-    const { jwt, role } = useSignInContext();
+    const { jwt, setJwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
+
+    if (window.sessionStorage.getItem('jwt')) {
+        setJwt(window.sessionStorage.getItem('jwt'));
+    }
+    
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
 
     const getCart = () => {
+        
+    
     fetch(url, {headers: headers})
     .then(res => res.json())
     .then(data => setCart(data.data))
