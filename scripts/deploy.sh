@@ -19,8 +19,8 @@ else
 fi
 
 # Add key to ssh-agent
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
+# eval "$(ssh-agent -s)"
+# ssh-add ~/.ssh/id_rsa
 
 # Copy the binary to the servers and resart the service
 scp -i ~/.ssh/id_rsa "$BE_EXEC" "$DEPLOY_USER"@"$BE_SERVER_01":~/webapp
