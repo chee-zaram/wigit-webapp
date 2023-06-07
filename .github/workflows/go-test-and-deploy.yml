@@ -94,12 +94,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ matrix.go }}
-          check-latest: true
-
       - name: Deploy to Servers
         uses: appleboy/ssh-action@v0.1.10
         env:
