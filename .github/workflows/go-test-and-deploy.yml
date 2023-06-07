@@ -109,7 +109,6 @@ jobs:
               git clone https://github.com/wigit-gh/webapp.git
             fi
             cd webapp
-            git checkout main
-            git pull origin
-            GOOS=linux GOARCH=amd64 /usr/local/go/bin/go build -o "$BE_EXEC"
-            sudo service "$BE_EXEC" restart
+            git stash && git checkout main && git pull origin -X theirs
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh
