@@ -109,7 +109,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           script_stop: true
-          env: BE_EXEC
+          envs: BE_EXEC
           script: |
             if [[ ! -d webapp ]]; then
               git clone https://github.com/wigit-gh/webapp.git
