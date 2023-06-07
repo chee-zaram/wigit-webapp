@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
       <html lang="en">
         <SignInContextProvider>
-        <body className='bg-zinc-100'>
+        <body className='bg-white'>
           <Navbar />
           <main className={inter.className}>{children}</main>
           <Footer />

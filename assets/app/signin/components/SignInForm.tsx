@@ -16,7 +16,7 @@ const signInForm = () => {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    const { jwt, setJwt, setRole } = useSignInContext();
+    const { jwt, setJwt, setRole, isSignedIn, setIsSignedIn, user, setUser } = useSignInContext();
     const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signin";
 
@@ -34,15 +34,25 @@ const signInForm = () => {
     };
     async function handleAxios (event: any){
         event.preventDefault();
-        const user = { email, password };
+        const credentials = { email, password };
         
-        const { data } = await axios.post(url, user);
-        setJwt(data.jwt);
-        setRole(data.user.role);
-        window.sessionStorage.setItem('jwt', data.jwt);
-        window.sessionStorage.setItem('role', data.user.role);
-        console.log(data);
-        router.push('/');
+        const { data, status } = await axios.post(url, credentials);
+        if (status == 200) {
+            setJwt(data.jwt);
+            setRole(data.user.role);
+            setIsSignedIn(true);
+            // setUser(data.user);
+            window.sessionStorage.setItem('jwt', data.jwt);
+            window.sessionStorage.setItem('role', data.user.role);
+            window.sessionStorage.setItem('isSignedIn', true);
+            window.sessionStorage.setItem('user', JSON.stringify(data.user))
+            console.log(data);
+            console.log(isSignedIn);
+            setUser(JSON.parse(window.sessionStorage.getItem('user')));
+            console.log(user);
+            console.log(window.sessionStorage.getItem('user'));
+            router.push('/');
+        }
     };
     const handleResetPassword = async () => {
         //event.preventDefault();
