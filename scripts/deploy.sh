@@ -11,7 +11,12 @@ git clone https://github.com/wigit-gh/webapp.git
 cd webapp
 
 # Build the backend
-GOOS=linux GOARCH=amd64 go build -o "$BE_EXEC"
+if GOOS=linux GOARCH=amd64 go build -o "$BE_EXEC"; then
+	echo "Done building"
+else
+	echo "Build not done"
+	exit 1
+fi
 
 # Add key to ssh-agent
 eval "$(ssh-agent -s)"
