@@ -108,7 +108,5 @@ jobs:
             if [[ ! -d webapp ]]; then
               git clone https://github.com/wigit-gh/webapp.git
             fi
-            cd webapp
-            git stash && git checkout main && git pull origin
-            chmod +x ./scripts/deploy.sh
-            ./scripts/deploy.sh
+            chmod +x ./webapp/scripts/deploy.sh
+            ./webapp/scripts/deploy.sh
