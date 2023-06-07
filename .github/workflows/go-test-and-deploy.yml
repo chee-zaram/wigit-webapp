@@ -117,5 +117,5 @@ jobs:
             cd webapp
             git checkout main
             git pull origin
-            GOOS=linux GOARCH=amd64 go build -o "$BE_EXEC"
+            GOOS=linux GOARCH=amd64 /usr/local/go/bin/go build -o "$BE_EXEC"
             sudo service "$BE_EXEC" restart
