@@ -109,7 +109,6 @@ body {
 }
 #nav_mob_cont>a:hover{
     color: var(--accent-color);
-
 }
 #close{
     background-color: var(--dark-color);
@@ -157,6 +156,7 @@ body {
         align-items: center;
         z-index: 30;
         padding: var(--padding-light);
+        transition: all 300ms ease;
     }
     #navbar>a{
         color: var(--accent-color);
@@ -166,6 +166,9 @@ body {
         font-weight:var(--fw-bold);
         font-size: var(--fs-med);
         text-align: center;
+    }
+    #navbar>a:hover {
+        color: var(--dark-color);
     }
     #open, #nav_mobile{
         display:none;
