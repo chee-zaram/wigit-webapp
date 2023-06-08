@@ -8,6 +8,9 @@ import Input from '@components/Input';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useSignInContext } from '../../SignInContextProvider';
+import Image from 'next/image';
+import signin from '@/public/assets/images/undraw_mobile_login_re_9ntv.svg';
+
 
 export const metadata = { title: 'sign in wigit' };
 
@@ -60,30 +63,42 @@ const signInForm = () => {
         router.push('/');
         alert("A password reset link has been sent to your email");
     };
+    const pushToSignUp = (): void => {
+      router.push('/signup');
+    };
 
     return (
-        <form onSubmit={ handleAxios } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>
-            <h1>Sign In</h1>
-            <label htmlFor='email'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
-                type='text'
-                name='email'
-                placeholder='Enter email'
-                id='email'
-                required={ true }
-            />
-            <label htmlFor='password'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
-                type='password'
-                name='password'
-                placeholder='Enter password'
-                id='password'
-                required={ true }
-            />
-            <Button type='submit' text='sign in' />
-            <p>Forgot password? <span className='underline pointer text-accent font-extrabold' onClick={handleResetPassword}>reset it here</span></p>
-
-        </form>
+        <section className=' md:min-w-3xl md:flex flex-wrap rounded-lg shadow-md overflow-hidden'>
+            <div className='md:w-1/2'>
+                <Image 
+                    src={ signin }
+                    alt='Wigit Company Logo'
+                    width={220}
+                    height={300}/>
+            </div>
+            <form onSubmit={ handleAxios } className=' md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
+                {/* <h1>Sign In</h1> */}
+                <label htmlFor='email'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
+                    type='text'
+                    name='email'
+                    placeholder='Enter email'
+                    id='email'
+                    required={ true }
+                />
+                <label htmlFor='password'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
+                    type='password'
+                    name='password'
+                    placeholder='Enter password'
+                    id='password'
+                    required={ true }
+                />
+                <Button type='submit' text='sign in' />
+                <p>Forgot password? <button className='underline pointer text-light_bg text-xs' onClick={handleResetPassword}>reset it here</button></p>
+                <p>First time? <button className='underline pointer text-light_bg text-xs' onClick={pushToSignUp}>sign up :)</button></p>
+            </form>
+        </section>
     )
 };
 

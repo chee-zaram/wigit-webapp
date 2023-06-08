@@ -7,7 +7,7 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --light-color: #f6f7f7;
-  --dark-color:#171717;
+  --dark-color:#1b1b1b;
   --accent-color: #AB841F;
 }
 
@@ -20,7 +20,7 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: var(--dark-color);
   text-align: center;
   background-color: #fff;
   /* background: linear-gradient(

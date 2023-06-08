@@ -1,6 +1,5 @@
-// sign in / sign up page
+// sign in page
 "use client";
-import { useState, useContext, useEffect } from 'react';
 import SignInForm from '@app/signin/components/SignInForm';
 import { useRouter } from 'next/navigation';
 import { useSignInContext } from '../SignInContextProvider';
@@ -10,7 +9,9 @@ const signin = () => {
     // check if user is signed in
     const router = useRouter();
     const { jwt } = useSignInContext();
-    
+    const user: any = window.sessionStorage.getItem('user') ?
+        JSON.parse(window.sessionStorage.getItem('user')) :
+        {};
     // const { data, error } = useQuery({ queryKey: ['signInSubmit'], queryFn: handleAxios})
     // console.log(data);
     // async function handleAxios () {
@@ -19,26 +20,18 @@ const signin = () => {
     //     setIsSignedIn(true);
     // }
       
-    const toggleSignIn = (): void => {
-      router.push('/signup');
-    };
+    
 
     return (
         <main className='signin_main flex flex-col justify-around items-center'>
             {/* take this to rootlayout to conditionally render sign in link  */}
-            <div className='welcome_message'>
-            
-                <h2>{jwt}</h2>
-                <h3>Welcome back, Vee baby!</h3> : 
-                <h3>Hey there, we're glad you found us, Please sign in</h3>
-                
+            <div className='mb-6 capitalize font-extrabold text-dark_bg'>
+                <h2>Welcome, please sign in</h2>
             </div>
             { window.sessionStorage.getItem('jwt') ? 
                 <h2> user profile, yaay! { window.sessionStorage.getItem('jwt') }</h2> :
                 <SignInForm />
             }
-            <p>First time? <span className='underline pointer text-accent font-extrabold' onClick={toggleSignIn}>sign up</span> :)</p>
-
         </main>
     )
     
