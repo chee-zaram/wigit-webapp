@@ -19,6 +19,7 @@
 body {
   color: rgb(var(--foreground-rgb));
   text-align: center;
+  background-color: #fff;
   /* background: linear-gradient(
       to bottom,
       transparent,

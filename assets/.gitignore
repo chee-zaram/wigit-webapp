@@ -34,8 +34,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-// fullstack files
-/models
-/api
 .env
