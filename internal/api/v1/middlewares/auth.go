@@ -13,7 +13,7 @@ import (
 	"github.com/wigit-gh/webapp/internal/db"
 )
 
-// JWTAuthentication validates a user's signin JWT token set in the `Authorization` header.
+// JWTAuthentication validates a user's signin JWT set in the `Authorization` header.
 func JWTAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
@@ -39,7 +39,7 @@ func JWTAuthentication(ctx *gin.Context) {
 		return
 	}
 
-	userID, err := validateJWTToken(bearerToken[1])
+	userID, err := validateJWT(bearerToken[1])
 	if err != nil {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="%s"`, err.Error(),
@@ -58,9 +58,9 @@ func JWTAuthentication(ctx *gin.Context) {
 	ctx.Next()
 }
 
-// validateJWTToken checks the validity of the jwt token provided.
+// validateJWT checks the validity of the jwt provided.
 // It returns the user ID stored in the claims, and any error if any occurs.
-func validateJWTToken(_token string) (string, error) {
+func validateJWT(_token string) (string, error) {
 	token, err := parseToken(_token)
 	if err != nil {
 		return "", err
@@ -83,7 +83,7 @@ func validateJWTToken(_token string) (string, error) {
 func parseToken(_token string) (*jwt.Token, error) {
 	token, err := jwt.Parse([]byte(_token), JWTVerifier)
 	if err != nil {
-		return nil, errors.New("failed to parse JWT token")
+		return nil, errors.New("failed to parse JWT")
 	}
 
 	return token, nil
