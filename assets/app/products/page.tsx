@@ -26,20 +26,30 @@ export default async function Products() {
   
   return (
     <main>
-      <div className='flex flex-col items-center justify-center'>
-        <h1>Our wigs</h1>
-        <p>Nothing but class....</p>
-        { product_obj? 
-        <div className="lg:max-w-4xl flex flex-wrap justify-center">
-          { product_obj && product_obj.map((item: Product) => (
-            <div key={product_obj.id}>
-              <ProductCard { ...item } />
-            </div>
-          ))}
-        </div> :
-        <p>no products</p>
-          }
-      </div>
+      <header className='flex flex-wrap w-[100vw]'>
+        <div >
+          {/* <img src='https://images.pexels.com/photos/13221796/pexels-photo-13221796.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' /> */}
+        </div>
+        <div>
+          <h1 className='font-bold uppercase text-accent'>Our luxury weaves</h1>
+        </div>
+      </header>
+      <section className='bg-green-100 min-h-screen px-8 md:px-12 '>
+        <div className='flex flex-col items-center justify-center'>
+          <h1>Our wigs</h1>
+          <p>Nothing but class....</p>
+          { product_obj? 
+          <div className="flex flex-wrap bg-slate-200 gap-4">
+            { product_obj && product_obj.map((item: Product) => (
+              <div key={product_obj.id}>
+                <ProductCard { ...item } />
+              </div>
+            ))}
+          </div> :
+          <p>no products</p>
+            }
+        </div>
+      </section>
     </main>
   )
 }

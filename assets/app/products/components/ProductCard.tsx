@@ -26,17 +26,19 @@ const ProductCard: NextPage<Product> = (props) => {
 };
 
 return (
-    <div className='bg-white m-3 pb-3 hover:scale-105 duration 300 rounded-md shadow-md shadow-zinc-400 border w-70'>
-        <div className=' w-70 object-cover bg-blue-200 '>
-            <Image src={ props.image_url } alt={ props.name } width={70} height={80}/>
+        <div className='bg-white w-150 hover:scale-105 duration 300'>
+            <div className=' w-full w-150 overflow-hidden bg-blue-300 '>
+                {/* <Image src={ props.image_url } alt={ props.name } width={150} height={80}
+                 className='object-cover'
+                /> */}
+            </div>
+            <div className='bg-pink-200 w-[100px]'>
+                <h2 className='capitalize text-sm font-bold text-neutral-700 '>{ props.name }</h2>
+                <p className='my-1 text-neutral-500 '>{ props.description }</p>
+                <p className=' text-accent font-bold'>{ props.price }</p>
+                <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
+            </div>
         </div>
-        <div className='bg-pink-200 w-[100px]'>
-            <h2 className='capitalize text-sm font-bold text-neutral-700 '>{ props.name }</h2>
-            <p className='my-1 text-neutral-500 '>{ props.description }</p>
-            <p className=' text-accent font-bold'>{ props.price }</p>
-            <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
-        </div>
-    </div>
 )};
 
 export default ProductCard;

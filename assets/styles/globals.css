@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Quicksand:wght@400;500;700&display=swap');
+
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -23,6 +26,7 @@ body {
   color: var(--dark-color);
   text-align: center;
   background-color: #fff;
+  font-family: 'Quicksand', sans-serif;;
   /* background: linear-gradient(
       to bottom,
       transparent,
@@ -34,7 +38,14 @@ body {
     justify-content: space-between;
     min-height: 100vh;
 }
-
+#header {
+    background-color: #fff;
+    min-width: 100vw;
+    height: 10%;
+    position: sticky;
+    top:0;
+    padding-bottom: 2rem;
+}
 /* .footer, .navbar {
   background-color: #171717;
   color:#fff;
