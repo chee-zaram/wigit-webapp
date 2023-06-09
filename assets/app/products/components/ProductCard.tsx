@@ -26,16 +26,17 @@ const ProductCard: NextPage<Product> = (props) => {
 };
 
 return (
-        <div className='bg-white w-150 hover:scale-105 duration 300'>
-            <div className=' w-full w-150 overflow-hidden bg-blue-300 '>
-                {/* <Image src={ props.image_url } alt={ props.name } width={150} height={80}
+        <div className='bg-white shadow-lg overflow-hidden rounded w-[200px] min-h-[250px] flexbox_row hover:scale-105 duration 400'>
+            <div className=' overflow-hidden h-[120px] w-full'>
+                <Image src={ props.image_url } alt={ props.name } width={200} height={100}
                  className='object-cover'
-                /> */}
+                />
             </div>
-            <div className='bg-pink-200 w-[100px]'>
+            <div className=' p-4 w-full'>
                 <h2 className='capitalize text-sm font-bold text-neutral-700 '>{ props.name }</h2>
                 <p className='my-1 text-neutral-500 '>{ props.description }</p>
-                <p className=' text-accent font-bold'>{ props.price }</p>
+                <p className={props.category === 'straight' ? 'bg-sky-700 tag' : props.category === 'wavy' ? 'bg-pink-700 tag' : 'bg-teal-600 tag'}>{ props.category}</p>
+                <p className=' text-accent font-bold'>GHS { props.price }</p>
                 <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
             </div>
         </div>

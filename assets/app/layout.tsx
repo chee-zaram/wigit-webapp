@@ -19,6 +19,7 @@ export default function RootLayout({
   
   return (
       <html lang="en">
+        
         <SignInContextProvider>
         <body className='bg-white'>
           <Navbar />
