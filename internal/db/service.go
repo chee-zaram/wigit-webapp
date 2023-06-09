@@ -85,8 +85,9 @@ func GetTrendingServices(bookings []Booking) ([]Service, error) {
 		}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		} else if err != nil {
 			return nil, err
+		} else {
+			services = append(services, *service)
 		}
-		services = append(services, *service)
 	}
 
 	return services, nil
