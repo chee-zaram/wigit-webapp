@@ -68,7 +68,7 @@ func AllProducts() ([]Product, error) {
 
 // TrendingProducts returns the top ten trending products.
 func TrendingProducts(items []Item) ([]Product, error) {
-	var products []Product
+	products := make([]Product, 0)
 
 	for _, item := range items {
 		product := new(Product)

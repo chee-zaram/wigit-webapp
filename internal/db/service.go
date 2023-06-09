@@ -77,7 +77,8 @@ func DeleteService(id string) error {
 
 // GetTrendingServices retrieves the top 10 services in the last week if available.
 func GetTrendingServices(bookings []Booking) ([]Service, error) {
-	var services []Service
+	services := make([]Service, 0)
+
 	for _, booking := range bookings {
 		service := new(Service)
 		if err := Connector.Query(func(tx *gorm.DB) error {
