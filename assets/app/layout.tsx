@@ -19,7 +19,9 @@ export default function RootLayout({
   
   return (
       <html lang="en">
-        
+        <head>
+          <script src="https://kit.fontawesome.com/40485fe37e.js" crossOrigin="anonymous"></script>
+        </head>
         <SignInContextProvider>
         <body className='bg-white'>
           <Navbar />
