@@ -8,7 +8,7 @@ const trendingUrl = "https://cheezaram.tech/api/v1/products/categories/trending"
 
 export const metadata = { title: 'wigit products' };
 
-async function getProducts(url: string): Promise<any> {
+export async function getProducts(url: string): Promise<any> {
 
   const res = await fetch(url, {
     headers: {"Content-Type": "application/json"},

@@ -26,7 +26,7 @@ const ProductCard: NextPage<Product> = (props) => {
 };
 
 return (
-        <div className='bg-white shadow-lg overflow-hidden rounded w-[200px] min-h-[250px] flexbox_row hover:scale-105 duration 400'>
+        <div className='bg-white shrink-0 shadow-lg overflow-hidden rounded w-[200px] min-h-[250px] flexbox_row hover:scale-105 duration 400'>
             <div className=' overflow-hidden h-[120px] w-full'>
                 <Image src={ props.image_url } alt={ props.name } width={200} height={100}
                  className='object-cover'
