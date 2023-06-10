@@ -130,6 +130,10 @@ func validateStock(items []Item) error {
 			return err
 		}
 
+		if *product.Stock == 0 {
+			return errors.New("Product is out of stock")
+		}
+
 		if *item.Quantity > *product.Stock {
 			*item.Quantity = *product.Stock
 		}
