@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/wigit-gh/webapp/internal/logging"
+	"github.com/wigit-gh/webapp/internal/logger"
 )
 
 // usage prints out a usage message when wrong flags or values are passed to the program.
@@ -36,9 +36,9 @@ func Parse() string {
 	flag.Parse()
 
 	// Configure global logger with specified environment.
-	logFile := logging.ConfigureLogger(*env)
+	logFile := logger.ConfigureLogger(*env)
 	if *env == "prod" && logFile != nil {
-		logging.SetGinLogToFile(logFile)
+		logger.SetGinLogToFile(logFile)
 	}
 
 	return *env

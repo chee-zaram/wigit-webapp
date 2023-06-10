@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/logging"
+	"github.com/wigit-gh/webapp/internal/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -69,7 +69,7 @@ func NewDB(dsn string) (*DB, error) {
 // It returns the session and an error if any occured.
 func createDBConnection(dsn string) (*gorm.DB, error) {
 	// Open connection to database
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logging.SetGORMLogToFile()})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.SetGORMLogToFile()})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
