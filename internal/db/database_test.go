@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/logging"
+	"github.com/wigit-gh/webapp/internal/logger"
 	"gorm.io/gorm"
 )
 
@@ -45,7 +45,7 @@ var (
 // It sets all environment variables to ensure all tests can be carried out,
 // and resets the variables when tests are done.
 func TestMain(m *testing.M) {
-	logging.ConfigureLogger("dev")
+	logger.ConfigureLogger("dev")
 
 	// Drop all existing tables to start from clean slate
 	db.Exec("DROP TABLES IF EXISTS users, orders, bookings, services, slots, products, items;")
