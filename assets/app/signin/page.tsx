@@ -28,10 +28,7 @@ const signin = () => {
             <div className='mb-6 capitalize font-extrabold text-dark_bg'>
                 <h2>Welcome, please sign in</h2>
             </div>
-            { window.sessionStorage.getItem('jwt') ? 
-                <h2> user profile, yaay! { window.sessionStorage.getItem('jwt') }</h2> :
                 <SignInForm />
-            }
         </main>
     )
     

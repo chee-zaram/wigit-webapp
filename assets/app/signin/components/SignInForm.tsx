@@ -68,11 +68,11 @@ const signInForm = () => {
     };
 
     return (
-        <section className=' md:min-w-3xl md:flex flex-wrap rounded-lg shadow-md overflow-hidden'>
+        <section className=' md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md overflow-hidden'>
             <div className='md:w-1/2'>
                 <Image 
                     src={ signin }
-                    alt='Wigit Company Logo'
+                    alt=''
                     width={220}
                     height={300}/>
             </div>
@@ -95,8 +95,8 @@ const signInForm = () => {
                     required={ true }
                 />
                 <Button type='submit' text='sign in' />
-                <p>Forgot password? <button className='underline pointer text-light_bg text-xs' onClick={handleResetPassword}>reset it here</button></p>
-                <p>First time? <button className='underline pointer text-light_bg text-xs' onClick={pushToSignUp}>sign up :)</button></p>
+                <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>reset it here</button></p>
+                <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>sign up :)</button></p>
             </form>
         </section>
     )

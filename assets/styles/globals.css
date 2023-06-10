@@ -107,6 +107,14 @@ body {
   max-height: 60px;
   overflow-y: hidden;
 }
+/* about page */
+.about_page {
+    background-image: url('../public/assets/images/undraw_faq_re_31cw.svg');
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
 
 #open{
     width: 50px;
