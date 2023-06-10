@@ -4,6 +4,7 @@ import headerImage from '@/public/assets/images/afro_girl.png';
 import { getProducts } from '@app/products/page';
 import { Product } from './products/interfaces/product';
 import ProductCard from './products/components/ProductCard';
+import Link from 'next/link';
 
 
 export default async function Home() {
@@ -26,7 +27,7 @@ export default async function Home() {
           <div className='p-4 md:p-8 md:mr-16 bg-yellow-500'>
             <h3 className='text-sky-900 text-3xl font-extrabold'>Amazing weave care deals</h3>
             <p className='text-sky-900 text-l'>Don't miss out on our discounts</p>
-            <button className='bg-accent duration-300 shadow hover:bg-accent/40 px-4 py-1 capitalize rounded-full text-bg text-light_bg'>view deals</button>
+            <Link href='/products'><button className='bg-accent duration-300 shadow hover:bg-accent/40 px-4 py-1 capitalize rounded-full text-bg text-light_bg'>view deals</button></Link>
           </div>
         </div>
       </section>
@@ -39,7 +40,7 @@ export default async function Home() {
           <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>cheap<i className='btn_icon mr-1'></i></button>
           <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>luxury<i className='btn_icon mr-1'></i></button>
         </div>
-        <div className='flex flexl-nowrap rounded-fulloverflow-hidden  shadowmax- w-[70px bg-green-200]'>
+        <div className='flex flex-nowrap rounded-full overflow-hidden shadow max-w-[70px] bg-green-200'>
           <input type='text' placeholder='search' className='outline-accent px-4 bg-slate-100' />
           <button className='w-max'>search</button>
         </div>
@@ -56,12 +57,12 @@ export default async function Home() {
           }
         </div>
       </section>
-      <section className='row-span-3 home_section grid grid-rows-4 grid-cols-4' >
+      <section className='row-span-3 home_section grid grid-rows-4 gap-4 grid-cols-4' >
 
-          <div className='row-span-1 col-span-- md:row-span-2 md:col-span-2 home_section bg-red-100'>hi</div>
-          <div className='row-span-1 md:row-span-2 md:col-span-2 home_section bg-red-200'></div>
-          <div className='row-span-1 md:row-span-2 md:col-span-2 home_section bg-red-300'></div>
-          <div className='row-span-1 md:row-span-2 md:col-span-2 home_section bg-red-400'></div>
+          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-100'>accessories</div>
+          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-200'>our services</div>
+          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-300'>view events</div>
+          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-400'>newsletter?? omo!!</div>
       </section>
     </main>
 

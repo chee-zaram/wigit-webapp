@@ -265,3 +265,9 @@ body {
 .footer {
     letter-spacing: 3px;
 }
+.signin_alert_show {
+    display: block;
+}
+.signin_alert_hide {
+    display: none;
+}

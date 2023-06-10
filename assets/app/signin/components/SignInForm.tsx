@@ -19,7 +19,7 @@ const signInForm = () => {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    const { jwt, setJwt, setRole, isSignedIn, setIsSignedIn, user, setUser } = useSignInContext();
+    const { setJwt, setRole, isSignedIn, setIsSignedIn, user, setUser } = useSignInContext();
     const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signin";
 
@@ -32,14 +32,13 @@ const signInForm = () => {
         event.preventDefault();
         setPassword(event.target.value);
     };
-    const handleSignIn = () => {
-        console.log('signed in successfully!' + email, password)
-    };
-    async function handleAxios (event: any){
+    
+    async function handleSignIn (event: any){
         event.preventDefault();
         const credentials = { email, password };
         
-        const { data, status } = await axios.post(url, credentials);
+        try {
+            const { data, status } = await axios.post(url, credentials);
         if (status == 200) {
             setJwt(data.jwt);
             setRole(data.user.role);
@@ -55,6 +54,10 @@ const signInForm = () => {
             console.log(user);
             console.log(window.sessionStorage.getItem('user'));
             router.push('/');
+        }
+        }
+        catch {
+            alert('something went wrong, please check your credentials, and try again.');
         }
     };
     const handleResetPassword = async () => {
@@ -76,8 +79,7 @@ const signInForm = () => {
                     width={220}
                     height={300}/>
             </div>
-            <form onSubmit={ handleAxios } className=' md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
-                {/* <h1>Sign In</h1> */}
+            <form onSubmit={ handleSignIn } className=' md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
                 <label htmlFor='email'></label>
                 <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
                     type='text'
