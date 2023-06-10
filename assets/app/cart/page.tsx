@@ -72,21 +72,19 @@ if (typeof window !== 'undefined') {
 
     return (
         <main>
-            <button onClick={handleEmptyCart}>empty cart</button>
-            <h2>shopping cart</h2>
-            <p>Sha pay and checkout</p>
-            <p>{role}</p>
-            { cart ?
+            
+            { jwt !== 'not authorized' ?
             <div>
+                <button onClick={handleEmptyCart}>empty cart</button>
+                <h2>shopping cart</h2>
+                <p>Sha pay and checkout</p>
+                <p>{role}</p>
                 { cart && cart.map((item: Item) => (
                 <div key={item.id}>
                     <ShoppingCart { ...item } />
                 </div>
                 )) }
-            </div> :
-            <p>no items in cart</p>
-            }
-            <form onSubmit={ handleSubmit }>
+                <form onSubmit={ handleSubmit }>
                 <h2> you chose {deliveryMethod}</h2>
                 <div>
                     <input required onClick={ handlePickup } id='pickup' name='delivery_method' type='radio' value='pickup' />
@@ -98,6 +96,11 @@ if (typeof window !== 'undefined') {
                 </div>
                 <Button text='checkout' type='submit' />
             </form>
+            </div> :
+            <div className=''>
+            <p>Please <button className='text-accent underline' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>
+            </div>
+            }
         </main>
     )
 };

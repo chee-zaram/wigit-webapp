@@ -115,6 +115,13 @@ body {
     background-size: contain;
     background-position: center;
 }
+.cart_loading_div {
+    background-image: url('../public/assets/images/undraw_empty_cart_co35.svg');
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
 
 #open{
     width: 50px;
