@@ -45,11 +45,11 @@ export default async function Home() {
           <button className='w-max'>search</button>
         </div>
       </section>
-      <section className='flexbox max-w-[100vw] home_trending p-4 md:px-10 md:py-8 row-span-4 home_section  bg-accent/80' >
-        <div>
-          <h2 className='text-sky-900 uppercase text-2xl mb-4 font-extrabold'>See what's trending</h2>
+      <section className='flexbox max-w-[100vw] home_trending p-4 md:p-10 row-span-3 home_section  bg-accent/80' >
+        <div className='mb-6'>
+          <h2 className='text-sky-900 uppercase text-2xl  font-extrabold'>See what's trending</h2>
         </div>
-        <div className=' flex gap-4 max-w-full p-4  overflow-x-scroll'>
+        <div className=' flex gap-4 max-w-full overflow-x-scroll'>
           {
             trendingProducts && trendingProducts.map((item: Product) => (
               < ProductCard { ...item } />
@@ -57,12 +57,12 @@ export default async function Home() {
           }
         </div>
       </section>
-      <section className='row-span-3 home_section grid grid-rows-4 gap-4 grid-cols-4' >
+      <section className=' group row-span-4 home_section grid grid-rows-4 gap-4 grid-cols-4' >
 
-          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-100'>accessories</div>
-          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-200'>our services</div>
-          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-300'>view events</div>
-          <div className='row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-red-400'>newsletter?? omo!!</div>
+          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-400'>accessories</div>
+          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-500'>our services</div>
+          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-500'>view events</div>
+          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-700'>newsletter?? omo!!</div>
       </section>
     </main>
 
