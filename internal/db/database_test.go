@@ -12,12 +12,13 @@ import (
 
 var (
 	// conf is the configuration we'll use to connect to our db during testing.
+	// Make sure run scripts/setup_dev_db to create user and databases.
 	conf = config.Config{
-		DBUser: "root",
-		DBPass: "WWApp-dev-pwd-0", // modify this to be your local root password but change back before pushing
+		DBUser: "wwapp_dev",
+		DBPass: "WWApp-dev-pwd-0",
 		DBHost: "localhost",
 		DBPort: "3306",
-		DBName: "wwapp_dev_db_test", // make sure the create this db. there's a script in /scripts
+		DBName: "wwapp_dev_db_test",
 	}
 
 	// dsn is the domain string name to connect to the database.
