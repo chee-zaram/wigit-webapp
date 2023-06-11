@@ -13,9 +13,9 @@ export default async function Home() {
   const trendingProducts = await getProducts(trendingUrl); 
   
   return (
-    <main className='grid max-w-[75vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
-      <section className='flexbox row-span-3 home_section bg-[#E0DEDD]'>
-        <div className='flex flex-wrap gap-2 justify-center sm:justify-between items-center'>
+    <main className='grid max-w-[100vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
+      <section className='flexbox row-span-2 home_section bg-[#E0DEDD]'>
+        <div className='flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
           <div className='bg-[#E0DEDD]'>
             <Image
             src={ headerImage }
@@ -24,7 +24,7 @@ export default async function Home() {
             height={1101}
             />
           </div>
-          <div className='p-4 md:p-8 md:mr-16 bg-yellow-500'>
+          <div className='p-4 md:p-8 md:mr-16 home_header bg-yellow-500'>
             <h3 className='text-sky-900 text-3xl font-extrabold'>Amazing weave care deals</h3>
             <p className='text-sky-900 text-l'>Don't miss out on our discounts</p>
             <Link href='/products'><button className='bg-accent duration-300 shadow hover:bg-accent/40 px-4 py-1 capitalize rounded-full text-bg text-light_bg'>view deals</button></Link>
@@ -45,11 +45,11 @@ export default async function Home() {
           <button className='w-max'>search</button>
         </div>
       </section>
-      <section className=' p-4 md:px-10 md:py-8 row-span-3 home_section  bg-accent/80' >
+      <section className='flexbox max-w-[100vw] home_trending p-4 md:px-10 md:py-8 row-span-4 home_section  bg-accent/80' >
         <div>
-          <h2 className='text-sky-900 uppercase text-2xl font-extrabold'>See what's trending</h2>
+          <h2 className='text-sky-900 uppercase text-2xl mb-4 font-extrabold'>See what's trending</h2>
         </div>
-        <div className=' flex gap-4 max-w-[70vw] p-4  overflow-x-scroll'>
+        <div className=' flex gap-4 max-w-full p-4  overflow-x-scroll'>
           {
             trendingProducts && trendingProducts.map((item: Product) => (
               < ProductCard { ...item } />
