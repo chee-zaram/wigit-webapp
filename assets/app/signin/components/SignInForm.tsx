@@ -72,7 +72,7 @@ const signInForm = () => {
 
     return (
         <section className=' md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md overflow-hidden'>
-            <div className='md:w-1/2'>
+            <div className='md:w-1/2 flexbox'>
                 <Image 
                     src={ signin }
                     alt=''

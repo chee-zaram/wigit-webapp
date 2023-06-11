@@ -3,7 +3,10 @@ import SignUpForm from '@app/signup/components/SignUpForm';
 
 const SignUp = () => {
     return (
-        <main>
+        <main className='signin_main flex flex-col justify-around items-center'>
+            <div className='mb-6 capitalize font-extrabold text-dark_bg'>
+                <h2>We're glad you found us, please sign up</h2>
+            </div>
             <SignUpForm />
         </main>
     )

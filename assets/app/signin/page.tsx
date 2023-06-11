@@ -1,13 +1,10 @@
 // sign in page
 "use client";
 import SignInForm from '@app/signin/components/SignInForm';
-import { useRouter } from 'next/navigation';
 import { useSignInContext } from '../SignInContextProvider';
-import axios from 'axios';
 
 const signin = () => {
     // check if user is signed in
-    const router = useRouter();
     const { jwt } = useSignInContext();
     const user: any = window.sessionStorage.getItem('user') ?
         JSON.parse(window.sessionStorage.getItem('user')) :
@@ -28,7 +25,7 @@ const signin = () => {
             <div className='mb-6 capitalize font-extrabold text-dark_bg'>
                 <h2>Welcome, please sign in</h2>
             </div>
-                <SignInForm />
+            <SignInForm />
         </main>
     )
     

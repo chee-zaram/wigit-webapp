@@ -7,6 +7,9 @@ import Button from '@components/Button';
 import Input from '@components/Input';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import signupimg from '@/public/assets/images/signup.svg';
+
 
 export const metadata = { title: 'sign up wigit' };
 
@@ -21,7 +24,7 @@ const SignUpForm = () => {
     const [ phoneNumber, setPhoneNumber ] = useState('');
     const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signup";
-    const [ jwt, setJwt ] = useState();
+    const [ setJwt ] = useState();
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
@@ -51,15 +54,26 @@ const SignUpForm = () => {
         event.preventDefault();
         setPhoneNumber(event.target.value);
     };
+    const pushToSignIn = (): void => {
+      router.push('/signin');
+    };
     
     async function handleSignUp (event: any){
         event.preventDefault();
         const newUser = { email, password, repeat_password: confirmPassword, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
-        const { data } = await axios.post(url, newUser);
-        console.log(data ? data : "error loading data...");
-        setJwt(data.jwt);
+        try {
+            const res = await axios.post(url, newUser);
+            console.log(res);
+        // setJwt(data.jwt);
         // on success, redirect to home page, on error, render error message
-        router.push('/');
+        if (res.status != 201) {
+            alert(res.data.msg);
+        }
+            router.push('/signin');
+        }
+        catch(error) {
+            alert(`${error}`)
+        }
     }
     
     // async function prod() {
@@ -69,8 +83,15 @@ const SignUpForm = () => {
     
    
     return (
-        <form onSubmit={ handleSignUp } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>
-            <h1>Sign Up</h1>
+    <section className=' md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md overflow-hidden'>
+        <div className='md:w-1/2 flexbox'>
+            <Image 
+                src={ signupimg }
+                alt=''
+                width={220}
+                height={300}/>
+        </div>
+        <form onSubmit={ handleSignUp } className='md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
             <label htmlFor='email'></label>
             <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
                 type='text'
@@ -135,7 +156,9 @@ const SignUpForm = () => {
                 required={ true }
             />
             <Button type='submit' text='sign up' />
+            <p className='text-sm'>Already shopping with us? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignIn}>sign in</button></p>
         </form>
+    </section>
     )
 };
 
