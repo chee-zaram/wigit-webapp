@@ -13,9 +13,9 @@ export default async function Home() {
   const trendingProducts = await getProducts(trendingUrl); 
   
   return (
-    <main className='grid max-w-[100vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
+    <main className='home_page grid max-w-[100vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
       <section className='flexbox row-span-2 home_section bg-[#E0DEDD]'>
-        <div className='flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
+        <div className='home_header flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
           <div className='bg-[#E0DEDD]'>
             <Image
             src={ headerImage }

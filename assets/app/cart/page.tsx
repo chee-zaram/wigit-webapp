@@ -97,8 +97,8 @@ if (typeof window !== 'undefined') {
                 <Button text='checkout' type='submit' />
             </form>
             </div> :
-            <div className=''>
-            <p>Please <button className='text-accent underline' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>
+            <div className='cart_signin mx-auto w-[80vw] h-[40vh]'>
+                <p className='bg-light_bg/70 p-8 rounded' >Please <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>
             </div>
             }
         </main>
