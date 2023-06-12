@@ -10,9 +10,9 @@ import { useSignInContext } from '@app/SignInContextProvider';
 const Navbar = () => {
     const { jwt, role, setRole, isSignedIn, setIsSignedIn } = useSignInContext();
 //if (typeof window !== 'undefined') {
-    if (window.sessionStorage.getItem('role')) {
-        setRole(window.sessionStorage.getItem('role'));
-        setIsSignedIn(window.sessionStorage.getItem('isSignedIn'));
+    if (sessionStorage.getItem('role')) {
+        setRole(sessionStorage.getItem('role'));
+        setIsSignedIn(sessionStorage.getItem('isSignedIn'));
     } else { setIsSignedIn(false)}
 //}
 const [ isOpen, setIsOpen ] = useState(false);
