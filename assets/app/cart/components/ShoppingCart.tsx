@@ -45,20 +45,22 @@ const ShoppingCart: any = async (props: Item) => {
 
     return (
         <main className='md:container'>
-            <div className='flex center gap-4 p-8 border border-color-slate-700'>
-                <div className=' overflow-hidden h-[120px] w-full'>
-                    <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
-                    />
+            <section className='flex center gap-4 p-4 border border-color-slate-700'>
+                <div>
+                    <div className=' overflow-hidden h-[100px] w-full'>
+                        <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
+                        />
+                        {/* <img className='max-w-[100%]' src={props.product.image_url} alt={ props.product.name } /> */}
+                    </div>
+                    <h1>{props.product.name}</h1>
+                    {/* <h2>amount = { newAmount }</h2> */}
+                    {/* <h2>qty = { newQty }</h2> */}
                 </div>
-                <h1>{props.product.name}</h1>
-                <h2>amount = { newAmount }</h2>
-                <h2>qty = { newQty }</h2>
 
-                {/* <p>{ productObj. name }</p> */}
-                <button onClick={ handleQtyMinus } className='border p-4 rounded-full bg-slate-400'>-</button>
-                <button onClick={ handleQtyPlus } className='border p-4 rounded-full bg-blue-400'>+</button>
-                <button onClick={ handleRemoveItem } className='border p-4 rounded-full bg-red-500'>remove</button>
-            </div>
+                {/* <button onClick={ handleQtyMinus } className=' bg-slate-400'>-</button>
+                <button onClick={ handleQtyPlus } className=' bg-blue-400'>+</button>
+                <button onClick={ handleRemoveItem } className=' bg-red-500'>remove</button> */}
+            </section>
         </main>
     )
 };
