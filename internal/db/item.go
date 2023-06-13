@@ -92,7 +92,7 @@ func GetItemsInCart(userID string) ([]Item, error) {
 	var items []Item
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Order("updated_at asc").
+		return tx.Order("created_at asc").
 			Where("user_id = ?", userID).
 			Where("order_id is NULL").
 			Preload("Product").
