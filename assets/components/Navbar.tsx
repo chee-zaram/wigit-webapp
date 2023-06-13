@@ -39,6 +39,11 @@ const handleMobileNav = () => {
           <Link className='nav_link' href='/dashboard'>Dashboard</Link> :
           <Link className='nav_link' href='/cart'>shopping cart</Link>
         }
+        {
+          role === 'customer' ?
+          <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link> :
+          <Link className='mob_nav_link' onClick={handleMobileNav} href='/'>blank</Link>
+        }
       </nav>
         <div id="nav_mobile" className={isOpen? 'show_nav' : 'hide_nav'}>
             <nav id="nav_mob_cont">
@@ -56,6 +61,11 @@ const handleMobileNav = () => {
                   role === 'admin' ?
                   <Link className='mob_nav_link' onClick={handleMobileNav} href='/dashboard'>Dashboard</Link> :
                   <Link className='mob_nav_link' onClick={handleMobileNav} href='/cart'>shopping cart</Link>
+                }
+                {
+                  role === 'customer' ?
+                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link> :
+                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/'>blank</Link>
                 }
             </nav>
         </div>
