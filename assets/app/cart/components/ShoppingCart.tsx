@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { useSignInContext } from '@app/SignInContextProvider';
 import axios from 'axios';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
-import { NextPage } from 'next';
+// import { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-const ShoppingCart: NextPage<Item> = async (props) => {
+const ShoppingCart: any = async (props: Item) => {
     const [ newQty, setNewQty ] = useState(props.quantity);
     const [ newAmount, setNewAmount ] = useState(Number(props.amount));
     const { jwt } = useSignInContext();
@@ -45,7 +46,11 @@ const ShoppingCart: NextPage<Item> = async (props) => {
     return (
         <main className='md:container'>
             <div className='flex center gap-4 p-8 border border-color-slate-700'>
-                <h1>product name</h1>
+                <div className=' overflow-hidden h-[120px] w-full'>
+                    <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
+                    />
+                </div>
+                <h1>{props.product.name}</h1>
                 <h2>amount = { newAmount }</h2>
                 <h2>qty = { newQty }</h2>
 

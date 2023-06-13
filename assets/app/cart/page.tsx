@@ -13,15 +13,15 @@ import Item from '@app/cart/interfaces/ShoppingCartProps';
 const url = 'https://cheezaram.tech/api/v1/cart';
 const orderUrl = 'https://cheezaram.tech/api/v1/orders';
 
-const Cart = () => {
+const Cart = async () => {
     
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
     const { jwt, setJwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
 
 if (typeof window !== 'undefined') {
-    if (window.sessionStorage.getItem('jwt')) {
-        setJwt(window.sessionStorage.getItem('jwt'));
+    if (sessionStorage.getItem('jwt')) {
+        setJwt(sessionStorage.getItem('jwt'));
     }
 }
     
@@ -29,8 +29,6 @@ if (typeof window !== 'undefined') {
     const router = useRouter();
 
     const getCart = () => {
-        
-    
     fetch(url, {headers: headers})
     .then(res => res.json())
     .then(data => setCart(data.data))
@@ -57,14 +55,14 @@ if (typeof window !== 'undefined') {
         try {
             const { status } = await axios.post(orderUrl, cartData, {headers: headers});
             
-            if ( status == 200 ) {
+            if ( status == 201 ) {
                 router.push('/');
                 alert('order sent'); 
             }
         }
         catch(error) {
             //catch it here
-            alert(`${error}`);
+            alert('something went horribly wrong, and we lost your order. Please shop again.');
         }
     };
     const handleEmptyCart = async() => {
@@ -74,13 +72,12 @@ if (typeof window !== 'undefined') {
     };
     
     useEffect(getCart, []);
-
+    // await getCart();
     return (
         <main>
-            
             { jwt !== 'not authorized' ?
         <div>
-            <h2>shopping cart</h2>
+            <h2 className='text-xxl font-extrabold mb-2'>shopping cart</h2>
             <button onClick={handleEmptyCart}>empty cart</button>
             <p>Sha pay and checkout</p>
             <p>{role}</p>

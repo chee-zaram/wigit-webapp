@@ -29,10 +29,20 @@ const ProductCard: NextPage<Product> = (props) => {
         setSignInAlert(true);
         return;
     }
-    const { status } = await axios.post(url, payload, {headers: headers});
+    if (props.stock <= 0) {
+        alert('out of stock');
+    }
+    try {
+        const { status } = await axios.post(url, payload, {headers: headers});
     if (status != 200) {
         setSomethingWrong(true);
     }
+    }
+    catch (error) {
+            alert('Item already added to cart.');
+            //fix this for other problems
+    }
+    
 };
 
 return (
@@ -47,7 +57,7 @@ return (
         <div className=' p-4 w-full'>
             <h2 className='capitalize text-sm font-bold text-neutral-700 '>{ props.name }</h2>
             <p className='my-1 text-neutral-500 '>{ props.description }</p>
-            <p className={props.category === 'straight' ? 'bg-sky-700 tag' : props.category === 'wavy' ? 'bg-pink-700 tag' : 'bg-teal-600 tag'}>{ props.category}</p>
+            <span className={props.category === 'straight' ? 'bg-sky-700 tag' : props.category === 'wavy' ? 'bg-pink-700 tag' : 'bg-teal-600 tag'}>{ props.category}</span><span className='text-xs text-gray-400 ml-4 '>{props.stock} left</span>
             <p className=' text-accent font-bold'>GHS { props.price }</p>
             <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
         </div>
