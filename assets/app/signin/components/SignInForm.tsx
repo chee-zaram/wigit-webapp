@@ -50,9 +50,11 @@ const signInForm = () => {
             window.sessionStorage.setItem('user', JSON.stringify(data.user))
             console.log(data);
             console.log(isSignedIn);
-            setUser(JSON.parse(window.sessionStorage.getItem('user')));
+            const userDetails = JSON.parse(sessionStorage.getItem('user'));
+            setUser(userDetails);
             console.log(user);
-            console.log(window.sessionStorage.getItem('user'));
+            console.log(userDetails);
+            console.log(sessionStorage.getItem('user'));
             router.push('/');
         }
         }

@@ -20,8 +20,9 @@ export const SignInContext = createContext<SignInContextProps>({
     role: 'customer',
     setRole: (): string => '',
     isSignedIn: false,
+    setIsSignedIn: (): boolean => false,
     user: {},
-    setUser: (): object => {}
+    setUser: ():any => {}
 });
 
 export const SignInContextProvider = ( { children } : { children: React.ReactNode}) => {

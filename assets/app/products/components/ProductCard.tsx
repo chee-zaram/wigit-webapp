@@ -41,6 +41,7 @@ const ProductCard: NextPage<Product> = (props) => {
     catch (error) {
             alert('Item already added to cart.');
             //fix this for other problems
+            return;
     }
     
 };

@@ -77,6 +77,11 @@ if (typeof window !== 'undefined') {
     }
     const handleSubmit = async(event: any) => {
         event.preventDefault();
+        console.log('cart ooo', cart, cart.length );
+        if (cart.length === 0) {
+            alert('empty cart!');
+            return;
+        }
 
         const cartData = { delivery_method: deliveryMethod };
         try {
