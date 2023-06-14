@@ -17,6 +17,7 @@
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
+    "bulma-toast": "^2.4.2",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "json-server": "^0.17.3",

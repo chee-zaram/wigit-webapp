@@ -8,6 +8,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { useSignInContext } from '@app/SignInContextProvider';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductCard: NextPage<Product> = (props) => {
     const { jwt } = useSignInContext();
@@ -26,20 +28,59 @@ const ProductCard: NextPage<Product> = (props) => {
         "Authorization": "Bearer " + jwt
     }
     if (jwt === 'not authorized') {
-        setSignInAlert(true);
+        toast.error('Please sign in to shop with us.', {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
         return;
     }
     if (props.stock <= 0) {
         alert('out of stock');
+        return;
     }
     try {
         const { status } = await axios.post(url, payload, {headers: headers});
-    if (status != 200) {
-        setSomethingWrong(true);
+    if (status != 201) {
+            toast.error(' Something went wrong!', {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    } else {
+        toast.info('Item added to cart', {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
     }
     }
     catch (error) {
-            alert('Item already added to cart.');
+            toast.error('Item already added to cart!', {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
             //fix this for other problems
             return;
     }
@@ -62,6 +103,7 @@ return (
             <p className=' text-accent font-bold'>GHS { props.price }</p>
             <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
         </div>
+        {/* <ToastContainer /> */}
     </div> :
     <div className='w-screen h-screen bg-slate-700 text-white absolute top-50 left-0'>please sign in first.. add link to sign in page...<br/> to be sorted out later ;) handle multiple entries too </div>
     }

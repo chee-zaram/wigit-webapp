@@ -8,6 +8,8 @@ import axios from 'axios';
 import Button from '@components/Button';
 import { useRouter } from 'next/navigation';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const url = 'https://cheezaram.tech/api/v1/cart';
@@ -79,7 +81,16 @@ if (typeof window !== 'undefined') {
         event.preventDefault();
         console.log('cart ooo', cart, cart.length );
         if (cart.length === 0) {
-            alert('empty cart!');
+            toast.error('empty cart!', {
+                position: "top-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
             return;
         }
 
@@ -88,13 +99,31 @@ if (typeof window !== 'undefined') {
             const { status } = await axios.post(orderUrl, cartData, {headers: headers});
             
             if ( status == 201 ) {
+                 toast.success('Order sent, thank you for shopping. Go to profile to track your orders', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                }); 
                 router.push('/');
-                alert('Order sent, thank you for shopping. Go to profile to track your orders'); 
             }
         }
         catch(error) {
             //catch it here
-            alert('something went horribly wrong, and we lost your order. Please shop again.');
+            toast.error('something went horribly wrong, and we lost your order. Please shop again.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
     const handleEmptyCart = async() => {
@@ -144,6 +173,7 @@ if (typeof window !== 'undefined') {
                     </form>
                 </div>
             </section>
+            <ToastContainer />
         </div> :
         <div className='cart_signin mx-auto w-[80vw] h-[40vh]'>
             <p className='bg-light_bg/70 p-8 rounded' >Please <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>

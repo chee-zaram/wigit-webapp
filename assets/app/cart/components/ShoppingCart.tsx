@@ -21,11 +21,16 @@ const ShoppingCart: any = async (props: Item) => {
             setNewQty(newQty - 1);
             setNewAmount( newAmount - (Number(props.amount)/props.quantity));
             //get the price from data
+            try {
+                const qtyUrl = 'https://cheezaram.tech/api/v1/cart/' + props.id + '/' + (newQty - 1);
+                console.log(qtyUrl);
+                const { data, status } = await axios.put(qtyUrl, newQty - 1, {headers: headers});
+                console.log(newQty - 1);
+            } catch (error) {
+                console.log(error);
+                //take this out!
+            }
         }
-        const qtyUrl = 'https://cheezaram.tech/api/v1/cart/' + props.id + '/' + (newQty - 1);
-        console.log(qtyUrl);
-        const { data, status } = await axios.put(qtyUrl, newQty - 1, {headers: headers});
-        console.log(newQty - 1);
     };
     const handleQtyPlus = async() => {
         // check stock
