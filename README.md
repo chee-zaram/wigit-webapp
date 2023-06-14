@@ -1,5 +1,7 @@
 # WIG!T Web Application
 
+![Last Commit][last_commit-badge] ![Contributors][contributors-badge]
+
 > Bringing wig products and services online for easy access and convenience in
 > Ghana.
 
@@ -186,3 +188,6 @@ The code in this repository is not provided under an open source license. It is
 solely intended for internal use within **WIG!T**. If you wish to use this code
 or incorporate it into your own projects, please contact support@wigit.com to
 discuss licensing and obtain permission.
+
+[contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
+[last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
