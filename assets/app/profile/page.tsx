@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 
 const Profile = () => {
     //pass
-    const { jwt } = useSignInContext();
+    const { jwt, setJwt } = useSignInContext();
     const headers = {'Authorization': 'Bearer ' + jwt};
+    
     const user =  JSON.parse(sessionStorage.getItem('user'));
     const router = useRouter();
     
