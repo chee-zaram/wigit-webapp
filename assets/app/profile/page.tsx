@@ -16,8 +16,8 @@ const Profile = () => {
             <div className='main_content bg-gray-100 md:w-3/4'>
                 <h4 className='text-lg font-bold text-dark_bg/80 '>Welcome {user.first_name} </h4>
                 <div className='flex gap-4 flex-wrap justify-center'>
-                <div className='border border-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
-                    <h5 className='mb-4 text-sm uppercase font-bold text-accent'>My orders</h5>
+                <div className='border p-2 flex flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
+                    <h5 className='mb-4 text-sm uppercase font-bold '>Pending orders</h5>
                     <span className="material-symbols-outlined">order_approve</span>
                 </div>
                 <div className='bg-slate-300 min-h-[150px] min-w-[150px]'></div>

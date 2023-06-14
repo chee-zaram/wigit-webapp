@@ -9,7 +9,7 @@ const Input: NextPage<InputProps> = ({ onChange, name, type, placeholder, id, re
         type={ type }
         placeholder={ placeholder }
         id={ id }
-        className='py-1 px-2 outline-none rounded-md'
+        className='py-2 px-4 outline-none text-sm text-bg-dark_bg rounded-md'
         required={ required }
         autoComplete={ autocomplete }
     />

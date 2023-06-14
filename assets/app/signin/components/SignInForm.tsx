@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 import { useSignInContext } from '../../SignInContextProvider';
 import Image from 'next/image';
 import signin from '@/public/assets/images/undraw_mobile_login_re_9ntv.svg';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata = { title: 'sign in wigit' };
 
@@ -55,11 +56,31 @@ const signInForm = () => {
             console.log(user);
             console.log(userDetails);
             console.log(sessionStorage.getItem('user'));
+            toast.success('sign in successful!', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
             router.push('/');
         }
         }
         catch {
-            alert('something went wrong, please check your credentials, and try again.');
+            toast.error('something went wrong, please check your credentials, and try again.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+
         }
     };
     const handleResetPassword = async () => {
@@ -102,6 +123,7 @@ const signInForm = () => {
                 <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>reset it here</button></p>
                 <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>sign up :)</button></p>
             </form>
+            <ToastContainer />
         </section>
     )
 };
