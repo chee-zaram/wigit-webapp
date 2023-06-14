@@ -14,17 +14,18 @@ import (
 //	@contact.url	/contact
 //	@contact.email	ecokeke21@gmail.com
 func main() {
-	env := flags.Parse()
-	// NOTE: in production we will specify the environment variables in our service file
-	// TODO: configure logger path to use standard /var/log dir.
-	/* if env != "prod" {
+	env, logFile := flags.Parse()
+
+	switch env {
+	case "prod":
+		if logFile == nil {
+			log.Panic().Msg("failed to create log file for production mode")
+		}
+		defer logFile.Close()
+	default:
 		if err := godotenv.Load(); err != nil {
 			log.Panic().Err(err).Msg("failed to load .env file")
 		}
-	} */
-
-	if err := godotenv.Load(); err != nil {
-		log.Panic().Err(err).Msg("failed to load .env file")
 	}
 
 	conf := config.NewConfig(env)

@@ -25,7 +25,7 @@ Supported arguments:
 }
 
 // Parse sets up the flags for the build executable.
-func Parse() string {
+func Parse() (string, *os.File) {
 	// use our usage function to display usage message if any error occurs during parsing.
 	flag.Usage = usage
 
@@ -41,5 +41,5 @@ func Parse() string {
 		logger.SetGinLogToFile(logFile)
 	}
 
-	return *env
+	return *env, logFile
 }
