@@ -25,7 +25,6 @@ const handleMobileNav = () => {
     <header id='header' className='mb-10'>
         <Logo />
         <nav id="navbar" className="flex px-4 gap-2 mr-4">
-        <p>...{ isSignedIn }</p>
         <Link className='nav_link font-thin' href='/'>Home</Link>
         {
           isSignedIn == false ?
