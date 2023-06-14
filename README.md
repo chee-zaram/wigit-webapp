@@ -74,7 +74,7 @@ following instructions apply to devolopment and testing. Documentation for the
 backend API is available on
 [GitHub](https://github.com/wigit-gh/webapp/blob/main/internal/api/v1/README.md).
 Documentation on the API has also been done using
-[Swagger](https://cheezaram.tech/api/v1/swagger/index.json).
+[Swagger](https://cheezaram.tech/api/v1/swagger/index.html).
 
 ##### Dependencies
 
