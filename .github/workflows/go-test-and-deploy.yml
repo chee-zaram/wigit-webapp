@@ -1,12 +1,14 @@
-name: Go Test and Format Checks
+name: Go Test and Deploy Backend
 
 on:
   push:
-    branches: ['*']
+    branches:
+      - '*'
   pull_request:
-    branches: [main]
+    branches:
+      - main
   schedule:
-  - cron: '0 10 * * 1' # run "At 10:00 on Monday"
+    - cron: '0 10 * * 1'
   workflow_call:
     inputs:
       skipTests:
@@ -16,7 +18,7 @@ on:
         type: boolean
 
 jobs:
-  run:
+  test:
     name: Go Test and Format Checks
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -29,8 +31,10 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: WWApp-dev-pwd-0
+          MYSQL_USER: wwapp_dev
+          MYSQL_PASSWORD: WWApp-dev-pwd-0
           MYSQL_DATABASE: wwapp_dev_db_test
+          MYSQL_ROOT_PASSWORD: WWApp-dev-pwd-0
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -72,8 +76,41 @@ jobs:
 
       - name: Go Test
         if: ${{ !inputs.skipTests }}
-        run: go test -v -count=1 -race -shuffle=on -coverprofile=- ./...
+        run: go test -v -count=1 -race -shuffle=on -coverprofile=coverage.txt ./...
 
       - name: Go Benchmark
         if: ${{ !inputs.skipTests }}
         run: go test -v -shuffle=on -run=- -bench=. -benchtime=1x ./...
+
+  deploy:
+    name: Deploy Backend
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        go: ['1.20.x']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Servers
+        uses: appleboy/ssh-action@v0.1.10
+        env:
+          BE_EXEC: ${{ secrets.BE_EXEC }}
+        with:
+          host: "${{ secrets.BE_SERVER_01 }},${{ secrets.BE_SERVER_02 }}"
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          script_stop: true
+          envs: BE_EXEC
+          script: |
+            if [[ ! -d webapp ]]; then
+              git clone https://github.com/wigit-gh/webapp.git
+            fi
+            cd webapp
+            git stash && git checkout main && git pull origin
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh
