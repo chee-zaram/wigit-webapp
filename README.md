@@ -3,15 +3,15 @@
 > Bringing wig products and services online for easy access and convenience in
 > Ghana.
 
-> ![Home Top](https://imgur.com/AMIfkWe.png)
+![Home Top](https://imgur.com/AMIfkWe.png)
 
-> ![Home Trending](https://imgur.com/lAKPnhZ.png)
+![Home Trending](https://imgur.com/lAKPnhZ.png)
 
-> ![Products Top](https://imgur.com/h5ALl13.png)
+![Products Top](https://imgur.com/h5ALl13.png)
 
-> ![Products Bottom](https://imgur.com/4OCT8Ea.png)
+![Products Bottom](https://imgur.com/4OCT8Ea.png)
 
-> ![Sign In](https://imgur.com/UddM0co.png)
+![Sign In](https://imgur.com/UddM0co.png)
 
 ## Table of Content
 
