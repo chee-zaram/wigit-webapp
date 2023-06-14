@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 const SignOut = () => {
     const router = useRouter();
     const { setJwt, setIsSignedIn, setRole } = useSignInContext();
+
     const handleSignOut = () => {
         window.sessionStorage.clear();
         setIsSignedIn(false);
@@ -16,9 +17,11 @@ const SignOut = () => {
     };
     
     return (
-        <main>
-            <Button onClick={ handleSignOut } text='sign out' />
-        </main>
+        <div className='logout min-h-[60vh] min-w-[60vw] flex items-center justify-center'>
+            <div className=''>
+                <Button onClick={ handleSignOut } text='sign out'/>
+            </div>
+        </div>
     )
 };
 
