@@ -111,6 +111,6 @@ jobs:
               git clone https://github.com/wigit-gh/webapp.git
             fi
             cd webapp
-            git stash && git checkout main && git pull origin
+            git stash && git checkout main && git pull origin --rebase
             chmod +x ./scripts/deploy.sh
             ./scripts/deploy.sh
