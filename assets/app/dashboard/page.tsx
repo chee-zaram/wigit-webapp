@@ -44,7 +44,7 @@ const Dashboard = async () => {
     
     return (
         <main className='grid md:grid-rows'>
-            <div className='bg-slate-600 '><h2>welcome to your dashboard<br/> fucking awesome shit..</h2></div>
+            <div className='bg-slate-600'><h2>welcome to your dashboard<br/> fucking awesome shit..</h2></div>
             <div>
                 { orders && orders.map((order: any) => (
             <div key={ order.id }>
