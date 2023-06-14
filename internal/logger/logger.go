@@ -54,7 +54,7 @@ func ConfigureLogger(env string) *os.File {
 
 // createLogDir creates a directory for the program logs if not exists.
 func createLogDir() {
-	if err := os.Mkdir(logsDir, 0744); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(logsDir, 0744); err != nil {
 		log.Fatal().Err(err).Msg("unable to create logs directory")
 	}
 }
