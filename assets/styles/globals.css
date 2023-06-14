@@ -96,7 +96,8 @@ body {
 
 }
 .logout {
-    background-image: url('../public/assets/images/logout.svg');
+    background-image: url('../public/assets/images/notfound.svg');
+    
 }
 .overlay {
     width: 100%;

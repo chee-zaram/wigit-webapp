@@ -3,29 +3,29 @@ package db
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/logger"
+	"github.com/wigit-gh/webapp/internal/db/models"
 	"gorm.io/gorm"
 )
 
 var (
 	// conf is the configuration we'll use to connect to our db during testing.
-	// Make sure run scripts/setup_dev_db to create user and databases.
 	conf = config.Config{
-		DBUser: "wwapp_dev",
-		DBPass: "WWApp-dev-pwd-0",
+		DBUser: "root",
+		DBPass: "WWApp-dev-pwd-0", // modify this to be your local root password but change back before pushing
 		DBHost: "localhost",
 		DBPort: "3306",
-		DBName: "wwapp_dev_db_test",
+		DBName: "wwapp_dev_db_test", // make sure the create this db. there's a script in /scripts
 	}
 
 	// dsn is the domain string name to connect to the database.
 	dsn = NewDatabaseDSN(conf)
 
 	// Database object
-	db = GetConnector(conf)
+	db, _ = NewDB(dsn)
 
 	// All table names
 	tableNames = struct {
@@ -46,10 +46,11 @@ var (
 // It sets all environment variables to ensure all tests can be carried out,
 // and resets the variables when tests are done.
 func TestMain(m *testing.M) {
-	logger.ConfigureLogger("dev")
-
 	// Drop all existing tables to start from clean slate
-	db.Exec("DROP TABLES IF EXISTS users, orders, bookings, services, slots, products, items;")
+	db.Raw("DROP TABLES IF EXISTS ?, ?, ?, ?, ?, ?, ?;",
+		tableNames.users, tableNames.products, tableNames.orders, tableNames.bookings,
+		tableNames.items, tableNames.services, tableNames.slots,
+	)
 
 	// Call NewDB to perform automigration
 	db, _ = NewDB(dsn)
@@ -126,16 +127,15 @@ func TestNewDBAutoMigration(t *testing.T) {
 // TestBeforeCreateHook performs a create operation on the database.
 func TestBeforeCreateHook(t *testing.T) {
 	assert := assert.New(t)
+	slotTime := new(time.Time)
 	isFree := new(bool)
-	slot := new(Slot)
-	dbSlot := new(Slot)
+	slot := new(models.Slot)
+	dbSlot := new(models.Slot)
 
-	dateString := "Mon, 26 Jan 2024"
-	timeString := "10:50 AM"
-	*slot = Slot{
-		DateString: &dateString,
-		TimeString: &timeString,
-		IsFree:     isFree,
+	*slotTime = time.Now()
+	*slot = models.Slot{
+		DateTime: slotTime,
+		IsFree:   isFree,
 	}
 
 	if err := db.Query(func(tx *gorm.DB) error {
