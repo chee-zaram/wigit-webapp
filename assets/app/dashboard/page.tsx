@@ -10,7 +10,7 @@ import Orders from '@app/dashboard/components/Orders';
 const Dashboard = async () => {
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
 
-    const { jwt, setJwt, role, setRole } = useSignInContext();
+    const { jwt, setJwt, setRole } = useSignInContext();
     
     if (window.sessionStorage.getItem('jwt')) {
             setJwt(window.sessionStorage.getItem('jwt'));
