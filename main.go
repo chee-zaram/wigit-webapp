@@ -19,12 +19,12 @@ func main() {
 	switch env {
 	case "prod":
 		if logFile == nil {
-			log.Panic().Msg("failed to create log file for production mode")
+			log.Panic().Msg("failed to create log file for prod mode")
 		}
 		defer logFile.Close()
 	default:
 		if err := godotenv.Load(); err != nil {
-			log.Panic().Err(err).Msg("failed to load .env file")
+			log.Panic().Err(err).Msg("failed to load .env file in dev mode")
 		}
 	}
 
