@@ -47,11 +47,11 @@ const ProductCard: NextPage<Product> = (props) => {
 };
 
 return (
-    <section>
+    <section className='h-full'>
         { !signInAlert ?
-        <div className='bg-white shrink-0 shadow-lg overflow-hidden rounded w-[200px] min-h-[250px] flexbox_row hover:scale-105 duration 400'>
+        <div className='bg-white shrink-0 shadow-lg h-full overflow-hidden rounded w-[150px] md:w-[200px] flexbox_row hover:scale-105 duration 400'>
         <div className=' overflow-hidden h-[120px] w-full'>
-            <Image src={ props.image_url } alt={ props.name } width={200} height={100}
+            <Image src={ props.image_url } alt={ props.name } width={200} height={120}
              className='object-cover'
             />
         </div>
@@ -66,7 +66,6 @@ return (
     <div className='w-screen h-screen bg-slate-700 text-white absolute top-50 left-0'>please sign in first.. add link to sign in page...<br/> to be sorted out later ;) handle multiple entries too </div>
     }
     </section>
-    
 )};
 
 export default ProductCard;
