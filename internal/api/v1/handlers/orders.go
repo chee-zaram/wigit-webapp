@@ -14,7 +14,10 @@ type NewOrder struct {
 	// DeliveryMethod is the method in which the order should be deliver.
 	//
 	// Allowed values are `pickup`, `delivery`.
-	DeliveryMethod *string `json:"delivery_method" binding:"required"`
+	DeliveryMethod *string `json:"delivery_method" binding:"required,max=45"`
+	// ShippingAddress is the address in which the current order should be delivered
+	// if the DeliveryMethod is `delivery`.
+	ShippingAddress *string `json:"shipping_address"`
 }
 
 // validate validates the values of the fields in the NewOrder body.
@@ -170,9 +173,10 @@ func CustomerPostOrders(ctx *gin.Context) {
 		return
 	}
 
-	order := newOrder(_order)
-	order.Items = items
-	order.TotalAmount = getOrderTotal(items)
+	order := newOrder(_order, items)
+	if *order.DeliveryMethod == "delivery" && order.ShippingAddress == nil {
+		order.ShippingAddress = user.Address
+	}
 	user.Orders = append(user.Orders, *order)
 
 	if err := user.SaveToDB(); err != nil {
@@ -192,9 +196,15 @@ func CustomerPostOrders(ctx *gin.Context) {
 }
 
 // newOrder fills up fields in the db.Order object from NewOrder and returns it.
-func newOrder(newOrder *NewOrder) *db.Order {
+func newOrder(newOrder *NewOrder, items []db.Item) *db.Order {
 	order := new(db.Order)
 	order.DeliveryMethod = newOrder.DeliveryMethod
+	order.Items = items
+	order.TotalAmount = getOrderTotal(items)
+
+	if *newOrder.DeliveryMethod == "delivery" && newOrder.ShippingAddress != nil {
+		order.ShippingAddress = newOrder.ShippingAddress
+	}
 
 	return order
 }

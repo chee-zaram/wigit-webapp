@@ -79,6 +79,9 @@ type Order struct {
 
 	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status" binding:"-"`
+
+	// ShippingAddress is the address where the order is to be delivered.
+	ShippingAddress *string `gorm:"type:varchar(255);" json:"shipping_address" binding:"-"`
 }
 
 // Product represents a unique product sold by the company.
