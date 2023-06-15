@@ -59,7 +59,9 @@ const AllOrders = async() => {
         <section>
         { allOrders.length > 0 ?
         <section>
-        <button onClick={HandleBack} className='mb-6 ml-[10vw] hover:bg-accent/60 hover:text-light_bg block py-2 px-12 border border-accent rounded shadow text-start font-bold text-accent'>Back</button>
+            <div onClick={() => {router.back()}} className='mb-6 hover:bg-accent/80 text-right ml-[10vw] duration-300 rounded-full p-3 max-w-max'>
+               <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-160 160-480l320-320 42 42-248 248h526v60H274l248 248-42 42Z"/></svg> 
+            </div>
             <h2 className='font-bold text-lg text-accent mb-4'>Confirmed orders</h2>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                 { allOrders && allOrders.map((order: any) => (
@@ -82,9 +84,13 @@ const AllOrders = async() => {
             </div>
             <ToastContainer />
         </section> :
-        <div>
-            <button onClick={HandleBack} className='mb-6 ml-[10vw] hover:bg-accent/60 hover:text-light_bg block py-2 px-12 border border-accent rounded shadow text-start font-bold text-accent'>Back</button>
-            <p>You currently have no confirmed orders</p>
+        <div className='no_orders_bg'>
+            <div onClick={() => {router.back()}} className='mb-6 hover:bg-accent/80 text-right ml-[10vw] duration-300 rounded-full p-3 max-w-max'>
+               <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-160 160-480l320-320 42 42-248 248h526v60H274l248 248-42 42Z"/></svg> 
+            </div>
+            {/* <p className='p-4 rounded shadow bg-light_bg/40 max-w-max mx-auto text-md font-bold text-dark_bg'>You currently have no confirmed orders</p> */}
+                        <p className='p-4 rounded shadow bg-light_bg/40 max-w-max mx-auto text-md font-bold text-dark_bg'><span onClick={() => {router.push('/products')}} className='cursor-pointer underline text-accent'>Shop now</span> to see your orders here </p>
+
         </div>
         }
         </section>

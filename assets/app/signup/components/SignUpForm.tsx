@@ -72,7 +72,7 @@ const SignUpForm = () => {
             router.push('/signin');
         }
         catch(error) {
-            alert(`${error}`)
+            console.log(`${error}`)
         }
     }
     

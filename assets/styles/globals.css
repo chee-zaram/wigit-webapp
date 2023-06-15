@@ -86,18 +86,19 @@ body {
     background-position: top;
     height: 30vh;
 } */
-.cart_signin, .logout {
+.cart_signin, .logout, .no_orders_bg {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: bottom;
 }
 .cart_signin {
         background-image: url('../public/assets/images/feeling_blue.svg.svg');
-
 }
 .logout {
     background-image: url('../public/assets/images/undraw_login_re_4vu2.svg');
-    
+}
+.no_orders_bg {
+    background-image: url('../public/assets/images/undraw_empty_cart_co35.svg');
 }
 .overlay {
     width: 100%;
@@ -314,4 +315,22 @@ body {
 }
 .signin_alert_hide {
     display: none;
+}
+.spinner {
+    border: 12px solid var(--accent-color);
+    border-top: 12px solid var(--dark-color);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 100px;
+    height: 100px;
+    margin: -76px 0 0 -76px;
+    border-radius: 50%;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

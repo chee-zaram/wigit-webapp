@@ -1,9 +1,9 @@
-// loading page for sign in
+// design loading skeleton
 
-const signInLoaing = () => (
-    <main>
-        <h3>Letting you in in a giffy ;)</h3>
-    </main>
+
+const SignInLoading = () => (
+    <div className='spinner'>
+    </div>
 );
 
-export default signInLoaing;
+export default SignInLoading;

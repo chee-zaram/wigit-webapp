@@ -3,11 +3,17 @@
 
 import { useSignInContext } from '@app/SignInContextProvider';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const Profile = () => {
     //pass
     const { jwt, setJwt } = useSignInContext();
-    const headers = {'Authorization': 'Bearer ' + jwt};
+    if (typeof window !== 'undefined') {
+        if (sessionStorage.getItem('jwt')) {
+            setJwt(sessionStorage.getItem('jwt'));
+        };
+    };
+    // const headers = {'Authorization': 'Bearer ' + jwt};
     
     const user =  JSON.parse(sessionStorage.getItem('user'));
     const router = useRouter();
@@ -25,6 +31,12 @@ const Profile = () => {
         //submit pre-filled form
         router.push('profile/my_profile');
     };
+    const authorizeUser = () => {
+        if (jwt === 'not authorized') {
+            router.push('/signin');
+        }
+    };
+    useEffect(authorizeUser, []);
 
     return (
         <section className='w-[100vw] min-h-screen md:flex'>
