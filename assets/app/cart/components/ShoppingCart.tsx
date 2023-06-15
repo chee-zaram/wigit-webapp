@@ -13,7 +13,13 @@ const ShoppingCart: any = async (props: Item) => {
     const [ newQty, setNewQty ] = useState(props.quantity);
     const [ newAmount, setNewAmount ] = useState(Number(props.amount));
     const [ hideItem, setHideItem ] = useState(false);
-    const { jwt } = useSignInContext();
+    const { jwt, setJwt } = useSignInContext();
+
+    if (typeof window !== 'undefined') {
+        if (sessionStorage.getItem('jwt')) {
+            setJwt(sessionStorage.getItem('jwt'));
+        };
+    };
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
 

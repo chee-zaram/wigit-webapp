@@ -13,7 +13,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ProductCard: NextPage<Product> = (props) => {
-    const jwt = sessionStorage.getItem('jwt');
+    const { jwt, setJwt } = useSignInContext();
+    
+    if (typeof window !== 'undefined') {
+        if (sessionStorage.getItem('jwt')) {
+            setJwt(sessionStorage.getItem('jwt'));
+        }
+}
+
     const [ signInAlert, setSignInAlert ] = useState(false);
     const [ viewCart, setViewCart ] = useState(false);
     
