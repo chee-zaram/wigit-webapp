@@ -22,10 +22,15 @@ const ProfilePage = () => {
             <button>Edit</button>
             {!editProfile ?
                 <div>
+                    <p>email</p>
                     <p>{ user.email }</p>
+                    <p>first name</p>
                     <p>{ user.first_name }</p>
+                    <p>last name</p>
                     <p>{ user.last_name }</p>
+                    <p>address</p>
                     <p>{ user.address }</p>
+                    <p>phone</p>
                     <p>{ user.phone }</p>
                 </div> :
                 <form className=' bg-accent'>
