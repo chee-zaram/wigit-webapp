@@ -60,7 +60,7 @@ const AllOrders = async() => {
         { allOrders.length > 0 ?
         <section>
         <button onClick={HandleBack} className='mb-6 ml-[10vw] hover:bg-accent/60 hover:text-light_bg block py-2 px-12 border border-accent rounded shadow text-start font-bold text-accent'>Back</button>
-            <h2 className='font-bold text-lg text-accent mb-4'>Pending orders</h2>
+            <h2 className='font-bold text-lg text-accent mb-4'>Confirmed orders</h2>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                 { allOrders && allOrders.map((order: any) => (
                     <Link href={'/profile/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>

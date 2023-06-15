@@ -39,9 +39,8 @@ const handleMobileNav = () => {
           <Link className='nav_link' href='/cart'>shopping cart</Link>
         }
         {
-          role === 'customer' ?
-          <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link> :
-          <Link className='mob_nav_link' onClick={handleMobileNav} href='/'>blank</Link>
+          role === 'customer' &&
+          <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link>
         }
       </nav>
         <div id="nav_mobile" className={isOpen? 'show_nav' : 'hide_nav'}>
@@ -62,9 +61,8 @@ const handleMobileNav = () => {
                   <Link className='mob_nav_link' onClick={handleMobileNav} href='/cart'>shopping cart</Link>
                 }
                 {
-                  role === 'customer' ?
-                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link> :
-                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/'>blank</Link>
+                  role === 'customer' &&
+                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/profile'>Profile</Link>
                 }
             </nav>
         </div>
