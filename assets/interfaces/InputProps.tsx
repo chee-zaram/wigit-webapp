@@ -9,4 +9,5 @@ export default interface InputProps {
     onChange: ChangeEventHandler<HTMLInputElement>;
     required?: boolean;
     autocomplete?: 'on' | 'off';
+    value?: string;
 }

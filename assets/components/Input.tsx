@@ -2,7 +2,7 @@
 import { NextPage } from 'next';
 import InputProps from '@interfaces/InputProps';
 
-const Input: NextPage<InputProps> = ({ onChange, name, type, placeholder, id, required, autocomplete } ) => (
+const Input: NextPage<InputProps> = ({ onChange, name, type, placeholder, id, required, autocomplete, value } ) => (
     <input
         onChange={ onChange }
         name={ name }
@@ -12,6 +12,7 @@ const Input: NextPage<InputProps> = ({ onChange, name, type, placeholder, id, re
         className='py-2 px-4 outline-none text-sm text-bg-dark_bg rounded-md'
         required={ required }
         autoComplete={ autocomplete }
+        value={ value }
     />
 );
 
