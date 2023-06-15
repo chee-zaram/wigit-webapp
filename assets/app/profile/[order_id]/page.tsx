@@ -60,6 +60,7 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                 className='inline cursor-pointer p-2 rounded text-accent text-sm underline font-bold hover:bg-dark_bg/60'
                 onClick={() => copy(params.order_id.split('-')[0])}>{ params.order_id.split('-')[0]}
             </span></h3>
+            <p className='font-bold text-lg my-2'>Items</p>
             <div>
             {order && order.items.map((item:any) => (
                 <div key={ item.id }
