@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSignInContext } from '@app/SignInContextProvider';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Link from 'next/link';
 
 const url = 'https://cheezaram.tech/api/v1/orders';
 
@@ -37,8 +38,8 @@ const AllOrders = async() => {
     const router = useRouter();
     const [ allOrders, setAllOrders ] = useState<string []>([]);
 
-    const Handleback = () => {
-        router.push('/profile');
+    const HandleBack = () => {
+        router.back();
     };
 
 // const [allOrders, setAllOrders] = useState<any>([]);
@@ -83,13 +84,11 @@ const AllOrders = async() => {
 
     return (
         <section>
-            <button onClick={Handleback}>
-                <span>Back</span>
-            </button>
+        <button onClick={HandleBack} className='mb-6 ml-[10vw] hover:bg-accent/60 hover:text-light_bg block py-2 px-12 border border-accent rounded shadow text-start font-bold text-accent'>Back</button>
             <h2 className='font-bold text-lg text-accent mb-4'>All orders</h2>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                 { allOrders && allOrders.map((order: any) => (
-                    <div key={ order.id } className='border border-accent w-full py-3 px-6'>
+                    <Link href={'/profile/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>
                         <h3>Reference: 
                         <span
                         className=' px-2 text-accent text-sm underline font-bold'
@@ -98,10 +97,11 @@ const AllOrders = async() => {
 
                         </h3>
                         <div>
+                            <p>Items: <span className='font-bold text-sm'>{ order.items.length }</span></p>
                             <p>Total: <span className='font-bold text-sm'>GHS { order.total_amount }</span></p>
-                            <p>Delivery method: <span>{ order.delivery_method }</span></p>
+                            <p>Delivery method: <span className='font-bold text-sm'>{ order.delivery_method }</span></p>
                         </div>
-                    </div>
+                    </Link>
                 ))
                 }
             </div>
