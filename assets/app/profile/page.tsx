@@ -29,8 +29,8 @@ const Profile = () => {
     return (
         <section className='w-[100vw] min-h-screen md:flex'>
             <div className='side_panel bg-dark_bg md:w-1/4'>side panel</div>
-            <div className='main_content bg-gray-100 md:w-3/4'>
-                <h4 className='p-4 text-lg font-bold text-dark_bg/70 '>Welcome {user.first_name} </h4>
+            <div className='main_content md:w-3/4'>
+                <h4 className='p-4 text-lg font-bold text-dark_bg/70 '>Welcome back, {user.first_name}!</h4>
                 {/* <p>track an order here... search</p> */}
                 <div className='flex gap-4  flex-wrap justify-center'>
                 <div onClick={handleAllOrders} className='border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
