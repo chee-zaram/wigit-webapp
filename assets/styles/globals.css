@@ -126,7 +126,7 @@ body {
 }
 .profile_data {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     padding: 0.5rem;
 }
@@ -316,7 +316,7 @@ body {
     display: none;
 }
 .spinner {
-    border: 10px solid #fff;
+    border: 10px solid #1b1b1b;
     border-top: 10px solid var(--accent-color);
     position: absolute;
     left: 50%;
