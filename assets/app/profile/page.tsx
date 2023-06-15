@@ -21,6 +21,10 @@ const Profile = () => {
     const handleConfirmedOrders = () => {
         router.push('profile/confirmed_orders');
     };
+    const handleEditProfile = () => {
+        //submit pre-filled form
+        router.push('profile/my_profile');
+    };
 
     return (
         <section className='w-[100vw] min-h-screen md:flex'>
@@ -41,8 +45,8 @@ const Profile = () => {
                     <h5 className='mb-4 text-sm uppercase font-bold '>Confirmed orders</h5>
                     <span className="material-symbols-outlined">order_approve</span>
                 </div>
-                <div className='border p-2 flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
-                    <h5 className='mb-4 text-sm uppercase font-bold '>My profile</h5>
+                <div onClick={handleEditProfile} className='border p-2 flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
+                    <h5 className='mb-4 text-sm uppercase font-bold '>Edit my profile</h5>
                     <span className="material-symbols-outlined">order_approve</span>
                 </div>
                 </div>

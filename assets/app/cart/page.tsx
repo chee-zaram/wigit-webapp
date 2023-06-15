@@ -34,15 +34,7 @@ if (typeof window !== 'undefined') {
     let sum: number = 0;
 
     const getCart = () => {
-        // try {
-        //     const { data, status } = await axios.get(url, {headers: headers});
-        //     if (status == 200 ) {
-        //         setCart(data.data);
-        //     }
-        // }
-        // catch(error) {
-        //     alert('something went wrong');
-        // }
+        
         if (jwt === 'not authorized') {
             return;
         }

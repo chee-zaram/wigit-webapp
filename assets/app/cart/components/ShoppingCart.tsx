@@ -43,8 +43,8 @@ const ShoppingCart: any = async (props: Item) => {
     };
     const handleRemoveItem = async() => {
         await axios.delete('https://cheezaram.tech/api/v1/cart/' + props.id, {headers: headers});
-        router.push('/');
-        // router.push('/cart');
+        // router.push('/');
+        router.push('/cart');
         
     };
 
