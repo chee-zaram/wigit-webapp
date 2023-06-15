@@ -16,10 +16,14 @@ const ProfilePage = () => {
     const user =  JSON.parse(sessionStorage.getItem('user'));
     const router = useRouter();
     
+    const handleEditProfile = () => {
+        setEditProfile(currValue => !currValue);
+    }
+    
     //update session storage with details
     return (
         <section>
-            <button>Edit</button>
+            <button onClick={handleEditProfile}>Edit</button>
             {!editProfile ?
                 <div>
                     <p>email</p>
