@@ -44,18 +44,11 @@ const signInForm = () => {
             setJwt(data.jwt);
             setRole(data.user.role);
             setIsSignedIn(true);
-            // setUser(data.user);
+            setUser(data.user);
             window.sessionStorage.setItem('jwt', data.jwt);
             window.sessionStorage.setItem('role', data.user.role);
-            window.sessionStorage.setItem('isSignedIn', true);
+            window.sessionStorage.setItem('isSignedIn', JSON.stringify(true));
             window.sessionStorage.setItem('user', JSON.stringify(data.user))
-            console.log(data);
-            console.log(isSignedIn);
-            const userDetails = JSON.parse(sessionStorage.getItem('user'));
-            setUser(userDetails);
-            console.log(user);
-            console.log(userDetails);
-            console.log(sessionStorage.getItem('user'));
             toast.success('sign in successful!', {
                 position: "top-center",
                 autoClose: 3000,
@@ -80,7 +73,6 @@ const signInForm = () => {
                 progress: undefined,
                 theme: "colored",
             });
-
         }
     };
     const handleResetPassword = async () => {
