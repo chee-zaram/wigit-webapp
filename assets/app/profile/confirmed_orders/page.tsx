@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
-const url = 'https://cheezaram.tech/api/v1/orders/status/confirmed';
+const url = 'https://cheezaram.tech/api/v1/orders/status/paid';
 
 const AllOrders = async() => {
     const router = useRouter();
