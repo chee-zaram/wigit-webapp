@@ -15,7 +15,7 @@
 
 ![Sign In](https://imgur.com/UddM0co.png)
 
-## Table of Content
+## Table of Contents
 
 - [Introduction](#introduction)
 - [Starting the Application](#starting-the-application)
@@ -153,8 +153,9 @@ Signed in users can additionally:
 - View cart
 - Place orders
 - Book services
-- Track orders and services
+- Track orders and bookings
 - View and edit profile
+- Delete their account
 
 Admins can:
 
@@ -166,8 +167,8 @@ Super Admins can:
 - Get all users information
 - See all admins
 - See all customers
-- Delete a user account
 - Update previleges for a user account
+- Delete an account
 
 ## Contributing
 
