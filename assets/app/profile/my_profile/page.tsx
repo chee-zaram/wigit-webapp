@@ -28,12 +28,12 @@ const ProfilePage = () => {
                     <p>{ user.address }</p>
                     <p>{ user.phone }</p>
                 </div> :
-                <form>
+                <form className=' bg-accent'>
+                    <Input placeholder='first name' name='first_name' onChange={() => {}} type='text' id='first_name' />
                     <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
                     <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
                     <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Button />
+                    <Button type='submit' text='Edit' />
                 </form>
             }
         </section>
