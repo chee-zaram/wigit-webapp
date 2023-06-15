@@ -112,8 +112,8 @@ const signInForm = () => {
                     required={ true }
                 />
                 <Button type='submit' text='sign in' />
-                <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>reset it here</button></p>
-                <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>sign up :)</button></p>
+                <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>Reset it here</button></p>
+                <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>Sign Up :)</button></p>
             </form>
             <ToastContainer />
         </section>

@@ -36,7 +36,7 @@ const handleMobileNav = () => {
         {
           role === 'admin' ?
           <Link className='nav_link' href='/dashboard'>Dashboard</Link> :
-          <Link className='nav_link' href='/cart'>shopping cart</Link>
+          <Link className='nav_link' href='/cart'>Shopping Cart</Link>
         }
         {
           role === 'customer' &&
@@ -58,7 +58,7 @@ const handleMobileNav = () => {
                 {
                   role === 'admin' ?
                   <Link className='mob_nav_link' onClick={handleMobileNav} href='/dashboard'>Dashboard</Link> :
-                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/cart'>shopping cart</Link>
+                  <Link className='mob_nav_link' onClick={handleMobileNav} href='/cart'>Shopping Cart</Link>
                 }
                 {
                   role === 'customer' &&
