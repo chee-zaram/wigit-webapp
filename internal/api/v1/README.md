@@ -69,7 +69,7 @@ where applicable, as well as response codes and types.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
     <li><h4>/orders/status/{status} *</h4>
-    Get all orders based on the status for the current user.
+    Get all orders based on the status for the current user. Values are <b>pending</b>, <b>paid</b>, <b>shipped</b>, <b>delivered</b>, or <b>cancelled</b>.
     On success, it will return a <b>200</b> response code with a <b>data</b> object in the payload which will be a list of orders.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
@@ -104,7 +104,7 @@ where applicable, as well as response codes and types.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
     <li><h4>/admin/orders/status/{status} **</h4>
-    Get all orders with given status from the database.
+    Get all orders with given status from the database. Values are <b>pending</b>, <b>paid</b>, <b>shipped</b>, <b>delivered</b>, or <b>cancelled</b>.
     On success, it will return a <b>200</b> response code with a <b>data</b> object in the payload which will be a list of orders.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
     </li>
