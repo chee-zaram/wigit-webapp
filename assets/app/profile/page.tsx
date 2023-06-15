@@ -28,8 +28,12 @@ const Profile = () => {
 
     return (
         <section className='w-[100vw] min-h-screen md:flex'>
-            <div className='side_panel bg-dark_bg md:w-1/4'>side panel</div>
-            <div className='main_content md:w-3/4'>
+            <div className='side_panel bg-dark_bg md:w-1/8 md:mr-4 '>
+                <div>
+                    side panel
+                </div>
+            </div>
+            <div className='main_content md:w-7/4'>
                 <h4 className='p-4 text-lg font-bold text-dark_bg/70 '>Welcome back, {user.first_name}!</h4>
                 {/* <p>track an order here... search</p> */}
                 <div className='flex gap-4  flex-wrap justify-center'>

@@ -96,7 +96,7 @@ body {
 
 }
 .logout {
-    background-image: url('../public/assets/images/notfound.svg');
+    background-image: url('../public/assets/images/undraw_login_re_4vu2.svg');
     
 }
 .overlay {
@@ -122,6 +122,12 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: stretch
+}
+.profile_data {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0.5rem;
 }
 .tag {
     padding: 0.1rem 0.5rem;
