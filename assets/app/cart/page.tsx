@@ -33,27 +33,6 @@ if (typeof window !== 'undefined') {
     const router = useRouter();
     let sum: number = 0;
 
-    const getCart = () => {
-        
-        if (jwt === 'not authorized') {
-            return;
-        }
-        try {
-            fetch(url, {headers: headers, next: {"revalidate": 0}})
-            .then(res => res.json())
-            .then(data => setCart(data.data))
-            
-            cart.forEach((item:Item) => {
-                let num = Number(item.amount);
-                sum += num;
-            })
-            setTotal(sum);
-            console.log(total, sum);
-
-        } catch(error) {
-            alert('failed to fetch cart, please try again');
-        }
-    };
     
     // const handleSetDelivery = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     console.log(deliveryMethod);
@@ -124,7 +103,30 @@ if (typeof window !== 'undefined') {
         
     };
     
-    useEffect(getCart, []);
+    useEffect(() => {
+        const getCart = () => {
+        
+        if (jwt === 'not authorized') {
+            return;
+        }
+        try {
+            fetch(url, {headers: headers, next: {"revalidate": 0}})
+            .then(res => res.json())
+            .then(data => setCart(data.data))
+            
+            cart.forEach((item:Item) => {
+                let num = Number(item.amount);
+                sum += num;
+            })
+            setTotal(sum);
+            console.log(total, sum);
+
+        } catch(error) {
+            console.log('failed to fetch cart, please try again');
+        }
+    };
+    getCart();
+    }, []);
     return (
         <main>
             { jwt !== 'not authorized' ?
