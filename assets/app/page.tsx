@@ -1,10 +1,11 @@
-
+// Home page
 import Image from 'next/image';
 import headerImage from '@/public/assets/images/afro_girl.png';
 import { getProducts } from '@app/products/page';
 import { Product } from './products/interfaces/product';
 import ProductCard from './products/components/ProductCard';
 import Link from 'next/link';
+import { ToastContainer } from 'react-toastify';
 
 
 export default async function Home() {
@@ -64,6 +65,7 @@ export default async function Home() {
           <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-500'>view events</div>
           <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-700'>newsletter?? omo!!</div>
       </section>
+      <ToastContainer />
     </main>
 
   )}
