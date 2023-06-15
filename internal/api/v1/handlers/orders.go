@@ -202,8 +202,10 @@ func newOrder(newOrder *NewOrder, items []db.Item) *db.Order {
 	order.Items = items
 	order.TotalAmount = getOrderTotal(items)
 
-	if *newOrder.DeliveryMethod == "delivery" && newOrder.ShippingAddress != nil {
-		order.ShippingAddress = newOrder.ShippingAddress
+	if *newOrder.DeliveryMethod == "delivery" {
+		if newOrder.ShippingAddress != nil && *newOrder.ShippingAddress != "" {
+			order.ShippingAddress = newOrder.ShippingAddress
+		}
 	}
 
 	return order
