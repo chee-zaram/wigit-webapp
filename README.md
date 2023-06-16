@@ -1,11 +1,17 @@
-# WIG!T Web Application
+<div align="center">
+<a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+<br/>
+<strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
+<h1>WIG!T Web Application</h1>
+</div>
 
-![Last Commit][last_commit-badge] ![Contributors][contributors-badge]
+[![Workflow][workflow-badge]][workflow]
+[![Go Report][go-report-card-badge]][report] ![Last Commit][last_commit-badge]
+![Contributors][contributors-badge]
 
-> Bringing wig products and services online for easy access and convenience in
-> Ghana.
+---
 
-![Home Top](https://imgur.com/AMIfkWe.png)
+<!-- ![Home Top](https://imgur.com/AMIfkWe.png)
 
 ![Home Trending](https://imgur.com/lAKPnhZ.png)
 
@@ -13,7 +19,7 @@
 
 ![Products Bottom](https://imgur.com/4OCT8Ea.png)
 
-![Sign In](https://imgur.com/UddM0co.png)
+![Sign In](https://imgur.com/UddM0co.png) -->
 
 ## Table of Contents
 
@@ -193,3 +199,7 @@ discuss licensing and obtain permission.
 
 [contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
 [last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
+[workflow-badge]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg
+[workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
+[go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend.svg
+[report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
