@@ -68,15 +68,44 @@ const ProfilePage = () => {
         event.preventDefault();
         setPhoneNumber(event.target.value);
     };
-    const handleSaveEdit = async () => {
+    const handleSaveEdit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setIsSaving(true);
         try {
             const { status } = await axios.put(url, userData, {headers: headers});
             if (status == 200) {
-                console.log('toast to the good news');
+                toast.success('Personal information updated successfully!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                // user.email = email;
+                // user.first_name = firstName;
+                // user.last_name = lastName;
+                // user.phone = phoneNumber;
+                // user.address = address;
+                sessionStorage.setItem('user', JSON.stringify(userData));
+                console.log(user);
+                console.log(userData);
+                router.back();
             }
         } catch(error) {
             console.log(error);
+            toast.error('Something went wrong, please try again.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
         setIsSaving(false);
     };
@@ -122,6 +151,16 @@ const ProfilePage = () => {
             }
         } catch(error) {
             console.log(error);
+            toast.error('Something went wrong, please retype the password fields, and try again.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
     
@@ -171,7 +210,7 @@ const ProfilePage = () => {
                             type='text'
                             id='first_name'
                             required={ false }
-                            value={user.first_name}
+                            // value={user.first_name}
                         />
                     </div>
                     <div className='profile_data py-2 px-4'>
@@ -183,7 +222,7 @@ const ProfilePage = () => {
                             id='last_name'
                             autocomplete='on'
                             required={ false }
-                            value={user.last_name}
+                            // value={user.last_name}
                         />
                     </div>
                     <div className='profile_data py-2 px-4'>
@@ -195,7 +234,7 @@ const ProfilePage = () => {
                             id='phone_number'
                             autocomplete='on'
                             required={ false }
-                            value={user.phone}
+                            // value={user.phone}
                         />
                     </div>
                     <div className='profile_data py-2 px-4'>
@@ -207,7 +246,7 @@ const ProfilePage = () => {
                             id='address'
                             autocomplete='on'
                             required={ false }
-                            value={user.address}
+                            // value={user.address}
                         />
                     </div>
                     {!isSaving?
