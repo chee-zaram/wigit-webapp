@@ -172,7 +172,7 @@ if (typeof window !== 'undefined') {
             <ToastContainer />
             </div> :
             <div className='empty_cart min-h-[70vh] mx-auto min-w-[60vw]'>
-                <p className='text-xl max-w-max mx-auto py-8 font-bold text-dark_bg/80'>You have an empty cart, <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>head to shop</button></p>
+                <p className='text-xl max-w-max mx-auto py-8 font-bold text-dark_bg/80'>You have an empty cart, <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/products')}>head to shop</button></p>
             </div> 
         }
         </div> :
