@@ -118,6 +118,7 @@ const ProfilePage = () => {
                     progress: undefined,
                     theme: "light",
                 }); 
+                router.back();
             }
         } catch(error) {
             console.log(error);
