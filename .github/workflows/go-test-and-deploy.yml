@@ -122,5 +122,6 @@ jobs:
             fi
             cd webapp
             git stash && git checkout main && git pull origin --rebase
-            chmod +x ./backend/scripts/deploy.sh
-            ./backend/scripts/deploy.sh
+            cd backend
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh
