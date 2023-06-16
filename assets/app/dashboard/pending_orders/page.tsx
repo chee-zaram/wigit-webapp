@@ -48,8 +48,22 @@ const AdminPendingOrders = async () => {
       try {
           const { status } = await axios.put(baseUrl + '/orders/' + id + '/paid', {status: "paid"}, {headers:headers});
           setPaid(true);
+          if (status === 200) {
+          toast.success('Order marked as paid!', {
+            position: "top-center",
+            autoClose: 500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+        router.push('/dashboard/paid_orders');
+        setPaid(false);
       } catch (error) {
-          alert(error);
+          alert('something went wrong');
       }
     };
     
@@ -72,14 +86,14 @@ const AdminPendingOrders = async () => {
             <div className='bg-slate-600 p-4 my-4'><h2>Pending orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                     { orders && orders.map((order: any) => (
-                        <div key={ order.id } className='border border-accent w-full py-3 px-6'>
+                        <div key={ order.id } className={!paid ? 'border border-accent w-full py-3 px-6' : 'hidden'}>
                             <Link href={'/dashboard/' + order.id} className=' px-3 py-1 rounded mb-4 text-light_bg underline bg-dark_bg/80'><span>view order</span></Link>
                             <h3>Reference: 
                             <span
                             className=' px-2 text-accent text-sm underline font-bold'
                             onClick={() => copy(order.id.split('-')[0])}>{ order.id.split('-')[0]}</span>
                             {!showMark ?
-                                <span onClick={handleShowMarkAsPaid} className={order.status === 'pending' && !paid ? 'bg-red-500 cursor-pointer px-3 py-1 rounded text-light_bg' : 'bg-green-500 px-3 py-1 rounded text-light_bg hidden'}>{ order.status }</span> :
+                                <span onClick={handleShowMarkAsPaid} className={order.status === 'pending' ? 'bg-red-500 cursor-pointer px-3 py-1 rounded text-light_bg' : 'bg-green-500 px-3 py-1 rounded text-light_bg'}>{ order.status }</span> :
                                 
                                 <span>
                                     <button onClick={() => {handleMarkAsPaid(order.id)}} className='bg-green-200 mt-4 duration-300 hover:scale-105 py-2 px-4 rounded shadow-md border font-bold text-green-900 border-green-700'>Mark as paid</button>
