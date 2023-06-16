@@ -116,7 +116,7 @@ const signInForm = () => {
                     width={220}
                     height={300}/>
             </div>
-            <div className='bg-accent py-2 px-4 md:w-1/2'>
+            <div className='bg-accent py-4 px-2 md:w-1/2'>
                 <form onSubmit={ handleSignIn } className='flex flex-col gap-2 p-4  center max-w-max sm:max-w-l'>
                     <label htmlFor='email'></label>
                     <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
@@ -136,8 +136,8 @@ const signInForm = () => {
                     />
                     <Button type='submit' text='sign in' />
                 </form>
-                <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>Reset it here</button></p>
-                <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>Sign Up :)</button></p>
+                <p className='text-sm px-2'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>Reset it here</button></p>
+                <p className='text-sm px-2'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>Sign Up :)</button></p>
             </div>
             <ToastContainer />
         </section>

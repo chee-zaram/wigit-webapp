@@ -91,73 +91,75 @@ const SignUpForm = () => {
                 width={220}
                 height={300}/>
         </div>
-        <form onSubmit={ handleSignUp } className='md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
-            <label htmlFor='email'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
-                type='text'
-                name='email'
-                placeholder='Enter email'
-                id='email'
-                autocomplete='on'
-                required={ true }
-            />
-            <label htmlFor='password'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
-                type='password'
-                name='password'
-                placeholder='Enter password'
-                id='password'
-                autocomplete='off'
-                required={ true }
-            />
-            <label htmlFor='confirm_password'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetConfirmPassword(event)}
-                type='password'
-                name='confirm password'
-                placeholder='confirm password'
-                id='confirm_password'
-                autocomplete='off'
-                required={ true }
-            />
-            <label htmlFor='first_name'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetFirstName(event)}
-                type='text'
-                name='first name'
-                placeholder='Enter first name'
-                id='first_name'
-                autocomplete='on'
-                required={ true }
-            />
-            <label htmlFor='last_name'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetLastName(event)}
-                type='text'
-                name='last name'
-                placeholder='Enter last name'
-                id='last_name'
-                autocomplete='on'
-                required={ true }
-            />
-            <label htmlFor='phone_number'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPhoneNumber(event)}
-                type='tel'
-                name='phone number'
-                placeholder='Enter phone number'
-                id='phone_number'
-                autocomplete='on'
-                required={ true }
-            />
-            <label htmlFor='address'></label>
-            <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetAddress(event)}
-                type='text'
-                name='address'
-                placeholder='Enter address'
-                id='address'
-                autocomplete='on'
-                required={ true }
-            />
-            <Button type='submit' text='sign up' />
-            <p className='text-sm'>Already shopping with us? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignIn}>sign in</button></p>
-        </form>
+        <div className='bg-accent py-4 px-2 md:w-1/2'>
+            <form onSubmit={ handleSignUp } className='flex flex-col gap-2 p-4 center max-w-max sm:max-w-l'>
+                <label htmlFor='email'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
+                    type='text'
+                    name='email'
+                    placeholder='Enter email'
+                    id='email'
+                    autocomplete='on'
+                    required={ true }
+                />
+                <label htmlFor='password'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
+                    type='password'
+                    name='password'
+                    placeholder='Enter password'
+                    id='password'
+                    autocomplete='off'
+                    required={ true }
+                />
+                <label htmlFor='confirm_password'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetConfirmPassword(event)}
+                    type='password'
+                    name='confirm password'
+                    placeholder='confirm password'
+                    id='confirm_password'
+                    autocomplete='off'
+                    required={ true }
+                />
+                <label htmlFor='first_name'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetFirstName(event)}
+                    type='text'
+                    name='first name'
+                    placeholder='Enter first name'
+                    id='first_name'
+                    autocomplete='on'
+                    required={ true }
+                />
+                <label htmlFor='last_name'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetLastName(event)}
+                    type='text'
+                    name='last name'
+                    placeholder='Enter last name'
+                    id='last_name'
+                    autocomplete='on'
+                    required={ true }
+                />
+                <label htmlFor='phone_number'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPhoneNumber(event)}
+                    type='tel'
+                    name='phone number'
+                    placeholder='Enter phone number'
+                    id='phone_number'
+                    autocomplete='on'
+                    required={ true }
+                />
+                <label htmlFor='address'></label>
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetAddress(event)}
+                    type='text'
+                    name='address'
+                    placeholder='Enter address'
+                    id='address'
+                    autocomplete='on'
+                    required={ true }
+                />
+                <Button type='submit' text='sign up' />
+            </form>
+            <p className='text-sm px-3'>Already shopping with us? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignIn}>sign in</button></p>
+        </div>
     </section>
     )
 };
