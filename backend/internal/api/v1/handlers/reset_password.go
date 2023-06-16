@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/internal/db"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // ResetPassword is used to obtain the post and put data during password reset.

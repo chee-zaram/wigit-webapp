@@ -1,4 +1,4 @@
-module github.com/wigit-gh/webapp
+module github.com/wigit-gh/webapp/backend
 
 go 1.20
 

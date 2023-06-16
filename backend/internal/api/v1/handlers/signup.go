@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
-	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
-	"github.com/wigit-gh/webapp/internal/db"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1/middlewares"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 

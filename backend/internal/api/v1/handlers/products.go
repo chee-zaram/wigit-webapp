@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"github.com/wigit-gh/webapp/internal/db"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 	"gorm.io/gorm"
 )
 

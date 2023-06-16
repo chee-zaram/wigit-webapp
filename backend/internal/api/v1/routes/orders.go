@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1/handlers"
 )
 
 // OrdersRoutes adds routes for the customer in the orders endpoint.

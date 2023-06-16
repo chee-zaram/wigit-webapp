@@ -10,7 +10,7 @@ import (
 
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/internal/db"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // JWTAuthentication validates a user's signin JWT set in the `Authorization` header.

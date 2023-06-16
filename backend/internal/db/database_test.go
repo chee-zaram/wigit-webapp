@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/logger"
+	"github.com/wigit-gh/webapp/backend/internal/config"
+	"github.com/wigit-gh/webapp/backend/internal/logger"
 	"gorm.io/gorm"
 )
 

@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/internal/api/v1/handlers"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1/handlers"
 )
 
 // UsersRoutes adds adds new routes for deleting user and updating user information.

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"github.com/wigit-gh/webapp/internal/db"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // NewItem binds to the json body on post request to cart.

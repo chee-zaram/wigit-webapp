@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
-	"github.com/wigit-gh/webapp/internal/api/v1"
-	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/flags"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1"
+	"github.com/wigit-gh/webapp/backend/internal/config"
+	"github.com/wigit-gh/webapp/backend/internal/flags"
 )
 
 // main Entry point to the program

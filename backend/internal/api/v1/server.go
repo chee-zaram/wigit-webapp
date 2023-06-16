@@ -15,11 +15,11 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	docs "github.com/wigit-gh/webapp/docs"
-	"github.com/wigit-gh/webapp/internal/api/v1/middlewares"
-	"github.com/wigit-gh/webapp/internal/api/v1/routes"
-	"github.com/wigit-gh/webapp/internal/config"
-	"github.com/wigit-gh/webapp/internal/db"
+	docs "github.com/wigit-gh/webapp/backend/docs"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1/middlewares"
+	"github.com/wigit-gh/webapp/backend/internal/api/v1/routes"
+	"github.com/wigit-gh/webapp/backend/internal/config"
+	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // SetGINRouterV1 configures the gin router with all necessary routes and middleware.
