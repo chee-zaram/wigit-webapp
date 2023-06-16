@@ -7,7 +7,8 @@ import Input from '@components/Input';
 import Button from '@components/Button';
 import { useState } from 'react';
 import axios from 'axios';
-
+import React from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const ProfilePage = () => {
@@ -90,7 +91,7 @@ const ProfilePage = () => {
         event.preventDefault();
         setConfirmPassword(event.target.value);
     };
-    const handleSubmitPassword = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSubmitPassword = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let token: string = '';
         try {
@@ -98,8 +99,7 @@ const ProfilePage = () => {
             if (status == 201) {
                 token = data.reset_token;
                 console.log(data.reset_token);
-                console.log('toast to the good news');
-            }
+           }
         } catch(error) {
             console.log(error);
         }
@@ -108,7 +108,16 @@ const ProfilePage = () => {
         try {
             const { status } = await axios.put(passwordUrl, passwordData, {headers: headers});
             if (status == 200) {
-                console.log('toast to the good news');
+                toast.success('Password changed successfully!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                }); 
             }
         } catch(error) {
             console.log(error);
@@ -232,6 +241,7 @@ const ProfilePage = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M280-412q-28 0-48-20t-20-48q0-28 20-48t48-20q28 0 48 20t20 48q0 28-20 48t-48 20Zm0 172q-100 0-170-70T40-480q0-100 70-170t170-70q72 0 126 34t85 103h356l113 113-167 153-88-64-88 64-75-60h-51q-25 60-78.5 98.5T280-240Zm0-60q58 0 107-38.5t63-98.5h114l54 45 88-63 82 62 85-79-51-51H450q-12-56-60-96.5T280-660q-75 0-127.5 52.5T100-480q0 75 52.5 127.5T280-300Z"/></svg>
                 <p className='ml-4 font-bold underline capitalize text-dark_bg/60 md:text-md>Change password'>change password</p>
             </div>
+            <ToastContainer />
         </section>
     );
 };
