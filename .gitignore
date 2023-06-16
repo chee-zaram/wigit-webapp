@@ -1,30 +1,38 @@
-# VS code config files
-/.vscode
+################# GENERAL #########################
+.DS_Store
+.vscode
+.idea
+debug
+.bundle
+*.swp
+*.crt
+*.csr
+*.key
+*.prof
+*.test
+*.pem
+logs/
 
-# assets dependencies
-/assets/node_modules/
-/assets/.pnp
-/assets/.pnp.js
+################# BACKEND #########################
+/backend/vendor
+/backend/dist
+/backend/local-archive
+/backend/coverage.txt
 
-# assets testing
-/assets/coverage
-
-# assets production
-/assets/build/
-
-# assets misc
-/assets/.DS_Store
-/assets/.env.local
-/assets/.env.development.local
-/assets/.env.test.local
-/assets/.env.production.local
-
-/assets/npm-debug.log*
-/assets/yarn-debug.log*
-/assets/yarn-error.log*
-
-# log files
-/logs/
-
-# test coverage file
-coverage.txt
+################# FRONTEND #########################
+/frontend/node_modules
+/frontend/.pnp
+.pnp.js
+/frontend/build
+/frontend/.next/
+/frontend/out/
+/frontend/coverage
+/frontend/tailwind.*
+/frontend/postcss.config.js
+.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
+*.tsbuildinfo
+next-env.d.ts
