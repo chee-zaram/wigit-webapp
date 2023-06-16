@@ -199,7 +199,7 @@ const ProfilePage = () => {
                         <p className='ml-4 font-bold text-dark_bg/80 md:text-md'>{ user.address }</p>
                     </div>
                 </div> :
-                <form onSubmit={handleSaveEdit} className='max-w-[80vw] p-4 md:p-10 shadow-md rounded md:max-w-[60vw] mx-auto bg-dark_bg/10'>
+                <form onSubmit={handleSaveEdit} className='max-w-[90vw] p-4 md:p-10 shadow-md rounded md:max-w-[60vw] mx-auto bg-dark_bg/10'>
                     <div className='profile_data py-2 px-4'>
                         <label htmlFor='first_name' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>first name</label>
                         <Input 
@@ -250,8 +250,8 @@ const ProfilePage = () => {
                         />
                     </div>
                     {!isSaving?
-                        <Button type='submit' text='edit' /> :
-                        <Button type='button' disabled={ true } text='saving...' />
+                        <Button type='submit' text='Save' /> :
+                        <Button type='button' disabled={ true } text='Saving...' />
                     }
                 </form>
             }

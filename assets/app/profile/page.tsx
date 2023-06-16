@@ -67,6 +67,10 @@ const Profile = () => {
                     <h5 className='mb-4 text-sm uppercase font-bold '>Edit my profile</h5>
                     <span className="material-symbols-outlined">order_approve</span>
                 </div>
+                <div onClick={handleEditProfile} className='border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
+                    <h5 className='mb-4 text-sm uppercase font-bold '>Settings</h5>
+                    
+                </div>
                 </div>
             </div>
         </section>
