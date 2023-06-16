@@ -199,7 +199,7 @@ discuss licensing and obtain permission.
 
 [contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
 [last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
-[workflow-badge]: https://github.com/stellar/go/actions/workflows/go.yml/badge.svg
+[workflow-badge]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg
 [workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
 [go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend.svg
 [report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
