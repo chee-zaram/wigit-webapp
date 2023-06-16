@@ -75,6 +75,10 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                     </div>
                 </div>
             ))}
+            {order && order.delivery_method === 'delivery' ?
+                <p>Delivery address: {order.shipping_address}</p> :
+                <p>Delivery method: Pickup</p>
+            }
             </div>
             <p>Order Total: GHS <span className='font-bold text-sm'>{ order && order.total_amount}</span></p>
             <ToastContainer />
