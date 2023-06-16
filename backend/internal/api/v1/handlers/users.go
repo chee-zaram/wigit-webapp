@@ -29,7 +29,7 @@ type UpdateUser struct {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/users/{email} [delete]
 func CustomerDeleteUser(ctx *gin.Context) {
-	user, _, err := validateUserParams(ctx)
+	user, err := validateDeleteUserRequest(ctx)
 	if err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -43,6 +43,26 @@ func CustomerDeleteUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "User deleted successfully",
 	})
+}
+
+// validateDeleteUserRequest validates the request sent to delete a user.
+func validateDeleteUserRequest(ctx *gin.Context) (*db.User, error) {
+	_user, exists := ctx.Get("user")
+	user, ok := _user.(*db.User)
+	if !exists || !ok {
+		return nil, ErrUserCtx
+	}
+
+	email := ctx.Param("email")
+	if email == "" {
+		return nil, ErrEmailParamNotSet
+	}
+
+	if email != *user.Email {
+		return nil, errors.New("Cannot perform operation on another user's account")
+	}
+
+	return user, nil
 }
 
 // CustomerPutUser Updates a user's information in the database.
@@ -59,7 +79,7 @@ func CustomerDeleteUser(ctx *gin.Context) {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/users/{email} [put]
 func CustomerPutUser(ctx *gin.Context) {
-	user, newUser, err := validateUserParams(ctx)
+	user, newUser, err := validatePutUserRequest(ctx)
 	if err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -81,9 +101,9 @@ func CustomerPutUser(ctx *gin.Context) {
 	})
 }
 
-// validateUserParams validates data sent to the `users` endpoint.
-// It is used during updating and deletion of a user or information.
-func validateUserParams(ctx *gin.Context) (*db.User, *UpdateUser, error) {
+// validatePutUserRequest validates data sent to the `users` endpoint.
+// It is used when updating a user's information.
+func validatePutUserRequest(ctx *gin.Context) (*db.User, *UpdateUser, error) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
 	if !exists || !ok {
