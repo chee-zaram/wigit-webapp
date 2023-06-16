@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 const Dashboard = async () => {
     const router = useRouter();
-    
+    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     let userObj: string = '';
     if (sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
@@ -27,6 +27,9 @@ const Dashboard = async () => {
     const handlePendingOrders = () => {
         router.push('dashboard/pending_orders');
     };
+    const handleAddProduct = () => {
+        router.push('dashboard/add_product');
+    };
     
     return (
         <section className='bg-neutral-400 max-w-[80vw] py-6 px-8 rounded-md shadow-md mx-auto'>
@@ -37,7 +40,7 @@ const Dashboard = async () => {
                 <div onClick={handleAllOrders} className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
                     <h2>View all orders</h2>
                 </div>
-                <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                <div onClick={handleAddProduct} className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
                     <h2>Add new product</h2>
                 </div>
                 <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
