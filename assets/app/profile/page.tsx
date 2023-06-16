@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const Profile = () => {
-    //pass
     const { jwt, setJwt } = useSignInContext();
     if (typeof window !== 'undefined') {
         if (sessionStorage.getItem('jwt')) {
@@ -14,8 +13,11 @@ const Profile = () => {
         };
     };
     // const headers = {'Authorization': 'Bearer ' + jwt};
-    
-    const user =  JSON.parse(sessionStorage.getItem('user'));
+    let userObj: string = '';
+    if (sessionStorage.getItem('user')) {
+        userObj = sessionStorage.getItem('user')!;
+    }
+    const user: any =  JSON.parse(userObj);
     const router = useRouter();
     
     const handleAllOrders = () => {

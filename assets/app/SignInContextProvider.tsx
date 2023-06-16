@@ -5,7 +5,7 @@ import { useState, createContext, useContext, Dispatch, SetStateAction } from 'r
 
 interface SignInContextProps {
     jwt: string;
-    setJwt: Dispatch<SetStateAction<string>>;
+    setJwt: Dispatch<SetStateAction<string | null>> ;
     role: string;
     setRole: Dispatch<SetStateAction<string>>;
     isSignedIn: boolean;

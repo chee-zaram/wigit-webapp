@@ -9,22 +9,34 @@ import { useState } from 'react';
 import axios from 'axios';
 
 
+
 const ProfilePage = () => {
-    const url = '';
     const { jwt, setJwt } = useSignInContext();
-    
+    if (typeof window !== 'undefined') {
+        if (sessionStorage.getItem('jwt')) {
+            setJwt(sessionStorage.getItem('jwt'));
+        };
+    };
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [ editProfile, setEditProfile ] = useState(false);
     const [ firstName, setFirstName ] = useState('');
     const [ lastName, setLastName ] = useState('');
     const [ address, setAddress ] = useState('');
     const [ phoneNumber, setPhoneNumber ] = useState('');
-    const [ isSaving, setIsSaving ] = useState(false); 
+    const [ isSaving, setIsSaving ] = useState(false);
+    const [ password, setPassword ] = useState('');
+    const [ confirmPassword, setConfirmPassword ] = useState('');
+    const [ passwordInput, setPasswordInput] = useState(false);
     
-    const user =  JSON.parse(sessionStorage.getItem('user'));
+    let userObj: string = '';
+    if (sessionStorage.getItem('user')) {
+        userObj = sessionStorage.getItem('user')!;
+    }
+    const user: any =  JSON.parse(userObj);
     const email = user.email;
     const userData = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
-
+    const url = 'https://cheezaram.tech/api/v1/users/' + email;
+    const passwordUrl = 'https://cheezaram.tech/api/v1/reset_password';
     const router = useRouter();
     
     const handleEditProfile = () => {
@@ -67,6 +79,42 @@ const ProfilePage = () => {
         }
         setIsSaving(false);
     };
+    const handleChangePassword = async () => {
+        setPasswordInput(true);
+    };
+    const handleSetPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        setPassword(event.target.value);
+    };
+    const handleSetConfirmPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        setConfirmPassword(event.target.value);
+    };
+    const handleSubmitPassword = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        let token: string = '';
+        try {
+            const { data, status } = await axios.post(passwordUrl, { email }, {headers: headers});
+            if (status == 201) {
+                token = data.reset_token;
+                console.log(data.reset_token);
+                console.log('toast to the good news');
+            }
+        } catch(error) {
+            console.log(error);
+        }
+        const passwordData = {email, new_password: password, repeat_new_password: confirmPassword, reset_token: token}
+        
+        try {
+            const { status } = await axios.put(passwordUrl, passwordData, {headers: headers});
+            if (status == 200) {
+                console.log('toast to the good news');
+            }
+        } catch(error) {
+            console.log(error);
+        }
+    };
+    
     //update session storage with details
     return (
         <section>
@@ -108,9 +156,11 @@ const ProfilePage = () => {
                         <Input 
                             placeholder='first name'
                             name='first_name'
+                            onLoad={(e:any) => handleSetFirstName(e)}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetFirstName(event)}
                             type='text'
                             id='first_name'
+                            required={ false }
                             value={user.first_name}
                         />
                     </div>
@@ -127,7 +177,7 @@ const ProfilePage = () => {
                         />
                     </div>
                     <div className='profile_data py-2 px-4'>
-                        <label htmlFor='phone_number' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>telephone</label>
+                        <label htmlFor='phone_number' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>tele phone</label>
                         <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPhoneNumber(event)}
                             type='tel'
                             name='phone number'
@@ -156,6 +206,32 @@ const ProfilePage = () => {
                     }
                 </form>
             }
+            { passwordInput &&
+                <form onSubmit={handleSubmitPassword} className='flex flex-col gap-4 my-4 p-2 bg-accent/80 mx-auto rounded max-w-max'>
+                <Input
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
+                    type='password'
+                    name='password'
+                    placeholder='new password'
+                    id='password'
+                    autocomplete='off'
+                    required={ true }
+                />
+                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetConfirmPassword(event)}
+                    type='password'
+                    name='confirm password'
+                    placeholder='confirm password'
+                    id='confirm_password'
+                    autocomplete='off'
+                    required={ true }
+                />
+                    <Button type='submit' text='reset' />
+                </form>
+            }
+            <div onClick={handleChangePassword} className='profile_data cursor-pointer py-2 max-w-max mx-auto px-4'>
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M280-412q-28 0-48-20t-20-48q0-28 20-48t48-20q28 0 48 20t20 48q0 28-20 48t-48 20Zm0 172q-100 0-170-70T40-480q0-100 70-170t170-70q72 0 126 34t85 103h356l113 113-167 153-88-64-88 64-75-60h-51q-25 60-78.5 98.5T280-240Zm0-60q58 0 107-38.5t63-98.5h114l54 45 88-63 82 62 85-79-51-51H450q-12-56-60-96.5T280-660q-75 0-127.5 52.5T100-480q0 75 52.5 127.5T280-300Z"/></svg>
+                <p className='ml-4 font-bold underline capitalize text-dark_bg/60 md:text-md>Change password'>change password</p>
+            </div>
         </section>
     );
 };

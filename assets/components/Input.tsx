@@ -2,9 +2,10 @@
 import { NextPage } from 'next';
 import InputProps from '@interfaces/InputProps';
 
-const Input: NextPage<InputProps> = ({ onChange, name, type, placeholder, id, required, autocomplete, value } ) => (
+const Input: NextPage<InputProps> = ({ onChange, onLoad, name, type, placeholder, id, required, autocomplete, value } ) => (
     <input
         onChange={ onChange }
+        onLoad={ onLoad }
         name={ name }
         type={ type }
         placeholder={ placeholder }

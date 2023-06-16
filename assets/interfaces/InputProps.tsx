@@ -7,6 +7,7 @@ export default interface InputProps {
     placeholder?: string;
     id: string;
     onChange: ChangeEventHandler<HTMLInputElement>;
+    onLoad?: any;
     required?: boolean;
     autocomplete?: 'on' | 'off';
     value?: string;
