@@ -10,28 +10,27 @@ import axios from 'axios';
 
 
 const ProfilePage = () => {
+    const url = '';
     const { jwt, setJwt } = useSignInContext();
+    
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [ editProfile, setEditProfile ] = useState(false);
-    const [ email, setEmail ] = useState('');
     const [ firstName, setFirstName ] = useState('');
     const [ lastName, setLastName ] = useState('');
     const [ address, setAddress ] = useState('');
     const [ phoneNumber, setPhoneNumber ] = useState('');
-    const newUser = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
     const [ isSaving, setIsSaving ] = useState(false); 
     
     const user =  JSON.parse(sessionStorage.getItem('user'));
+    const email = user.email;
+    const userData = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
+
     const router = useRouter();
     
     const handleEditProfile = () => {
         setEditProfile(currValue => !currValue);
     }
-    
-    const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setEmail(event.target.value);
-    };
+
     // const handleSetPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     event.preventDefault();
     //     setPassword(event.target.value);
@@ -55,6 +54,18 @@ const ProfilePage = () => {
     const handleSetPhoneNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         setPhoneNumber(event.target.value);
+    };
+    const handleSaveEdit = async () => {
+        setIsSaving(true);
+        try {
+            const { status } = await axios.put(url, userData, {headers: headers});
+            if (status == 200) {
+                console.log('toast to the good news');
+            }
+        } catch(error) {
+            console.log(error);
+        }
+        setIsSaving(false);
     };
     //update session storage with details
     return (
