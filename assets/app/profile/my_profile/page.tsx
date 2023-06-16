@@ -7,7 +7,7 @@ import Input from '@components/Input';
 import Button from '@components/Button';
 import { useState } from 'react';
 import axios from 'axios';
-import React from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
 
