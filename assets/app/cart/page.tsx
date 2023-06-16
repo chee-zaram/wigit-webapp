@@ -50,7 +50,6 @@ if (typeof window !== 'undefined') {
     }
     const handleSubmit = async(event: any) => {
         event.preventDefault();
-        console.log('cart ooo', cart, cart.length );
         if (cart.length === 0) {
             toast.error('empty cart!', {
                 position: "top-left",
@@ -80,7 +79,7 @@ if (typeof window !== 'undefined') {
                     progress: undefined,
                     theme: "light",
                 }); 
-                router.push('/contact');
+                router.push('/payment');
             }
         }
         catch(error) {
@@ -130,8 +129,11 @@ if (typeof window !== 'undefined') {
     return (
         <main>
             { jwt !== 'not authorized' ?
+                
         // <div className='md:flex justify-between items-center md:container max-w-[80vw]'>
-        <div className='md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md max-w-[80vw] lg:max-w-[70vw] mx-auto overflow-hidden'>
+        <div>
+            {cart && cart.length > 0 ?
+            <div className='md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md max-w-[80vw] lg:max-w-[70vw] mx-auto overflow-hidden'>
             <section className='items_list p-4 md:p-8 lg:p-12 mb-4 md:mb-0 md:w-2/3'>
                 <h2 className='text-xxl font-extrabold mb-2'>My shopping cart</h2>
                 <button className='hover:bg-red-200 ' onClick={ handleEmptyCart }>
@@ -168,9 +170,14 @@ if (typeof window !== 'undefined') {
                 </div>
             </section>
             <ToastContainer />
+            </div> :
+            <div className='empty_cart min-h-[70vh] mx-auto min-w-[60vw]'>
+                <p className='text-xl max-w-max mx-auto py-8 font-bold text-dark_bg/80'>You have an empty cart, <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>head to shop</button></p>
+            </div> 
+        }
         </div> :
         <div className='cart_signin mx-auto w-[80vw] h-[40vh]'>
-            <p className='bg-light_bg/70 p-8 rounded' >Please <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>
+            <p className='bg-light_bg/70 p-8 rounded'>Please <button className='text-accent underline hover:text-accent/60' onClick={ () => router.push('/signin')}>sign in</button> to shop with us</p>
         </div>
         }
     </main>

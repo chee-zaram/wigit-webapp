@@ -50,7 +50,6 @@ const ShoppingCart: any = async (props: Item) => {
     };
     const handleRemoveItem = async() => {
         await axios.delete('https://cheezaram.tech/api/v1/cart/' + props.id, {headers: headers});
-        // router.push('/');
         setHideItem(true);
     };
 
@@ -60,7 +59,6 @@ const ShoppingCart: any = async (props: Item) => {
                 <div className='mx-auto w-[70px]'>
                     <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
                     />
-                    {/* <img className='max-w-[100%]' src={props.product.image_url} alt={ props.product.name } /> */}
                 </div>
                 <span className='text-sm font-bold text-gray-700'>{props.product.name}</span>
             </div>

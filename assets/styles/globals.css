@@ -86,13 +86,16 @@ body {
     background-position: top;
     height: 30vh;
 } */
-.cart_signin, .logout, .no_orders_bg {
+.cart_signin, .logout, .no_orders_bg, .empty_cart {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: bottom;
 }
 .cart_signin {
         background-image: url('../public/assets/images/feeling_blue.svg.svg');
+}
+.empty_cart {
+    background-image: url('../public/assets/images/undraw_empty_cart_co35.svg');
 }
 .logout {
     background-image: url('../public/assets/images/undraw_login_re_4vu2.svg');

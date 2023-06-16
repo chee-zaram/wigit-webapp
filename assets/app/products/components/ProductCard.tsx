@@ -106,7 +106,6 @@ const ProductCard: NextPage<Product> = (props) => {
             //fix this for other problems
             return;
     }
-    
 };
 
 return (
