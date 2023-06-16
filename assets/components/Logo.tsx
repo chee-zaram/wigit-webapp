@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import Link from 'next/link';
-import logo from '/public/assets/images/logo.svg';
+import logo from '/public/assets/images/wigit.png';
 
 const Logo = () => (
-    <div className='logo_wrap bg-white h-8'>
+    <div className='logo_wrap p-3'>
         <Image
           src={logo}
           alt='Wigit Company Logo'
           width={70}
-          height={60}
+          height={40}
         />
     </div>
 );
