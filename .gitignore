@@ -17,7 +17,7 @@ logs/
 /backend/vendor
 /backend/dist
 /backend/local-archive
-/backend/coverage.txt
+coverage.txt
 
 ################# FRONTEND #########################
 /frontend/node_modules
