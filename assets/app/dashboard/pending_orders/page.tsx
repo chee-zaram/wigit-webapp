@@ -11,6 +11,7 @@ import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
+
 const AdminPendingOrders = async () => {
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const router = useRouter();
@@ -31,7 +32,7 @@ const AdminPendingOrders = async () => {
       navigator.clipboard.writeText(text);
       toast.info('Reference number copied!', {
         position: "top-center",
-        autoClose: 500,
+        autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
@@ -44,14 +45,32 @@ const AdminPendingOrders = async () => {
     const handleShowMarkAsPaid = () => {
       setShowMark(currValue => !currValue);  
     };
-    const handleMarkAsPaid = async(id: string) => {
-      try {
-          const { status } = await axios.put(baseUrl + '/orders/' + id + '/paid', {status: "paid"}, {headers:headers});
+    const handleMarkAsPaid = async(order: any) => {
+        let available = true;
+        order.items.map((item: any) => {
+            if (item.product.stock == 0) {
+                available = false;
+                toast.error('An item in this order is out of stock', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+        });
+            return;
+            }
+        })
+        if (available) {
+            try {
+          const { status } = await axios.put(baseUrl + '/orders/' + order.id + '/paid', {status: "paid"}, {headers:headers});
           setPaid(true);
           if (status === 200) {
           toast.success('Order marked as paid!', {
             position: "top-center",
-            autoClose: 500,
+            autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: true,
@@ -65,14 +84,17 @@ const AdminPendingOrders = async () => {
       } catch (error) {
             toast.error('Unable to update order status', {
                 position: "top-center",
-                autoClose: 500,
+                autoClose: 5000,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
                 theme: "colored",
-        });      }
+        });   
+   }
+        }
+      
     };
     
     useEffect(() => {
@@ -104,7 +126,7 @@ const AdminPendingOrders = async () => {
                                 <span onClick={handleShowMarkAsPaid} className={order.status === 'pending' ? 'bg-red-500 cursor-pointer px-3 py-1 rounded text-light_bg' : 'bg-green-500 px-3 py-1 rounded text-light_bg'}>{ order.status }</span> :
                                 
                                 <span>
-                                    <button onClick={() => {handleMarkAsPaid(order.id)}} className='bg-green-200 mt-4 duration-300 hover:scale-105 py-2 px-4 rounded shadow-md border font-bold text-green-900 border-green-700'>Mark as paid</button>
+                                    <button onClick={() => {handleMarkAsPaid(order)}} className='bg-green-200 mt-4 duration-300 hover:scale-105 py-2 px-4 rounded shadow-md border font-bold text-green-900 border-green-700'>Mark as paid</button>
                                     <span onClick={handleShowMarkAsPaid}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="m448-326 112-112 112 112 43-43-113-111 111-111-43-43-110 112-112-112-43 43 113 111-113 111 43 43ZM120-480l169-239q13-18 31-29.5t40-11.5h420q25 0 42.5 17.5T840-700v440q0 25-17.5 42.5T780-200H360q-22 0-40-11.5T289-241L120-480Z"/></svg>
                                     </span>
