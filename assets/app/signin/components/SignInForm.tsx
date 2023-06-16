@@ -77,9 +77,31 @@ const signInForm = () => {
     };
     const handleResetPassword = async () => {
         //event.preventDefault();
-        await axios.post("https://cheezaram.tech/api/v1/reset_password", { email });
-        router.push('/');
-        alert("A password reset link has been sent to your email");
+        try {
+            await axios.post("https://cheezaram.tech/api/v1/reset_password", { email });
+            toast.success('A password reset link has been sent to your email!', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            router.push('/');
+        } catch (error) {
+            toast.error("We didn't find your email in our records, please sign up", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+        }
     };
     const pushToSignUp = (): void => {
       router.push('/signup');
@@ -94,27 +116,29 @@ const signInForm = () => {
                     width={220}
                     height={300}/>
             </div>
-            <form onSubmit={ handleSignIn } className=' md:w-1/2 flex flex-col gap-2 p-4 bg-accent center max-w-max sm:max-w-l'>
-                <label htmlFor='email'></label>
-                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
-                    type='text'
-                    name='email'
-                    placeholder='Enter email'
-                    id='email'
-                    required={ true }
-                />
-                <label htmlFor='password'></label>
-                <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
-                    type='password'
-                    name='password'
-                    placeholder='Enter password'
-                    id='password'
-                    required={ true }
-                />
-                <Button type='submit' text='sign in' />
+            <div className='bg-accent py-2 px-4 md:w-1/2'>
+                <form onSubmit={ handleSignIn } className='flex flex-col gap-2 p-4  center max-w-max sm:max-w-l'>
+                    <label htmlFor='email'></label>
+                    <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetEmail(event)}
+                        type='text'
+                        name='email'
+                        placeholder='Enter email'
+                        id='email'
+                        required={ true }
+                    />
+                    <label htmlFor='password'></label>
+                    <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPassword(event)}
+                        type='password'
+                        name='password'
+                        placeholder='Enter password'
+                        id='password'
+                        required={ true }
+                    />
+                    <Button type='submit' text='sign in' />
+                </form>
                 <p className='text-sm'>Forgot password? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={handleResetPassword}>Reset it here</button></p>
                 <p className='text-sm'>First time? <button className='underline pointer text-light_bg text-xs hover:text-dark_bg' onClick={pushToSignUp}>Sign Up :)</button></p>
-            </form>
+            </div>
             <ToastContainer />
         </section>
     )

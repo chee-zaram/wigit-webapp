@@ -33,7 +33,7 @@ const ProfilePage = () => {
     if (sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
     }
-    const user: any =  JSON.parse(userObj);
+    const user: any =  JSON.parse(userObj, undefined);
     const email = user.email;
     const userData = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
     const url = 'https://cheezaram.tech/api/v1/users/' + email;

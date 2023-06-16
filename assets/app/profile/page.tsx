@@ -14,10 +14,11 @@ const Profile = () => {
     };
     // const headers = {'Authorization': 'Bearer ' + jwt};
     let userObj: string = '';
+    let user: any = {};
     if (sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
+        user =  JSON.parse(userObj, undefined);
     }
-    const user: any =  JSON.parse(userObj);
     const router = useRouter();
     
     const handleAllOrders = () => {
