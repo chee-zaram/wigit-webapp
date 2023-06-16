@@ -4,8 +4,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useSignInContext } from '@app/SignInContextProvider';
-import Input from '@components/Input';
-import Button from '@components/Button';
 import { useState } from 'react';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,7 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const Settings = () => {
     const router = useRouter();
     const [showDelete, setShowDelete] = useState(false);
-    const { jwt, setJwt } = useSignInContext();
+    const { jwt, setJwt, setIsSignedIn } = useSignInContext();
     if (typeof window !== 'undefined') {
         if (sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));
@@ -37,6 +35,12 @@ const Settings = () => {
         try {
             const { status } = await axios.delete(url, {headers: headers});
             if (status == 200) {
+                setJwt('not authorized');
+                setIsSignedIn(false);
+                sessionStorage.setItem('jwt', 'not authorized');
+                sessionStorage.setItem('user', '');
+                sessionStorage.setItem('isSignedIn', JSON.stringify(false));
+                
                 toast.info('Account deleted!', {
                     position: "top-center",
                     autoClose: 3000,
