@@ -1,34 +1,205 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+<a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+<br/>
+<strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
+<h1>WIG!T Web Application</h1>
+</div>
 
-## Getting Started
+[![Workflow][workflow-badge]][workflow]
+[![Go Report][go-report-card-badge]][report] ![Last Commit][last_commit-badge]
+![Contributors][contributors-badge]
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+<!-- ![Home Top](https://imgur.com/AMIfkWe.png)
+
+![Home Trending](https://imgur.com/lAKPnhZ.png)
+
+![Products Top](https://imgur.com/h5ALl13.png)
+
+![Products Bottom](https://imgur.com/4OCT8Ea.png)
+
+![Sign In](https://imgur.com/UddM0co.png) -->
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Starting the Application](#starting-the-application)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Related Projects](#related-projects)
+- [Licensing](#licensing)
+
+## Introduction
+
+The **WIG!T Web Application** is a full stack web project which aims to restore
+customer trust in online shopping. Our mission is to bring shopping closer to
+the people. We are inspired by a need to provide safety, assurance, quality, and
+peace-of-mind to customers who simply want to experience the joy and convenience
+of shopping.
+
+The Web Application aims to reduce customer wait times by providing seemless
+user experience, customer service, and delivery experience. We keep customers
+informed and reassured every step of the way.
+
+To learn more about the **WIG!T** brand, you can:
+
+- Visit the [landing page]().
+- Know the [founder]() and [engineers]().
+- Read our [blog post]() on the launch of the Web Application.
+- Try out [our application]().
+
+## Starting the Application
+
+The procedure outlined expect you're setting up for testing or devolopment. The
+DevOps team will be responsible for server setup and configuration required in a
+production environment.
+
+Provided you use **Linux/GNU** and have **git** installed, the application can
+be started by cloning this repository on the commandline using the following
+command:
+
+```sh
+git clone https://github.com/wigit-gh/webapp.git wigit-webapp
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+changing working directory into the application directory:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+cd wigit-webapp
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### [Backend](https://github.com/wigit-gh/webapp/blob/main/backend)
 
-## Learn More
+The backend is written in [Go Programming Language](https://go.dev/) and uses
+the [Gin Web Framework](https://gin-gonic.com/). Server configurations will be
+carried out by the DevOps team in production prior to backend deployment. The
+following instructions apply to devolopment and testing. Documentation for the
+backend API is available on
+[GitHub](https://github.com/wigit-gh/webapp/blob/main/backend/internal/api/v1/README.md).
+Documentation on the API has also been done using
+[Swagger](https://cheezaram.tech/api/v1/swagger/index.html).
 
-To learn more about Next.js, take a look at the following resources:
+##### Dependencies
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Go 1.2.x
+- MySQL 8.x
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+After carrying out the [initial steps](#starting-the-application) and setting up
+dependencies, navigate to the backend directory and install all required
+modules:
 
-## Deploy on Vercel
+```sh
+cd backend && go mod tidy
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+start the backend using:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```sh
+go run main.go
+```
+
+This will start the backend server to listen on all hosts on port `8000`.
+**Gin** will also start in debug mode which should make all routes visible on
+start-up.
+
+### [Frontend](https://github.com/wigit-gh/webapp/blob/main/frontend)
+
+For the frontend, the [initial steps](#starting-the-application) are carried out
+on the already configured frontend server in production, or anywhere for testing
+and devolopment purposes. The frontend depends on a deployed backend whose host
+name is used in the source code.
+
+##### Dependencies
+
+- [Node and npm](https://github.com/nvm-sh/nvm)
+
+Next, change directory into the
+[frontend](https://github.com/wigit-gh/webapp/tree/main/frontend) directory
+which is where the frontend source code resides and is the root of the frontend
+built with [Next.js](https://nextjs.org/).
+
+```sh
+cd frontend
+```
+
+install all dependencies needed with:
+
+```sh
+npm install
+```
+
+In production, the Frontend is built using `npm build`, and then the static
+files are duly deployed on the server. For testing purposes, the devolopment
+server will do. Start it by running:
+
+```sh
+npm run dev
+```
+
+Visit `http://localhost:3000` on your browser to interact with the application.
+
+## Usage
+
+The fullstack application can be interacted with from the browser by visiting
+the deployed application at [the website]().
+
+Anyone can perform the following:
+
+- Visit the homepage
+- View `Products`
+- View `Services`
+- View `About` page
+- View `Contact Us` page
+
+Signed in users can additionally:
+
+- Add items to cart
+- View cart
+- Place orders
+- Book services
+- Track orders and bookings
+- View and edit profile
+- Delete their account
+
+Admins can:
+
+- View customer orders and bookings
+- Change orders and bookings status
+
+Super Admins can:
+
+- Get all users information
+- See all admins
+- See all customers
+- Update previleges for a user account
+- Delete an account
+
+## Contributing
+
+Only members of the software engineering team can contribute to the source code.
+To report bugs and issues, or make feature requests, kindly send us a mail
+through our [support page]() or directly at our support email support@wigit.com.
+
+## Related Projects
+
+Some project similar to ours include:
+
+- wigwholesale.com
+- wigsbyvanity.com
+
+## Licensing
+
+The code in this repository is not provided under an open source license. It is
+solely intended for internal use within **WIG!T**. If you wish to use this code
+or incorporate it into your own projects, please contact support@wigit.com to
+discuss licensing and obtain permission.
+
+[contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
+[last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
+[workflow-badge]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg
+[workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
+[go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend.svg
+[report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
