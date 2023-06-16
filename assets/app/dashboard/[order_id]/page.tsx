@@ -71,12 +71,12 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                     <div className=''>
                         <h3>{ item.product.name }</h3>
                         <p>quantity: { item.quantity }</p>
-                        <p>amount: { item.amount }</p>
+                        <p>amount: GHS { item.amount }</p>
                     </div>
                 </div>
             ))}
             </div>
-            <p>Order Total: <span className='font-bold text-sm'>{ order && order.total_amount}</span></p>
+            <p>Order Total: GHS <span className='font-bold text-sm'>{ order && order.total_amount}</span></p>
             <ToastContainer />
             </div>
     )
