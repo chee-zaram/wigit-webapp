@@ -1,73 +1,60 @@
 // Dashboard
 "use client";
 
-import { useSignInContext } from '@app/SignInContextProvider';
+// import { useSignInContext } from '@app/SignInContextProvider';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Button from '@components/Button';
+import Link from 'next/link';
 import Orders from '@app/dashboard/components/Orders';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+
 
 const Dashboard = async () => {
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
-
-    const { jwt, setJwt, setRole } = useSignInContext();
+    const router = useRouter();
     
-    if (window.sessionStorage.getItem('jwt')) {
-            setJwt(window.sessionStorage.getItem('jwt'));
-            setRole(window.sessionStorage.getItem('role'));
-
-        }
-        
-    // if (typeof window !== 'undefined') {
-    //     if (window.sessionStorage.getItem('jwt')) {
-    //         setJwt(window.sessionStorage.getItem('jwt'));
-    //         setRole(window.sessionStorage.getItem('role'));
-
-    //     }
-    // };
-
-    const [orders, setOrders] = useState([]);
-    const headers = { "Authorization": "Bearer " + jwt};
+    let userObj: string = '';
+    if (sessionStorage.getItem('user')) {
+        userObj = sessionStorage.getItem('user')!;
+    }
+    const user: any =  JSON.parse(userObj);
     
-    // fetch a list of orders
-    
-    useEffect(() => {
-    async function getOrders() {
-        const { data, status } = await axios.get(baseUrl + '/orders', {headers: headers}) 
-        if (status == 200) {
-            setOrders(data.data);
-            console.log(data);
-        }
+    const handleAllOrders = () => {
+        router.push('/dashboard/orders');
     };
-        getOrders();
-    }, []);
+    const handlePendingOrders = () => {
+        router.push('dashboard/pending_orders');
+    };
     
     return (
-        <main className='grid md:grid-rows'>
-            <div className='bg-slate-600'><h2>welcome to your dashboard<br/> fucking awesome shit..</h2></div>
+        <section className='bg-neutral-400 max-w-[80vw] py-6 px-8 rounded-md shadow-md mx-auto'>
             <div>
-                { orders && orders.map((order: any) => (
-            <div key={ order.id }>
-                <Orders { ...order } />
+                <h2 className='p-4 text-2xl font-bold mb-4 text-dark_bg/70'>Welcome to the dashboard, {user.first_name}</h2>
             </div>
-            ))}
+            <div className='flexbox_row gap-6 md:gap-8'>
+                <div onClick={handleAllOrders} className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
+                    <h2>View all orders</h2>
+                </div>
+                <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>Add new product</h2>
+                </div>
+                <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>Manage bookings</h2>
+                </div>
+                <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>Add new slot</h2>
+                </div>
+                <div className='bg-neutral-800 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>settings</h2>
+                </div>
+                <div onClick={handlePendingOrders} className='bg-yellow-600 bg-neutral-00 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>View pending orders</h2>
+                </div>
             </div>
-            <div className='bg-pink-600 '>
-                <h2>Add new product</h2>
-            </div>
-            <div className='bg-slate-600 '>
-                <h2></h2>
-            </div>
-            <div className='bg-purple-600 '>
-                
-            </div>
-            <div className='bg-green-600 '></div>
-            <div className='bg-blue-600 '></div>
-            <div className='bg-yellow-600 '></div>
-            <div></div>
-
-        </main>
-    )
+        </section>
+    );
 };
 
 export default Dashboard;

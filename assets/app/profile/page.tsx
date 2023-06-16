@@ -64,7 +64,7 @@ const Profile = () => {
                     <h5 className='mb-4 text-sm uppercase font-bold '>Confirmed orders</h5>
                     <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm0-342h680v-129H140v129Z"/></svg>                </div>
                 <div onClick={handleEditProfile} className='border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
-                    <h5 className='mb-4 text-sm uppercase font-bold '>Edit my profile</h5>
+                    <h5 className='mb-4 text-sm uppercase font-bold '>My profile</h5>
                     <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-481q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM160-160v-94q0-38 19-65t49-41q67-30 128.5-45T480-420q62 0 123 15.5T731-360q31 14 50 41t19 65v94H160Z"/></svg>                </div>
                 <div onClick={handleSettings} className='border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-accent hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px]'>
                     <h5 className='mb-4 text-sm uppercase font-bold '>Settings</h5>

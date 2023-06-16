@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 const url = 'https://cheezaram.tech/api/v1/orders/status/pending';
 
-const AllOrders = async() => {
+const PendingOrders = async() => {
     const router = useRouter();
     const [ allOrders, setAllOrders ] = useState<string []>([]);
 
@@ -95,4 +95,4 @@ const AllOrders = async() => {
     );
 };
 
-export default AllOrders;
+export default PendingOrders;

@@ -316,7 +316,7 @@ body {
     display: none;
 }
 .spinner {
-    border: 10px solid #1b1b1b;
+    border: 10px solid #979595;
     border-top: 10px solid var(--accent-color);
     position: absolute;
     left: 50%;
