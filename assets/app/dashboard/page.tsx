@@ -27,6 +27,9 @@ const Dashboard = async () => {
     const handlePendingOrders = () => {
         router.push('dashboard/pending_orders');
     };
+    const handlePaidOrders = () => {
+        router.push('dashboard/paid_orders');
+    }
     const handleAddProduct = () => {
         router.push('dashboard/add_product');
     };
@@ -54,6 +57,9 @@ const Dashboard = async () => {
                 </div>
                 <div onClick={handlePendingOrders} className='bg-yellow-600 bg-neutral-00 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
                     <h2>View pending orders</h2>
+                </div>
+                <div onClick={handlePaidOrders} className='bg-green-700 bg-neutral-00 text-light_bg text-xl font-medium border p-2 cursor-pointer flex max-w-[150px] flex-col justify-center items-center border-dark_bg hover:scale-105 duration-300 hover:shadow-accent rounded shadow-md min-h-[150px] min-w-[150px] '>
+                    <h2>View paid orders</h2>
                 </div>
             </div>
         </section>

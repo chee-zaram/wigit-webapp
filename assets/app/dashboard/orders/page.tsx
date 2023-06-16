@@ -58,7 +58,7 @@ const AdminOrders = async () => {
             <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                     { orders && orders.map((order: any) => (
-                        <Link href={'/profile/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>
+                        <Link href={'/dashboard/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>
                             <h3>Reference: 
                             <span
                             className=' px-2 text-accent text-sm underline font-bold'
