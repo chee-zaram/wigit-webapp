@@ -65,14 +65,14 @@ changing working directory into the application directory:
 cd wigit-webapp
 ```
 
-### Backend
+### [Backend](https://github.com/wigit-gh/webapp/blob/main/backend)
 
 The backend is written in [Go Programming Language](https://go.dev/) and uses
 the [Gin Web Framework](https://gin-gonic.com/). Server configurations will be
 carried out by the DevOps team in production prior to backend deployment. The
 following instructions apply to devolopment and testing. Documentation for the
 backend API is available on
-[GitHub](https://github.com/wigit-gh/webapp/blob/main/internal/api/v1/README.md).
+[GitHub](https://github.com/wigit-gh/webapp/blob/main/backend/internal/api/v1/README.md).
 Documentation on the API has also been done using
 [Swagger](https://cheezaram.tech/api/v1/swagger/index.html).
 
@@ -82,10 +82,11 @@ Documentation on the API has also been done using
 - MySQL 8.x
 
 After carrying out the [initial steps](#starting-the-application) and setting up
-dependencies, install all required modules:
+dependencies, navigate to the backend directory and install all required
+modules:
 
 ```sh
-go mod tidy
+cd backend && go mod tidy
 ```
 
 start the backend using:
@@ -98,7 +99,7 @@ This will start the backend server to listen on all hosts on port `8000`.
 **Gin** will also start in debug mode which should make all routes visible on
 start-up.
 
-### Frontend
+### [Frontend](https://github.com/wigit-gh/webapp/blob/main/frontend)
 
 For the frontend, the [initial steps](#starting-the-application) are carried out
 on the already configured frontend server in production, or anywhere for testing
@@ -110,12 +111,12 @@ name is used in the source code.
 - [Node and npm](https://github.com/nvm-sh/nvm)
 
 Next, change directory into the
-[assets](https://github.com/wigit-gh/webapp/tree/main/assets) directory which is
-where the frontend source code resides and is the root of the frontend built
-with [Next.js](https://nextjs.org/).
+[frontend](https://github.com/wigit-gh/webapp/tree/main/frontend) directory
+which is where the frontend source code resides and is the root of the frontend
+built with [Next.js](https://nextjs.org/).
 
 ```sh
-cd assets
+cd frontend
 ```
 
 install all dependencies needed with:
