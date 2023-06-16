@@ -150,7 +150,6 @@ const ProfilePage = () => {
                 router.back();
             }
         } catch(error) {
-            console.log(error);
             toast.error('Something went wrong, please retype the password fields, and try again.', {
                 position: "top-center",
                 autoClose: 4000,
