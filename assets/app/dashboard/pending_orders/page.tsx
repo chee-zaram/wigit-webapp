@@ -112,6 +112,7 @@ const AdminPendingOrders = async () => {
                     ))
                     }
             </div>
+            <ToastContainer />
         </main>
     )
 };
