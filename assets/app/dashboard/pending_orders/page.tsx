@@ -63,8 +63,16 @@ const AdminPendingOrders = async () => {
         router.push('/dashboard/paid_orders');
         setPaid(false);
       } catch (error) {
-          alert('something went wrong');
-      }
+            toast.error('Unable to update order status', {
+                position: "top-center",
+                autoClose: 500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+        });      }
     };
     
     useEffect(() => {
