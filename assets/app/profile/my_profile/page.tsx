@@ -237,7 +237,7 @@ const ProfilePage = () => {
                             // value={user.phone}
                         />
                     </div>
-                    <div className='profile_data py-2 px-4'>
+                    <div className='profile_data py-2 mb-2 px-4'>
                         <label htmlFor='address' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>billing add</label>
                         <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetAddress(event)}
                             type='text'
