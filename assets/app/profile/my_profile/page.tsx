@@ -69,7 +69,7 @@ const ProfilePage = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30"><path d="M794-666 666-794l42-42q17-17 42.5-16.5T793-835l43 43q17 17 17 42t-17 42l-42 42Zm-42 42L248-120H120v-128l504-504 128 128Z"/></svg>
             </button>
             {!editProfile ?
-                <div className='max-w-[80vw] shadow-md rounded md:max-w-[60vw] mx-auto bg-dark_bg/10'>
+                <div className='max-w-[80vw] p-4 md:p-10 shadow-md rounded md:max-w-[60vw] mx-auto bg-dark_bg/10'>
                     <div className='profile_data py-2 px-4'>
                         <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480v53q0 56-39.5 94.5T744-294q-36 0-68-17.5T627-361q-26 34-65 50.5T480-294q-78 0-132.5-54T293-480q0-78 54.5-133T480-668q78 0 132.5 55T667-480v53q0 31 22.5 52t54.5 21q31 0 53.5-21t22.5-52v-53q0-142-99-241t-241-99q-142 0-241 99t-99 241q0 142 99 241t241 99h214v60H480Zm0-274q53 0 90-36.5t37-89.5q0-54-37-91t-90-37q-53 0-90 37t-37 91q0 53 37 89.5t90 36.5Z"/></svg>
                         <p className='ml-4 font-bold text-dark_bg/80 md:text-m'>{ user.email }</p>
@@ -91,12 +91,55 @@ const ProfilePage = () => {
                         <p className='ml-4 font-bold text-dark_bg/80 md:text-md'>{ user.address }</p>
                     </div>
                 </div> :
-                <form className=' bg-accent'>
-                    <Input placeholder='first name' name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Input name='first_name' onChange={() => {}} type='text' id='first_name' />
-                    <Button type='submit' text='Edit' />
+                <form className='max-w-[80vw] p-4 md:p-10 shadow-md rounded md:max-w-[60vw] mx-auto bg-dark_bg/10'>
+                    <div className='profile_data py-2 px-4'>
+                        <label htmlFor='first_name' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>first name</label>
+                        <Input 
+                            placeholder='first name'
+                            name='first_name'
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetFirstName(event)}
+                            type='text'
+                            id='first_name'
+                            value={user.first_name}
+                        />
+                    </div>
+                    <div className='profile_data py-2 px-4'>
+                        <label htmlFor='last_name' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>last name</label>
+                        <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetLastName(event)}
+                            type='text'
+                            name='last name'
+                            placeholder='Enter last name'
+                            id='last_name'
+                            autocomplete='on'
+                            required={ false }
+                            value={user.last_name}
+                        />
+                    </div>
+                    <div className='profile_data py-2 px-4'>
+                        <label htmlFor='phone_number' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>telephone</label>
+                        <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetPhoneNumber(event)}
+                            type='tel'
+                            name='phone number'
+                            placeholder='Enter phone number'
+                            id='phone_number'
+                            autocomplete='on'
+                            required={ false }
+                            value={user.phone}
+                        />
+                    </div>
+                    <div className='profile_data py-2 px-4'>
+                        <label htmlFor='address' className='mr-4 font-bold capitalize text-dark_bg/60 md:text-md'>billing add</label>
+                        <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSetAddress(event)}
+                            type='text'
+                            name='address'
+                            placeholder='Enter address'
+                            id='address'
+                            autocomplete='on'
+                            required={ false }
+                            value={user.address}
+                        />
+                    </div>
+                        <Button type='submit' text='save' />
                 </form>
             }
         </section>
