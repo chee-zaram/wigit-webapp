@@ -80,7 +80,7 @@ if (typeof window !== 'undefined') {
                     progress: undefined,
                     theme: "light",
                 }); 
-                router.push('/');
+                router.push('/contact');
             }
         }
         catch(error) {
