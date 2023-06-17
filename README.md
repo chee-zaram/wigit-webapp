@@ -257,5 +257,5 @@ support@wigit.com to discuss licensing and obtain permission.
 [last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
 [workflow-badge]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg
 [workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
-[go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend.svg
+[go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend
 [report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
