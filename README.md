@@ -28,6 +28,7 @@
   - [Backend](#backend)
   - [Frontend](#frontend)
 - [Usage](#usage)
+- [Authors](#authors)
 - [Contributing](#contributing)
 - [Related Projects](#related-projects)
 - [Licensing](#licensing)
@@ -177,6 +178,30 @@ Super Admins can:
 - Update previleges for a user account
 - Delete an account
 
+## Authors
+
+This lists all individuals who were part of the project from the start. Their
+full names, links, and contact information are listed below:
+
+<details>
+    <summary>Emmanuel Chee-zaram Okeke</summary>
+    <ul>
+    <li><a href="https://www.cheezaram.com">Website</a></li>
+    <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
+    <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
+    <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
+    <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
+    </ul>
+</details>
+<details>
+    <summary>Ovy Evbodi</summary>
+    <ul>
+    <li><a href="https://www.github.com/OvyEvbodi">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/ovy-evbodi-21920a203/">Linkedin</a></li>
+    <li><a href="mailto:evbodiovo@gmail.com">Gmail</a></li>
+    </ul>
+</details>
+
 ## Contributing
 
 Only members of the software engineering team can contribute to the source code.
@@ -193,9 +218,10 @@ Some project similar to ours include:
 ## Licensing
 
 The code in this repository is not provided under an open source license. It is
-solely intended for internal use within **WIG!T**. If you wish to use this code
-or incorporate it into your own projects, please contact support@wigit.com to
-discuss licensing and obtain permission.
+solely intended for internal use within **WIG!T** as is stated in the
+[LICENSE](https://github.com/wigit-gh/webapp/blob/main/LICENSE) file. If you
+wish to use this code or incorporate it into your own projects, please contact
+support@wigit.com to discuss licensing and obtain permission.
 
 [contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
 [last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
