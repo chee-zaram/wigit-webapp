@@ -136,7 +136,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 	})
 }
 
-// newBooking fills up the neccessary fields in db.Booking object from NewBooking
+// newBooking fills up the necessary fields in db.Booking object from NewBooking
 // object and returns it.
 func newBooking(newBooking *NewBooking) *db.Booking {
 	booking := new(db.Booking)

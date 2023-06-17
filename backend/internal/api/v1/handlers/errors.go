@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	// ErrInternalServer indicates some server side error occured that can't be handled.
+	// ErrInternalServer indicates some server side error occurred that can't be handled.
 	ErrInternalServer = errors.New("Something went wrong!")
 	// ErrDuplicateUser indicates that User with email already exists during signup.
 	ErrDuplicateUser = errors.New("User with email already exists")
