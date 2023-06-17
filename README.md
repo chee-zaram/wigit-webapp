@@ -28,7 +28,10 @@
   - [Backend](#backend)
   - [Frontend](#frontend)
 - [Usage](#usage)
-- [Authors](#authors)
+- [Developers](#developers)
+  - [Backend](#dev_backend)
+  - [Frontend](#dev_frontend)
+  - [DevOps](#dev_devops)
 - [Contributing](#contributing)
 - [Related Projects](#related-projects)
 - [Licensing](#licensing)
@@ -48,7 +51,7 @@ informed and reassured every step of the way.
 To learn more about the **WIG!T** brand, you can:
 
 - Visit the [landing page]().
-- Know the [founder]() and [engineers]().
+- Know the [founder]() and [developers]().
 - Read our [blog post]() on the launch of the Web Application.
 - Try out [our application]().
 
@@ -178,29 +181,56 @@ Super Admins can:
 - Update previleges for a user account
 - Delete an account
 
-## Authors
+## Developers
 
-This lists all individuals who were part of the project from the start. Their
-full names, links, and contact information are listed below:
+This lists all individuals who have contributed to the development of this
+application. Their full names, links, and contact information are listed below:
+
+<div id="dev_backend">
+  <h4>Backend</h4>
 
 <details>
-    <summary>Emmanuel Chee-zaram Okeke</summary>
-    <ul>
-    <li><a href="https://www.cheezaram.com">Website</a></li>
-    <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
-    <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
-    <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
-    <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
-    </ul>
-</details>
+      <summary>Emmanuel Chee-zaram Okeke</summary>
+      <ul>
+      <li><a href="https://www.cheezaram.com">Website</a></li>
+      <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
+      <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
+      <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
+      <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
+      </ul>
+  </details>
+</div>
+
+---
+
+<div id="dev_frontend">
+  <h4>Frontend</h4>
+
 <details>
-    <summary>Ovy Evbodi</summary>
-    <ul>
-    <li><a href="https://www.github.com/OvyEvbodi">GitHub</a></li>
-    <li><a href="https://www.linkedin.com/in/ovy-evbodi-21920a203/">Linkedin</a></li>
-    <li><a href="mailto:evbodiovo@gmail.com">Gmail</a></li>
-    </ul>
-</details>
+      <summary>Ovy Evbodi</summary>
+      <ul>
+      <li><a href="https://www.github.com/OvyEvbodi">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/ovy-evbodi-21920a203/">Linkedin</a></li>
+      <li><a href="mailto:evbodiovo@gmail.com">Gmail</a></li>
+      </ul>
+  </details>
+</div>
+
+---
+
+<div id="dev_devops">
+  <h4>DevOps</h4>
+  <details>
+      <summary>Emmanuel Chee-zaram Okeke</summary>
+      <ul>
+      <li><a href="https://www.cheezaram.com">Website</a></li>
+      <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
+      <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
+      <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
+      <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
+      </ul>
+  </details>
+</div>
 
 ## Contributing
 
