@@ -53,7 +53,7 @@ func NewDatabaseDSN(conf config.Config) string {
 }
 
 // NewDB takes in a domain string name and returns a pointer to a
-// newly configured DB object with connection to the database and an error if any occured.
+// newly configured DB object with connection to the database and an error if any occurred.
 func NewDB(dsn string) (*DB, error) {
 	session, err := createDBConnection(dsn)
 	if err != nil {
@@ -66,7 +66,7 @@ func NewDB(dsn string) (*DB, error) {
 }
 
 // createConnection sets up connection to the database and creates a session.
-// It returns the session and an error if any occured.
+// It returns the session and an error if any occurred.
 func createDBConnection(dsn string) (*gorm.DB, error) {
 	// Open connection to database
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.SetGORMLogToFile()})
