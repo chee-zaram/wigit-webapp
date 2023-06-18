@@ -144,12 +144,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to Servers
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Server 1
+        uses: appleboy/ssh-action@master
         env:
           BE_EXEC: ${{ secrets.BE_EXEC }}
         with:
-          host: "${{ secrets.BE_SERVER_01 }},${{ secrets.BE_SERVER_02 }}"
+          host: ${{ secrets.BE_SERVER_01 }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          script_stop: true
+          envs: BE_EXEC
+          script: |
+            if [[ ! -d webapp ]]; then
+              git clone https://github.com/wigit-gh/webapp.git
+            fi
+            cd webapp
+            git stash && git checkout main && git pull origin --rebase
+            cd backend
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh
+
+      - name: Server 2
+        uses: appleboy/ssh-action@master
+        env:
+          BE_EXEC: ${{ secrets.BE_EXEC }}
+        with:
+          host: ${{ secrets.BE_SERVER_02 }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           script_stop: true
