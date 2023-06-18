@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"errors"
-	// "fmt"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -214,7 +214,7 @@ func AdminGetBooking(ctx *gin.Context) {
 //	@Router			/admin/bookings/{booking_id}/{status} [put]
 func AdminPutBooking(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
-	_, ok := _user.(*db.User)
+	admin, ok := _user.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
@@ -233,15 +233,15 @@ func AdminPutBooking(ctx *gin.Context) {
 		return
 	}
 
-	if !validBookingStatus(booking, status) {
+	if !bookingStatusIsValid(booking, status) {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New(
 			"The status is not valid. Likely because the service is not available at the moment",
 		))
 		return
 	}
 
-	// adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
-	if err := booking.UpdateStatus(status); err != nil {
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	if err := booking.UpdateStatus(status, adminName); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -252,8 +252,8 @@ func AdminPutBooking(ctx *gin.Context) {
 	})
 }
 
-// validBookingStatus checks if the new status is for updating a booking valid.
-func validBookingStatus(booking *db.Booking, status string) bool {
+// bookingStatusIsValid checks if the new status is for updating a booking valid.
+func bookingStatusIsValid(booking *db.Booking, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedBookingStatus {

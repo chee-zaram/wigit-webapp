@@ -37,13 +37,25 @@ func (booking *Booking) LoadFromDB(id string) error {
 	return nil
 }
 
-// UpdateStatus updates the status of an existing user booking.
-func (booking *Booking) UpdateStatus(newStatus string) error {
+// UpdateStatus updates the status of an existing user booking, stating the admin
+// responsible for the status update.
+func (booking *Booking) UpdateStatus(newStatus, adminName string) error {
 	if booking == nil {
 		return ErrNilPointer
 	}
 
 	booking.Status = &newStatus
+	booking.UpdatedBy = adminName
+
+	switch newStatus {
+	case Paid:
+		booking.PaidUpdatedBy = adminName
+	case Fulfilled:
+		booking.FulfilledUpdatedBy = adminName
+	case Cancelled:
+		booking.CancelledUpdatedBy = adminName
+	}
+
 	if err := booking.Reload(); err != nil {
 		return err
 	}

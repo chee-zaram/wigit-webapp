@@ -164,6 +164,18 @@ type Booking struct {
 	// Status is the current status of the booking.
 	// Values are `pending`, `paid`, `fulfilled`, `cancelled`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the status of the booking.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
+
+	// PaidUpdatedBy gives the name of the admin who updated the status to paid.
+	PaidUpdatedBy string `gorm:"type:varchar(91)" json:"paid_updated_by" binding:"-"`
+
+	// FulfilledUpdatedBy gives the name of the admin who updated the status to `fulfilled`.
+	FulfilledUpdatedBy string `gorm:"type:varchar(91)" json:"fulfilled_updated_by" binding:"-"`
+
+	// CancelledUpdatedBy gives the name of the admin who updated the status to `cancelled`.
+	CancelledUpdatedBy string `gorm:"type:varchar(91)" json:"cancelled_updated_by" binding:"-"`
 }
 
 // Slot represents a datetime for a booking.
