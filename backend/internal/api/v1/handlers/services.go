@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/backend/internal/db"
 	"gorm.io/gorm"
@@ -99,8 +101,14 @@ func GetServiceByID(ctx *gin.Context) {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services [post]
 func AdminPostServices(ctx *gin.Context) {
-	_service := new(NewService)
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
 
+	_service := new(NewService)
 	if err := ctx.ShouldBindJSON(_service); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -111,7 +119,8 @@ func AdminPostServices(ctx *gin.Context) {
 		return
 	}
 
-	service := newService(_service)
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	service := newService(_service, adminName, false)
 	if err := service.SaveToDB(); err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New("Service with this name already exists"))
 		return
@@ -132,12 +141,27 @@ func AdminPostServices(ctx *gin.Context) {
 }
 
 // newService fills up the fields for db.Service object.
-func newService(newService *NewService) *db.Service {
+func newService(newService *NewService, adminName string, exists bool) *db.Service {
 	service := new(db.Service)
 	service.Name = newService.Name
 	service.Description = newService.Description
 	service.Available = newService.Available
 	service.Price = newService.Price
+	if !exists {
+		service.AddedBy = adminName
+		msg := fmt.Sprintf(
+			"service [%s] added by [%s]. price [%s]",
+			*service.Name, adminName, service.Price,
+		)
+		log.Info().Msg(msg)
+	} else {
+		service.UpdatedBy = adminName
+		msg := fmt.Sprintf(
+			"service [%s] update by [%s]. price [%s]",
+			*service.Name, adminName, *service.Price,
+		)
+		log.Info().Msg(msg)
+	}
 
 	return service
 }
@@ -155,6 +179,13 @@ func newService(newService *NewService) *db.Service {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services/{service_id} [delete]
 func AdminDeleteServices(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	id := ctx.Param("service_id")
 	if id == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
@@ -165,6 +196,9 @@ func AdminDeleteServices(ctx *gin.Context) {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	msg := fmt.Sprintf("service [%s] deleted by admin [%s]", id, adminName)
+	log.Info().Msg(msg)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "Service deleted successfully",
@@ -185,6 +219,13 @@ func AdminDeleteServices(ctx *gin.Context) {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services/{service_id} [put]
 func AdminPutServices(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	_service := new(NewService)
 	id := ctx.Param("service_id")
 	if id == "" {
@@ -209,7 +250,8 @@ func AdminPutServices(ctx *gin.Context) {
 	}
 
 	created_at := service.CreatedAt
-	service = newService(_service)
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	service = newService(_service, adminName, true)
 	service.ID = &id
 	service.CreatedAt = created_at
 

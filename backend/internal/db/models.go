@@ -213,4 +213,10 @@ type Service struct {
 
 	// Available says whether the service is available or not.
 	Available *bool `gorm:"not null" json:"available" binding:"required"`
+
+	// AddedBy gives the full name of the admin who added this Service.
+	AddedBy string `gorm:"type:varchar(91)" json:"added_by" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the Service.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
 }
