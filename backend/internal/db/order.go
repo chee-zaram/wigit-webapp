@@ -50,13 +50,25 @@ func (order *Order) CustomerLoadFromDB(userID, id string) error {
 	return nil
 }
 
-// UpdateStatus updates the status of the current order.
-func (order *Order) UpdateStatus(status string) error {
+// UpdateStatus updates the status of the current order specifying the name of
+// the admin responsible for the last update.
+func (order *Order) UpdateStatus(status, adminName string) error {
 	if order == nil {
 		return ErrNilPointer
 	}
 
 	order.Status = &status
+	order.UpdatedBy = adminName
+
+	switch status {
+	case Paid:
+		order.PaidUpdatedBy = adminName
+	case Shipped:
+		order.ShippedUpdatedBy = adminName
+	case Delivered:
+		order.DeliveredUpdatedBy = adminName
+	}
+
 	if err := order.Reload(); err != nil {
 		return err
 	}

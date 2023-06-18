@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -315,6 +316,13 @@ func AdminGetOrder(ctx *gin.Context) {
 //	@Failure		500				{object}	map[string]interface{}	"error"
 //	@Router			/admin/orders/{order_id}/{status} [put]
 func AdminPutOrders(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	order_id := ctx.Param("order_id")
 	if order_id == "" {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New("No order ID"))
@@ -340,7 +348,8 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if err := order.UpdateStatus(status); err != nil {
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	if err := order.UpdateStatus(status, adminName); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
