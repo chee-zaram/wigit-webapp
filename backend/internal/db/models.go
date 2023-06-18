@@ -77,7 +77,7 @@ type Order struct {
 	// Values are `shipping` or `pickup`.
 	DeliveryMethod *string `gorm:"not null;type:varchar(45);" json:"delivery_method" binding:"required"`
 
-	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`.
+	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`, `cancelled`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status" binding:"-"`
 
 	// UpdatedBy gives the full name of the user who last updated the status of the order.
@@ -91,6 +91,9 @@ type Order struct {
 
 	// DeliveredUpdatedBy gives the name of the admin who updated the status to delivered.
 	DeliveredUpdatedBy string `gorm:"type:varchar(91)" json:"delivered_updated_by" binding:"-"`
+
+	// CancelledUpdatedBy gives the name of the admin who updated the status to `cancelled`.
+	CancelledUpdatedBy string `gorm:"type:varchar(91)" json:"cancelled_updated_by" binding:"-"`
 
 	// ShippingAddress is the address where the order is to be delivered.
 	ShippingAddress *string `gorm:"type:varchar(255);" json:"shipping_address" binding:"-"`

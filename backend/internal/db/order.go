@@ -72,6 +72,10 @@ func (order *Order) UpdateStatus(status, adminName string) error {
 		order.ShippedUpdatedBy = adminName
 	case Delivered:
 		order.DeliveredUpdatedBy = adminName
+	case Cancelled:
+		order.CancelledUpdatedBy = adminName
+	default:
+		return fmt.Errorf("invalid status %s", status)
 	}
 
 	if err := order.Reload(); err != nil {
