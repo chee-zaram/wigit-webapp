@@ -77,8 +77,23 @@ type Order struct {
 	// Values are `shipping` or `pickup`.
 	DeliveryMethod *string `gorm:"not null;type:varchar(45);" json:"delivery_method" binding:"required"`
 
-	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`.
+	// This is the status of the order. Values are `pending`, `paid`, `shipped`, `delivered`, `cancelled`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status" binding:"-"`
+
+	// UpdatedBy gives the full name of the user who last updated the status of the order.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
+
+	// PaidUpdatedBy gives the name of the admin who updated the status to paid.
+	PaidUpdatedBy string `gorm:"type:varchar(91)" json:"paid_updated_by" binding:"-"`
+
+	// ShippedUpdatedBy gives the name of the admin who updated the status to shipped.
+	ShippedUpdatedBy string `gorm:"type:varchar(91)" json:"shipped_updated_by" binding:"-"`
+
+	// DeliveredUpdatedBy gives the name of the admin who updated the status to delivered.
+	DeliveredUpdatedBy string `gorm:"type:varchar(91)" json:"delivered_updated_by" binding:"-"`
+
+	// CancelledUpdatedBy gives the name of the admin who updated the status to `cancelled`.
+	CancelledUpdatedBy string `gorm:"type:varchar(91)" json:"cancelled_updated_by" binding:"-"`
 
 	// ShippingAddress is the address where the order is to be delivered.
 	ShippingAddress *string `gorm:"type:varchar(255);" json:"shipping_address" binding:"-"`
@@ -106,6 +121,12 @@ type Product struct {
 
 	// ImageURL is a link to a stock photo of the product.
 	ImageURL *string `gorm:"not null;type:varchar(255)" json:"image_url" binding:"required,max=255"`
+
+	// AddedBy gives the full name of the admin who added this Product.
+	AddedBy string `gorm:"type:varchar(91)" json:"added_by" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the Product.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
 }
 
 // Item is an instance of a Product within an Order.
@@ -152,6 +173,18 @@ type Booking struct {
 	// Status is the current status of the booking.
 	// Values are `pending`, `paid`, `fulfilled`, `cancelled`.
 	Status *string `gorm:"not null;type:varchar(45);default:'pending'" json:"status" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the status of the booking.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
+
+	// PaidUpdatedBy gives the name of the admin who updated the status to paid.
+	PaidUpdatedBy string `gorm:"type:varchar(91)" json:"paid_updated_by" binding:"-"`
+
+	// FulfilledUpdatedBy gives the name of the admin who updated the status to `fulfilled`.
+	FulfilledUpdatedBy string `gorm:"type:varchar(91)" json:"fulfilled_updated_by" binding:"-"`
+
+	// CancelledUpdatedBy gives the name of the admin who updated the status to `cancelled`.
+	CancelledUpdatedBy string `gorm:"type:varchar(91)" json:"cancelled_updated_by" binding:"-"`
 }
 
 // Slot represents a datetime for a booking.
@@ -183,4 +216,10 @@ type Service struct {
 
 	// Available says whether the service is available or not.
 	Available *bool `gorm:"not null" json:"available" binding:"required"`
+
+	// AddedBy gives the full name of the admin who added this Service.
+	AddedBy string `gorm:"type:varchar(91)" json:"added_by" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the Service.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
 }

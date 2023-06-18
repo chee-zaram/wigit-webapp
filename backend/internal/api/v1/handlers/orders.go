@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,9 @@ func (order *NewOrder) validate() error {
 }
 
 // allowedOrderStatus is a slice of status allowed to be set for an order.
-var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "cancelled"}
+var allowedOrderStatus = []string{
+	db.Pending, db.Paid, db.Shipped, db.Delivered, db.Cancelled,
+}
 
 // CustomerGetOrders Get all given customer's orders.
 //
@@ -313,6 +316,13 @@ func AdminGetOrder(ctx *gin.Context) {
 //	@Failure		500				{object}	map[string]interface{}	"error"
 //	@Router			/admin/orders/{order_id}/{status} [put]
 func AdminPutOrders(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	order_id := ctx.Param("order_id")
 	if order_id == "" {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New("No order ID"))
@@ -331,14 +341,15 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if !validOrderStatus(order, status) {
+	if !orderStatusIsValid(order, status) {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New(
 			"Status cannot be updated. Likely because a product is out of stock",
 		))
 		return
 	}
 
-	if err := order.UpdateStatus(status); err != nil {
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	if err := order.UpdateStatus(status, adminName); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -349,14 +360,14 @@ func AdminPutOrders(ctx *gin.Context) {
 	})
 }
 
-// validOrderStatus validates the status to which an order is about to be updated.
+// orderStatusIsValid validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func validOrderStatus(order *db.Order, status string) bool {
+func orderStatusIsValid(order *db.Order, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedOrderStatus {
 		if stat == status {
-			if status == "paid" {
+			if status == db.Paid {
 				for _, item := range order.Items {
 					if *item.Quantity > *item.Product.Stock {
 						return false

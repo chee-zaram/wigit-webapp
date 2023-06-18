@@ -1,6 +1,11 @@
 package db
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
+)
 
 // SaveToDB saves the current order to the database.
 func (order *Order) SaveToDB() error {
@@ -50,16 +55,38 @@ func (order *Order) CustomerLoadFromDB(userID, id string) error {
 	return nil
 }
 
-// UpdateStatus updates the status of the current order.
-func (order *Order) UpdateStatus(status string) error {
+// UpdateStatus updates the status of the current order specifying the name of
+// the admin responsible for the last update.
+func (order *Order) UpdateStatus(status, adminName string) error {
 	if order == nil {
 		return ErrNilPointer
 	}
 
 	order.Status = &status
+	order.UpdatedBy = adminName
+
+	switch status {
+	case Paid:
+		order.PaidUpdatedBy = adminName
+	case Shipped:
+		order.ShippedUpdatedBy = adminName
+	case Delivered:
+		order.DeliveredUpdatedBy = adminName
+	case Cancelled:
+		order.CancelledUpdatedBy = adminName
+	default:
+		return fmt.Errorf("invalid status %s", status)
+	}
+
 	if err := order.Reload(); err != nil {
 		return err
 	}
+
+	msg := fmt.Sprintf(
+		"status of order with id = [%s] updated to [%s] by [%s]",
+		*order.ID, status, adminName,
+	)
+	log.Info().Msg(msg)
 
 	return nil
 }

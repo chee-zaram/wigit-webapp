@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/wigit-gh/webapp/backend/internal/db"
 	"gorm.io/gorm"
@@ -138,6 +140,13 @@ func GetProductsByCategory(ctx *gin.Context) {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products [post]
 func AdminPostProducts(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	_newProduct := new(NewProduct)
 	if err := ctx.ShouldBindJSON(_newProduct); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
@@ -149,7 +158,8 @@ func AdminPostProducts(ctx *gin.Context) {
 		return
 	}
 
-	product := newProduct(_newProduct)
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	product := newProduct(_newProduct, adminName, false)
 	if err := product.Reload(); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
@@ -162,7 +172,7 @@ func AdminPostProducts(ctx *gin.Context) {
 }
 
 // newProduct gets a pointer to a new db.Product object.
-func newProduct(newProduct *NewProduct) *db.Product {
+func newProduct(newProduct *NewProduct, adminName string, exists bool) *db.Product {
 	product := new(db.Product)
 	product.Name = newProduct.Name
 	product.Category = newProduct.Category
@@ -170,6 +180,18 @@ func newProduct(newProduct *NewProduct) *db.Product {
 	product.ImageURL = newProduct.ImageURL
 	product.Price = newProduct.Price
 	product.Stock = newProduct.Stock
+	if !exists {
+		product.AddedBy = adminName
+		msg := fmt.Sprintf("product with name = [%s] added by [%s]", *product.Name, adminName)
+		log.Info().Msg(msg)
+	} else {
+		product.UpdatedBy = adminName
+		msg := fmt.Sprintf(
+			"product with name = [%s] updated by [%s]. stock = %d and price = %s",
+			*product.Name, adminName, *product.Stock, *product.Price,
+		)
+		log.Info().Msg(msg)
+	}
 
 	return product
 }
@@ -187,16 +209,25 @@ func newProduct(newProduct *NewProduct) *db.Product {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products/{product_id} [delete]
 func AdminDeleteProducts(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	id := ctx.Param("product_id")
 	if id == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidProductID)
 		return
 	}
 
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
 	if err := db.DeleteProduct(id); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
+	log.Info().Msg(fmt.Sprintf("product [%s] deleted by [%s]", id, adminName))
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "Product delete successfully",
@@ -217,6 +248,13 @@ func AdminDeleteProducts(ctx *gin.Context) {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products/{product_id} [put]
 func AdminPutProducts(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	admin, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	_newProduct := new(NewProduct)
 	id := ctx.Param("product_id")
 	if id == "" {
@@ -241,7 +279,8 @@ func AdminPutProducts(ctx *gin.Context) {
 	}
 
 	createdAt := product.CreatedAt
-	product = newProduct(_newProduct)
+	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	product = newProduct(_newProduct, adminName, true)
 	product.ID = &id
 	product.CreatedAt = createdAt
 
