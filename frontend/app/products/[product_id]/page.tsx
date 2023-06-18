@@ -1,19 +1,14 @@
 // products details page
-// "use client";
 import axios from 'axios';
-// import { useState, useEffect } from 'react';
+import BackButton from '@components/BackButton';
 import Image from 'next/image';
 import { Product } from '@app/products/interfaces/product';
 import { getProducts } from '@app/products/page';
-
-// import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 const ProductDetails = async ({params}: {params: {product_id: string} }) => {
-    // const router = useRouter();
     const url = 'https://cheezaram.tech/api/v1/products/' + params.product_id;
-    let product;
+    let product = {};
     try {
         product = await getProducts(url);
     } catch (error) {
@@ -29,11 +24,11 @@ const ProductDetails = async ({params}: {params: {product_id: string} }) => {
         });
     }
     
-    
     return (
         <section>
             { product &&
                 <div>
+                    <BackButton />
                     <div className='flexbox gap-3 max-w-[80vw] mx-auto'>
                         <h2 className='font-bold text-xl text-dark_bg/80 '>{ product.name }</h2>
                         <div className='border-3 p-3 border-accent bg-dark_bg'>
