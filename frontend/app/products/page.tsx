@@ -13,17 +13,20 @@ export const metadata = { title: 'wigit products' };
 
 export async function getProducts(url: string): Promise<any> {
 
-  const res = await fetch(url, {
+  try {
+    const res = await fetch(url, {
     headers: {"Content-Type": "application/json"},
     next: {"revalidate": 0}
-  });
+    });
 
-  const data = await res.json();
-  if (res.ok) {
+    const data = await res.json();
+    if (res.ok) {
     return data.data;
+    }
+  } catch (error) {
+    return null;
   }
-  return null; // fix this
-}
+};
 
 export default async function Products() {
   const product_obj = await getProducts(productsUrl);

@@ -4,12 +4,11 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useSignInContext } from '@app/SignInContextProvider';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const OrderDetails = ({ params }: { params: {order_id: string } }) => {
-     const router = useRouter();
+    const router = useRouter();
     const [ order, setOrder ] = useState<any>(null);
     const url = 'https://cheezaram.tech/api/v1/orders/' + params.order_id;
 
@@ -87,6 +86,3 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
 };
 
 export default OrderDetails;
-// export default function Page({ params }: { params: { order_id: string } }) {
-//   return <div>My Post: {params.order_id}</div>
-// }
