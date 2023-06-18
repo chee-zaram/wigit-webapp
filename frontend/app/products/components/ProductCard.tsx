@@ -9,7 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import axios from 'axios';
 import { useSignInContext } from '@app/SignInContextProvider';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ProductCard: NextPage<Product> = (props) => {
@@ -111,14 +111,14 @@ const ProductCard: NextPage<Product> = (props) => {
 return (
     <section className='h-full'>
         <div className='bg-white shrink-0 shadow-lg h-full overflow-hidden rounded w-[150px] md:w-[200px] flexbox_row hover:scale-105 duration 400'>
-            <div className=' overflow-hidden h-[120px] w-full'>
+            <Link href={'/products/' + props.id} className='block overflow-hidden h-[120px] w-full'>
                 <Image src={ props.image_url } alt={ props.name } width={200} height={120}
                  className='object-cover'
                 />
-            </div>
+            </Link >
             <div className=' p-4 w-full'>
-                <h2 className='capitalize text-sm font-bold text-neutral-700 '>{ props.name }</h2>
-                <p className='my-1 text-neutral-500 '>{ props.description }</p>
+                <Link href={'/products/' + props.id}  className='block capitalize text-sm font-bold text-neutral-700 '>{ props.name }</Link>
+                <Link href={'/products/' + props.id}  className='block my-1 text-neutral-500 '>{ props.description }</Link>
                 <span className={props.category === 'straight' ? 'bg-sky-700 tag' : props.category === 'wavy' ? 'bg-pink-700 tag' : 'bg-teal-600 tag'}>{ props.category}</span><span className='text-xs text-gray-400 ml-4 '>{props.stock} left</span>
                 <p className=' text-accent font-bold'>GHS { props.price }</p>
                 <Button text='add to cart' onClick={() => {addToCart(props.id, 1)}} />
