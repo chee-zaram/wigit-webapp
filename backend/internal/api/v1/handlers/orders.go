@@ -34,7 +34,9 @@ func (order *NewOrder) validate() error {
 }
 
 // allowedOrderStatus is a slice of status allowed to be set for an order.
-var allowedOrderStatus = []string{"pending", "paid", "shipped", "delivered", "cancelled"}
+var allowedOrderStatus = []string{
+	db.Pending, db.Paid, db.Shipped, db.Delivered, db.Cancelled,
+}
 
 // CustomerGetOrders Get all given customer's orders.
 //
@@ -331,7 +333,7 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if !validOrderStatus(order, status) {
+	if !orderStatusIsValid(order, status) {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New(
 			"Status cannot be updated. Likely because a product is out of stock",
 		))
@@ -349,14 +351,14 @@ func AdminPutOrders(ctx *gin.Context) {
 	})
 }
 
-// validOrderStatus validates the status to which an order is about to be updated.
+// orderStatusIsValid validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func validOrderStatus(order *db.Order, status string) bool {
+func orderStatusIsValid(order *db.Order, status string) bool {
 	var valid bool
 
 	for _, stat := range allowedOrderStatus {
 		if stat == status {
-			if status == "paid" {
+			if status == db.Paid {
 				for _, item := range order.Items {
 					if *item.Quantity > *item.Product.Stock {
 						return false

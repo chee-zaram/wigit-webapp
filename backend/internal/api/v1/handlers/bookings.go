@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	// "fmt"
 	"net/http"
 	"strings"
 
@@ -18,7 +19,9 @@ type NewBooking struct {
 }
 
 // allowedBookingStatus is a list of all the valid status for a booking.
-var allowedBookingStatus = []string{"pending", "paid", "fulfilled", "cancelled"}
+var allowedBookingStatus = []string{
+	db.Pending, db.Paid, db.Fulfilled, db.Cancelled,
+}
 
 // CustomerGetBookings Customer get all bookings
 //
@@ -210,6 +213,13 @@ func AdminGetBooking(ctx *gin.Context) {
 //	@Failure		500				{object}	map[string]interface{}	"error"
 //	@Router			/admin/bookings/{booking_id}/{status} [put]
 func AdminPutBooking(ctx *gin.Context) {
+	_user, exists := ctx.Get("user")
+	_, ok := _user.(*db.User)
+	if !exists || !ok {
+		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
+		return
+	}
+
 	id := ctx.Param("booking_id")
 	status := ctx.Param("status")
 	if id == "" || status == "" {
@@ -230,6 +240,7 @@ func AdminPutBooking(ctx *gin.Context) {
 		return
 	}
 
+	// adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
 	if err := booking.UpdateStatus(status); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
@@ -247,7 +258,7 @@ func validBookingStatus(booking *db.Booking, status string) bool {
 
 	for _, stat := range allowedBookingStatus {
 		if stat == status {
-			if status == "paid" {
+			if status == db.Paid {
 				if !*booking.Service.Available {
 					return false
 				}
