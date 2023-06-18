@@ -1,6 +1,11 @@
 package db
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
+)
 
 // SaveToDB saves the current order to the database.
 func (order *Order) SaveToDB() error {
@@ -72,6 +77,12 @@ func (order *Order) UpdateStatus(status, adminName string) error {
 	if err := order.Reload(); err != nil {
 		return err
 	}
+
+	msg := fmt.Sprintf(
+		"status of order with id = [%s] updated to [%s] by [%s]",
+		*order.ID, status, adminName,
+	)
+	log.Info().Msg(msg)
 
 	return nil
 }

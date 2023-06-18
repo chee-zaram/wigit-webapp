@@ -1,8 +1,10 @@
 package db
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -59,6 +61,12 @@ func (booking *Booking) UpdateStatus(newStatus, adminName string) error {
 	if err := booking.Reload(); err != nil {
 		return err
 	}
+
+	msg := fmt.Sprintf(
+		"status of booking with id = [%s] updated to [%s] by [%s]",
+		*booking.ID, newStatus, adminName,
+	)
+	log.Info().Msg(msg)
 
 	return nil
 }
