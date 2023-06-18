@@ -1,25 +1,16 @@
 <div align="center">
-<a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
-<br/>
-<strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
-<h1>WIG!T Web Application</h1>
+  <a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+  <br/>
+  <strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
+  <h1>WIG!T Web Application</h1>
 </div>
 
-[![Workflow][workflow-badge]][workflow]
-[![Go Report][go-report-card-badge]][report] ![Last Commit][last_commit-badge]
-![Contributors][contributors-badge]
+[![Workflow](https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg)][workflow]
+[![Go Report](https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend)][report]
+![Last Commit](https://img.shields.io/github/last-commit/wigit-gh/webapp)
+![Contributors](https://img.shields.io/github/contributors/wigit-gh/webapp)
 
 ---
-
-<!-- ![Home Top](https://imgur.com/AMIfkWe.png)
-
-![Home Trending](https://imgur.com/lAKPnhZ.png)
-
-![Products Top](https://imgur.com/h5ALl13.png)
-
-![Products Bottom](https://imgur.com/4OCT8Ea.png)
-
-![Sign In](https://imgur.com/UddM0co.png) -->
 
 ## Table of Contents
 
@@ -38,31 +29,32 @@
 
 ## Introduction
 
-The **WIG!T Web Application** is a full stack web project which aims to restore
+The **WIG!T Web Application** is a full-stack web project that aims to restore
 customer trust in online shopping. Our mission is to bring shopping closer to
-the people. We are inspired by a need to provide safety, assurance, quality, and
-peace-of-mind to customers who simply want to experience the joy and convenience
-of shopping.
+the people. We are inspired by the need to provide safety, assurance, quality,
+and peace of mind to customers who simply want to experience the joy and
+convenience of shopping.
 
-The Web Application aims to reduce customer wait times by providing seemless
+The Web Application aims to reduce customer wait times by providing seamless
 user experience, customer service, and delivery experience. We keep customers
 informed and reassured every step of the way.
 
 To learn more about the **WIG!T** brand, you can:
 
-- Visit the [landing page]().
-- Know the [founder]() and [developers]().
-- Read our [blog post]() on the launch of the Web Application.
-- Try out [our application]().
+- Visit the [landing page](https://example.com).
+- Know the [founder](https://example.com/founder) and [developers](#developers).
+- Read our [blog post](https://example.com/blog) on the launch of the Web
+  Application.
+- Try out [our application](https://example.com/app).
 
 ## Starting the Application
 
-The procedure outlined expect you're setting up for testing or devolopment. The
-DevOps team will be responsible for server setup and configuration required in a
-production environment.
+The procedure outlined expects that you're setting up for testing or
+development. The DevOps team will be responsible for server setup and
+configuration required in a production environment.
 
 Provided you use **Linux/GNU** and have **git** installed, the application can
-be started by cloning this repository on the commandline using the following
+be started by cloning this repository on the command line using the following
 command:
 
 ```sh
@@ -92,8 +84,8 @@ Documentation on the API has also been done using
 - MySQL 8.x
 
 After carrying out the [initial steps](#starting-the-application) and setting up
-dependencies, navigate to the backend directory and install all required
-modules:
+dependencies, navigate to the backend directory and install all required module
+dependencies:
 
 ```sh
 cd backend && go mod tidy
@@ -113,8 +105,8 @@ start-up.
 
 For the frontend, the [initial steps](#starting-the-application) are carried out
 on the already configured frontend server in production, or anywhere for testing
-and devolopment purposes. The frontend depends on a deployed backend whose host
-name is used in the source code.
+and devolopment purposes. The frontend depends on a deployed backend whose
+hostname is used in the source code.
 
 ##### Dependencies
 
@@ -158,9 +150,9 @@ Anyone can perform the following:
 - View `About` page
 - View `Contact Us` page
 
-Signed in users can additionally:
+Signed-in users can additionally:
 
-- Add items to cart
+- Add items to the cart
 - View cart
 - Place orders
 - Book services
@@ -175,7 +167,7 @@ Admins can:
 
 Super Admins can:
 
-- Get all users information
+- Get all user information
 - See all admins
 - See all customers
 - Update previleges for a user account
@@ -188,16 +180,15 @@ application. Their full names, links, and contact information are listed below:
 
 <div id="dev_backend">
   <h4>Backend</h4>
-
-<details>
-      <summary>Emmanuel Chee-zaram Okeke</summary>
-      <ul>
-      <li><a href="https://www.cheezaram.com">Website</a></li>
-      <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
-      <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
-      <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
-      <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
-      </ul>
+  <details>
+    <summary>Emmanuel Chee-zaram Okeke</summary>
+    <ul>
+    <li><a href="https://www.cheezaram.tech">Website</a></li>
+    <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
+    <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
+    <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
+    <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
+    </ul>
   </details>
 </div>
 
@@ -205,14 +196,13 @@ application. Their full names, links, and contact information are listed below:
 
 <div id="dev_frontend">
   <h4>Frontend</h4>
-
-<details>
-      <summary>Ovy Evbodi</summary>
-      <ul>
-      <li><a href="https://www.github.com/OvyEvbodi">GitHub</a></li>
-      <li><a href="https://www.linkedin.com/in/ovy-evbodi-21920a203/">Linkedin</a></li>
-      <li><a href="mailto:evbodiovo@gmail.com">Gmail</a></li>
-      </ul>
+  <details>
+    <summary>Ovy Evbodi</summary>
+    <ul>
+    <li><a href="https://www.github.com/OvyEvbodi">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/ovy-evbodi-21920a203/">Linkedin</a></li>
+    <li><a href="mailto:evbodiovo@gmail.com">Gmail</a></li>
+    </ul>
   </details>
 </div>
 
@@ -221,14 +211,14 @@ application. Their full names, links, and contact information are listed below:
 <div id="dev_devops">
   <h4>DevOps</h4>
   <details>
-      <summary>Emmanuel Chee-zaram Okeke</summary>
-      <ul>
-      <li><a href="https://www.cheezaram.com">Website</a></li>
-      <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
-      <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
-      <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
-      <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
-      </ul>
+    <summary>Emmanuel Chee-zaram Okeke</summary>
+    <ul>
+    <li><a href="https://www.cheezaram.tech">Website</a></li>
+    <li><a href="https://www.github.com/chee-zaram">GitHub</a></li>
+    <li><a href="https://www.twitter.com/CheezaramOkeke">Twitter</a></li>
+    <li><a href="https://www.linkedin.com/in/chee-zaram">Linkedin</a></li>
+    <li><a href="mailto:ecokeke21@gmail.com">Gmail</a></li>
+    </ul>
   </details>
 </div>
 
@@ -236,7 +226,8 @@ application. Their full names, links, and contact information are listed below:
 
 Only members of the software engineering team can contribute to the source code.
 To report bugs and issues, or make feature requests, kindly send us a mail
-through our [support page]() or directly at our support email support@wigit.com.
+through our [support page](https://example.com) or directly at our support email
+support@wigit.com.
 
 ## Related Projects
 
@@ -253,9 +244,5 @@ solely intended for internal use within **WIG!T** as is stated in the
 wish to use this code or incorporate it into your own projects, please contact
 support@wigit.com to discuss licensing and obtain permission.
 
-[contributors-badge]: https://img.shields.io/github/contributors/wigit-gh/webapp
-[last_commit-badge]: https://img.shields.io/github/last-commit/wigit-gh/webapp
-[workflow-badge]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg
 [workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
-[go-report-card-badge]: https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend
 [report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
