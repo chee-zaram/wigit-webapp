@@ -118,6 +118,12 @@ type Product struct {
 
 	// ImageURL is a link to a stock photo of the product.
 	ImageURL *string `gorm:"not null;type:varchar(255)" json:"image_url" binding:"required,max=255"`
+
+	// AddedBy gives the full name of the admin who added this Product.
+	AddedBy string `gorm:"type:varchar(91)" json:"added_by" binding:"-"`
+
+	// UpdatedBy gives the full name of the admin who last updated the Product.
+	UpdatedBy string `gorm:"type:varchar(91)" json:"updated_by" binding:"-"`
 }
 
 // Item is an instance of a Product within an Order.
