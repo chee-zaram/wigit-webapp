@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import SearchBox from '@components/SearchBox';
 import Input from '@components/Input';
 import BackButton from '@components/BackButton';
+import OrderCard from '@components/OrderCard';
 
 
 const AdminOrders = async () => {
@@ -31,19 +32,19 @@ const AdminOrders = async () => {
     const [orders, setOrders] = useState<any>([]);
     const headers = { "Authorization": "Bearer " + jwt};
     
-    function copy(text:string){
-      navigator.clipboard.writeText(text);
-      toast.info('Reference number copied!', {
-        position: "top-center",
-        autoClose: 500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
-    }
+    // function copy(text:string){
+    //   navigator.clipboard.writeText(text);
+    //   toast.info('Reference number copied!', {
+    //     position: "top-center",
+    //     autoClose: 500,
+    //     hideProgressBar: true,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "light",
+    //     });
+    // }
     
     
     
@@ -100,19 +101,7 @@ const AdminOrders = async () => {
             <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                     { orders && orders.map((order: any) => (
-                        <Link href={'/dashboard/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>
-                            <h3>Reference: 
-                            <span
-                            className=' px-2 text-accent text-sm underline font-bold'
-                            onClick={() => copy(order.id.split('-')[0])}>{ order.id.split('-')[0]}</span>
-                            <span className={order.status === 'pending' ? 'bg-red-500 px-3 py-1 rounded text-light_bg' : 'bg-green-500 px-3 py-1 rounded text-light_bg'}>{ order.status }</span>
-                            </h3>
-                            <div>
-                                <p>Items: <span className='font-bold text-sm'>{ order.items.length }</span></p>
-                                <p>Total: <span className='font-bold text-sm'>GHS { order.total_amount }</span></p>
-                                <p>Delivery method: <span className='font-bold text-sm'>{ order.delivery_method }</span></p>
-                            </div>
-                        </Link>
+                        <OrderCard { ...order } />
                     ))
                     }
             </div>
