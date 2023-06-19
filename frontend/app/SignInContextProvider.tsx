@@ -7,11 +7,11 @@ interface SignInContextProps {
     jwt: string;
     setJwt: Dispatch<SetStateAction<string | null>> ;
     role: string;
-    setRole: Dispatch<SetStateAction<string>>;
+    setRole: Dispatch<SetStateAction<string | null>>;
     isSignedIn: boolean;
-    setIsSignedIn: Dispatch<SetStateAction<boolean>>;
+    setIsSignedIn: Dispatch<SetStateAction<boolean | null>>;
     user: object;
-    setUser: Dispatch<SetStateAction<string>>;
+    setUser: Dispatch<SetStateAction<object | null>>;
 }
 
 export const SignInContext = createContext<SignInContextProps>({
