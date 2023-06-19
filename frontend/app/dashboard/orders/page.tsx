@@ -12,13 +12,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import SearchBox from '@components/SearchBox';
 import Input from '@components/Input';
+import BackButton from '@components/BackButton';
 
 
 const AdminOrders = async () => {
 
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const searchUrl = baseUrl + '/orders/';
-    const router = useRouter();
+    // const router = useRouter();
 
     let jwt: string | null = '';
         if (typeof window !== 'undefined') {
@@ -66,6 +67,7 @@ const AdminOrders = async () => {
     const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         setSearchInput(event.target.value);
+        console.log(searchInput);
     };
     
     
@@ -85,9 +87,8 @@ const AdminOrders = async () => {
     
     return (
         <main className='grid md:grid-rows'>
-            <div onClick={() => {router.back()}} className='hover:bg-accent/80 text-right ml-[10vw] duration-300 rounded-full p-3 max-w-max'>
-               <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-160 160-480l320-320 42 42-248 248h526v60H274l248 248-42 42Z"/></svg> 
-            </div>
+            <BackButton />
+            <SearchBox />
             <section>
                 <form onSubmit={handleSearch}>
                     {/* <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSearchInput(event)}
@@ -98,11 +99,11 @@ const AdminOrders = async () => {
                         required={ true }
                     /> */}
                     <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}} type='text' placeholder='order reference' />
-                    <button>Search</button>
+                    <button>Bug</button>
                 </form>
                 { searchResult &&
                     <div>
-                        <p>total: GHS{searchResult.total_amount}</p>
+                        <p>total: GHS {searchResult.total_amount}</p>
                         <p>With the currency this time, lol... I love you my darling, thank you for staying up with me.</p>
                     </div>
                     // <p>Sorry, we couldn't find a match</p>
