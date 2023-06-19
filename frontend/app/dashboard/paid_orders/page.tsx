@@ -11,7 +11,7 @@ import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
-const AdminOrders = async () => {
+const AdminOrders = () => {
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const router = useRouter();
 
@@ -55,7 +55,7 @@ const AdminOrders = async () => {
             <div onClick={() => {router.back()}} className='hover:bg-accent/80 text-right ml-[10vw] duration-300 rounded-full p-3 max-w-max'>
                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-160 160-480l320-320 42 42-248 248h526v60H274l248 248-42 42Z"/></svg> 
             </div>
-            <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
+            <div className='bg-slate-600 my-4 p-4'><h2>Paid orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                     { orders && orders.map((order: any) => (
                         <Link href={'/dashboard/' + order.id} key={ order.id } className='border border-accent w-full py-3 px-6'>

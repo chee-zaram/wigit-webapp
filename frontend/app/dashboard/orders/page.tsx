@@ -30,46 +30,13 @@ const AdminOrders = async () => {
             }
     }
     const [orders, setOrders] = useState<any>([]);
+
     const headers = { "Authorization": "Bearer " + jwt};
-    
-    // function copy(text:string){
-    //   navigator.clipboard.writeText(text);
-    //   toast.info('Reference number copied!', {
-    //     position: "top-center",
-    //     autoClose: 500,
-    //     hideProgressBar: true,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //     theme: "light",
-    //     });
-    // }
-    
-    
-    
       
     const [ searchResult, setSearchResult ] = useState<any>(null);
     const [searchInput, setSearchInput ] = useState<string>('');
-    
-    const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+    const [hideList, setHideList ] = useState(false);
         
-        event.preventDefault();
-        try {
-            const { data, status } = await axios.get(searchUrl + searchInput, { headers: headers });
-            if ( status == 200 ) {
-                setSearchResult(data.data);
-            }
-        } catch (error) {
-            //
-        }
-    };
-    
-    const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setSearchInput(event.target.value);
-        console.log(searchInput);
-    };
     
     useEffect(() => {
     async function getOrders() {
@@ -86,17 +53,7 @@ const AdminOrders = async () => {
             <BackButton />
             <SearchBox { ...urlObj} />
             <section>
-                <form onSubmit={handleSearch}>
-                    <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}}/>
-                    <button>Bug</button>
-                </form>
-                { searchResult &&
-                    <div>
-                        <p>total: GHS {searchResult.total_amount}</p>
-                        <p>With the currency this time, lol... I love you my darling, thank you for staying up with me.</p>
-                    </div>
-                    // <p>Sorry, we couldn't find a match</p>
-                }
+                
             </section>
             <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
