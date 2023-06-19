@@ -11,6 +11,7 @@ import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import SearchBox from '@components/SearchBox';
+import Input from '@components/Input';
 
 
 const AdminOrders = async () => {
@@ -89,6 +90,13 @@ const AdminOrders = async () => {
             </div>
             <section>
                 <form onSubmit={handleSearch}>
+                    {/* <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSearchInput(event)}
+                        type='text'
+                        name='ref. no'
+                        placeholder='order ref. no.'
+                        id='ref_no'
+                        required={ true }
+                    /> */}
                     <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}} type='text' placeholder='order reference' />
                     <button>Search</button>
                 </form>
