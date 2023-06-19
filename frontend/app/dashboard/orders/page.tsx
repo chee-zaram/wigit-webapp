@@ -19,6 +19,7 @@ const AdminOrders = async () => {
 
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const searchUrl = baseUrl + '/orders/';
+    const urlObj = {url: searchUrl};
     // const router = useRouter();
 
     let jwt: string | null = '';
@@ -27,8 +28,7 @@ const AdminOrders = async () => {
                 jwt = sessionStorage.getItem('jwt');
             }
     }
-
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<any>([]);
     const headers = { "Authorization": "Bearer " + jwt};
     
     function copy(text:string){
@@ -70,11 +70,6 @@ const AdminOrders = async () => {
         console.log(searchInput);
     };
     
-    
-    
-    
-    
-    
     useEffect(() => {
     async function getOrders() {
         const { data, status } = await axios.get(baseUrl + '/orders', {headers: headers}) 
@@ -88,17 +83,10 @@ const AdminOrders = async () => {
     return (
         <main className='grid md:grid-rows'>
             <BackButton />
-            <SearchBox />
+            <SearchBox { ...urlObj} />
             <section>
                 <form onSubmit={handleSearch}>
-                    {/* <Input onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSearchInput(event)}
-                        type='text'
-                        name='ref. no'
-                        placeholder='order ref. no.'
-                        id='ref_no'
-                        required={ true }
-                    /> */}
-                    <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}} type='text' placeholder='order reference' />
+                    <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}}/>
                     <button>Bug</button>
                 </form>
                 { searchResult &&
