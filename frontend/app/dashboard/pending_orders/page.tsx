@@ -118,7 +118,7 @@ const AdminPendingOrders = async () => {
                     { orders && orders.map((order: any) => (
                         <div key={ order.id } className={!paid ? 'border border-accent w-full py-3 px-6' : 'hidden'}>
                             <Link href={'/dashboard/' + order.id} className=' px-3 py-1 rounded mb-4 text-light_bg underline bg-dark_bg/80'><span>view order</span></Link>
-                            <h3>Reference: 
+                            <h3 className='pt-3'>Reference: 
                             <span
                             className=' px-2 text-accent text-sm underline font-bold'
                             onClick={() => copy(order.id.split('-')[0])}>{ order.id.split('-')[0]}</span>
