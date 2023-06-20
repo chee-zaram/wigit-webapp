@@ -31,7 +31,7 @@ func (booking *Booking) LoadFromDB(id string) error {
 	}
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
-		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", "%"+id+"%").Error
+		return tx.Preload("Slot").Preload("Service").First(booking, "id LIKE ?", id+"%").Error
 	}); err != nil {
 		return err
 	}
