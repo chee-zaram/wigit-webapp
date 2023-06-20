@@ -13,7 +13,7 @@ const PendingOrders = () => {
     const url = 'https://cheezaram.tech/api/v1/orders/status/pending';
     const searchUrl = 'https://cheezaram.tech/api/v1/orders/';
     const [ pendingOrders, setPendingOrders ] = useState<string []>([]);
-    const urlObj = {url: searchUrl};
+    const urlObj = {url: searchUrl, status: 'pending'};
     
     let jwt: string | null = '';
         if (typeof window !== 'undefined') {
