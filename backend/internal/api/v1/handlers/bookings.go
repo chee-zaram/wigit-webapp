@@ -77,7 +77,7 @@ func CustomerGetBooking(ctx *gin.Context) {
 	}
 
 	for _, booking := range user.Bookings {
-		if strings.Contains(*booking.ID, booking_id) {
+		if strings.HasPrefix(*booking.ID, booking_id) {
 			ctx.JSON(http.StatusOK, gin.H{
 				"data": booking,
 			})

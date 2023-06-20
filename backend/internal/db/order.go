@@ -30,7 +30,7 @@ func (order *Order) LoadFromDB(id string) error {
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
 		return tx.Preload("Items.Product").
-			First(order, "id LIKE ?", "%"+id+"%").Error
+			First(order, "id LIKE ?", id+"%").Error
 	}); err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (order *Order) CustomerLoadFromDB(userID, id string) error {
 	if err := Connector.Query(func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", userID).
 			Preload("Items.Product").
-			First(order, "id LIKE ?", "%"+id+"%").Error
+			First(order, "id LIKE ?", id+"%").Error
 	}); err != nil {
 		return err
 	}
