@@ -13,9 +13,9 @@ const Orders: NextPage<any> = async(props: any) => {
     const { jwt, role, setJwt, setRole } = useSignInContext();
     
     if (typeof window !== 'undefined') {
-        if (window.sessionStorage.getItem('jwt')) {
-            setJwt(window.sessionStorage.getItem('jwt'));
-            setRole(window.sessionStorage.getItem('role'));
+        if (sessionStorage.getItem('jwt') && sessionStorage.getItem('role')) {
+            setJwt(sessionStorage.getItem('jwt'));
+            setRole(sessionStorage.getItem('role'));
 
         }
     };

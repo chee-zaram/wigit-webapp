@@ -1,20 +1,11 @@
 // Dashboard
 "use client";
 
-// import { useSignInContext } from '@app/SignInContextProvider';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
-import Button from '@components/Button';
-import Link from 'next/link';
-import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-
 
 const Dashboard = async () => {
     const router = useRouter();
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     let userObj: string = '';
     if (sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
