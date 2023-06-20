@@ -9,13 +9,13 @@ import OrderCard from '@components/OrderCard';
 
 
 const SearchBox:NextPage<any> = (props) => {
-    const { jwt, setJwt } = useSignInContext();
-    if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('jwt')) {
-            setJwt(sessionStorage.getItem('jwt'));
-        };
-    };
-    
+   let jwt: string | null = '';
+        if (typeof window !== 'undefined') {
+            if (sessionStorage.getItem('jwt')) {
+                jwt = sessionStorage.getItem('jwt');
+            }
+    }
+
     const [ searchResult, setSearchResult ] = useState<any>(null);
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [searchInput, setSearchInput ] = useState<string>('');
@@ -46,8 +46,9 @@ const SearchBox:NextPage<any> = (props) => {
                 <input onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleSearchInput(event)}} type='text' placeholder='order reference' required className='py-2 px-4 text-xs text-dark_bg/90 border border-accent/70' />
                 <button className='py-2 px-6 text-xs border border-accent/70 focus:outline-0 text-light_bg font-bold bg-accent/70'>Search</button>
             </form>
+            <p className='font-bold my-2'>Your result</p>
             { searchResult &&
-                <div>
+                <div className='mt-4 max-w-max mx-auto'>
                         <OrderCard { ...searchResult } />
                 </div>
             }

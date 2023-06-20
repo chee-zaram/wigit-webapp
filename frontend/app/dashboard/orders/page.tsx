@@ -56,10 +56,13 @@ const AdminOrders = async () => {
                 
             </section>
             <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
-            <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
-                    { orders && orders.map((order: any) => (
-                        <OrderCard { ...order } />
-                    ))
+            <div className='w-[80vw] md:w-[70vw] mx-auto flexbox md:flex md:flex-row md:gap-6 md:flex-wrap gap-4'>
+                    { orders ? orders.map((order: any) => (
+                        <div key={order.id}>
+                            <OrderCard { ...order } />
+                        </div>
+                    )):
+                        <p>There are no orders to review at this time.</p>
                     }
             </div>
         </main>

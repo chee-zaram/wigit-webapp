@@ -21,7 +21,7 @@ const OrderCard: NextPage<any> = (searchResult) => {
     }
     
     return (
-        <Link href={'/dashboard/' + searchResult.id} key={ searchResult.id } className='border border-accent w-full py-3 px-6'>
+        <Link href={'/dashboard/' + searchResult.id} key={ searchResult.id } className='border block border-accent w-max py-3 px-6'>
             <h3>Reference: 
             <span
             className=' px-2 text-accent text-sm underline font-bold'
