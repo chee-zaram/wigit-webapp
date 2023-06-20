@@ -20,8 +20,7 @@ const SearchBox:NextPage<any> = (props) => {
     const [ searchResult, setSearchResult ] = useState<any>(null);
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [searchInput, setSearchInput ] = useState<string>('');
-    // const baseUrl = 'https://cheezaram.tech/api/v1/admin';
-    // const searchUrl = baseUrl + '/orders/';
+    
     
     const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
         
