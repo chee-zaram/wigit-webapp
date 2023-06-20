@@ -1,13 +1,15 @@
+// search box for profile
+
 // search box
 "use client";
 
 import axios from 'axios';
 import { useState } from 'react';
 import { NextPage } from 'next';
-import OrderCard from '@components/OrderCard';
+import ProfileOrderCard from '@components/ProfileOrderCard';
 import { ToastContainer, toast } from 'react-toastify';
 
-const SearchBox:NextPage<any> = ( props ) => {
+const ProfileSearchBox:NextPage<any> = ( props ) => {
    let jwt: string | null = '';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
@@ -57,9 +59,9 @@ const SearchBox:NextPage<any> = ( props ) => {
                 { searchResult.status === props.status || props.status === 'all' ?
                 <div className='mt-4 max-w-max mx-auto min-h-screen'>
                     <p className='font-bold my-2'>Your result</p>
-                    <OrderCard { ...searchResult } />
+                    <ProfileOrderCard { ...searchResult } />
                 </div> :
-                <p className='max-w-[80vw] mx-auto'>No match here, check for the order in your <span className='bg-accent'>{searchResult.status}</span> orders section.</p>
+                <p className='max-w-[80vw] mx-auto'>No match here, check for the order in your<span className='bg-accent'>{searchResult.status}</span> orders section.</p>
                 }
             </div>
             }
@@ -68,4 +70,4 @@ const SearchBox:NextPage<any> = ( props ) => {
     );
 };
 
-export default SearchBox;
+export default ProfileSearchBox;

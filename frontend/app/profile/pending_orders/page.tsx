@@ -5,16 +5,16 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import OrderCard from '@components/OrderCard';
+import ProfileOrderCard from '@components/ProfileOrderCard';
 import BackButton from '@components/BackButton';
-import SearchBox from '@components/SearchBox';
+import ProfileSearchBox from '@components/ProfileSearchBox';
 
 const PendingOrders = () => {
     const url = 'https://cheezaram.tech/api/v1/orders/status/pending';
     const searchUrl = 'https://cheezaram.tech/api/v1/orders/';
-    const [ pendingOrders, setPendingOrders ] = useState<string []>([]);
     const urlObj = {url: searchUrl, status: 'pending'};
-    
+    const [ pendingOrders, setPendingOrders ] = useState<string []>([]);
+        
     let jwt: string | null = '';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
@@ -40,12 +40,12 @@ const PendingOrders = () => {
     return (
         <section>
             <BackButton />
-            <SearchBox { ...urlObj} />
+            <ProfileSearchBox { ...urlObj} />
             <h2 className='font-bold text-lg text-accent mb-4'>Pending orders</h2>
             <div className='min-w-[80vw] md:w-[70vw] mx-auto flexbox md:flex md:flex-row md:gap-6 md:flex-wrap gap-4'>
                 { pendingOrders ? pendingOrders.map((order: any) => (
                     <div key={order.id} className='max-w-max mx-auto'>
-                        <OrderCard { ...order } />
+                        <ProfileOrderCard { ...order } />
                     </div>
                 )) :
             <div className='no_orders_bg'>

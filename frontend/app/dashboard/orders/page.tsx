@@ -20,7 +20,7 @@ const AdminOrders = async () => {
 
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const searchUrl = baseUrl + '/orders/';
-    const urlObj = {url: searchUrl};
+    const urlObj = {url: searchUrl, status: 'all'};
     // const router = useRouter();
 
     let jwt: string | null = '';
