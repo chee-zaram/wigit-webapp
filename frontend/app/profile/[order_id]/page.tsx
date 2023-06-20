@@ -87,28 +87,28 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                     <div className='w-[200px] mx-auto bg-light_bg border shadow rounded-full overflow-hidden h-[20px]'>
                         <div className='w-[100%] bg-dark_bg h-full'></div>
                     </div>
-                    <div className=''>Order delivered at: {order.updated_at.split('T')[0]}</div>
+                    <div className='pt-1'>Order delivered at: {order.updated_at.split('T')[0]}</div>
                 </div> :
                 order && order.shipped_updated_by !== '' ?
                 <div className='mt-4 mx-auto max-w-[80vw]'>
                     <div className='mt-4 w-[200px] mx-auto bg-light_bg border shadow rounded-full overflow-hidden h-[20px]'>
                         <div className='w-[70%] bg-dark_bg h-full'></div>
                     </div>
-                    <div className=''>Order shipped at: {order.updated_at.split('T')[0]}</div>
+                    <div className='pt-1'>Order shipped at: {order.updated_at.split('T')[0]}</div>
                 </div> :
                 order && order.paid_updated_by !== '' ?
                 <div className='mt-4 mx-auto max-w-[80vw]'>
                     <div className='mt-4 w-[200px] mx-auto bg-light_bg border shadow rounded-full overflow-hidden h-[20px]'>
                         <div className='w-[50%] bg-dark_bg h-full'></div>
                     </div>
-                    <div className=''>Payment confirmed at: {order.updated_at.split('T')[0]}</div>
+                    <div className='pt-1'>Payment confirmed at: {order.updated_at.split('T')[0]}</div>
                 </div> :
                 order ?
                 <div className='mt-4 mx-auto max-w-[80vw]'>
                     <div className='mt-4 w-[200px] mx-auto bg-light_bg border shadow rounded-full overflow-hidden h-[20px]'>
                         <div className='w-[25%] bg-dark_bg h-full'></div>
                     </div>
-                    <div className=''>Order placed at: {order.created_at.split('T')[0]}</div>
+                    <div className='pt-1'>Order placed at: {order.created_at.split('T')[0]}</div>
                 </div>:
                 <div></div>
             }
