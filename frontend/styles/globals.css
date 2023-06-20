@@ -43,17 +43,11 @@ body {
   color: var(--dark-color);
   text-align: center;
   background-color: #fff;
-  font-family: 'Quicksand', sans-serif;;
-  /* background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb)); */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
+  font-family: 'Quicksand', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
 }
 
 #header {
@@ -86,14 +80,7 @@ body {
     background-size: cover;
     background-position: center;
 }
-/* .products_header {
-    background-image: url('../public/assets/images/pexels-brian-jr-asare-13221798.jpg');
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: top;
-    height: 30vh;
-} */
+
 .cart_signin, .logout, .no_orders_bg, .empty_cart {
     background-repeat: no-repeat;
     background-size: contain;
@@ -151,15 +138,6 @@ body {
     color: rgb(226, 223, 223);
     font-variant: small-caps;
 }
-/* .footer, .navbar {
-  background-color: #171717;
-  color:#fff;
-  width: 100vw;
-  padding: 2rem;
-  display: flex;
-  justify-content: space-between;
-} */
-
 .logo_wrap {
   max-height: 60px;
   overflow-y: hidden;
@@ -331,14 +309,14 @@ body {
     border: 10px solid #979595;
     border-top: 10px solid var(--accent-color);
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
     z-index: 1;
     width: 80px;
     height: 80px;
-    /* transform:translateX(-50%);
-    transform:translateY(-50%); */
-    margin: -76px 0 0 -76px;
     border-radius: 50%;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
