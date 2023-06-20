@@ -28,7 +28,7 @@ const AdminPaidOrders = async () => {
     useEffect(() => {
     async function getOrders() {
         try {
-            const { data, status } = await axios.get(baseUrl + '/orders', {headers: headers}) 
+            const { data, status } = await axios.get(baseUrl + '/orders/status/paid', {headers: headers}) 
             if (status == 200) {
             setOrders(data.data);
             }
