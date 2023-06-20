@@ -52,7 +52,7 @@ const AdminOrders = async () => {
         <main className='grid md:grid-rows'>
             <BackButton />
             <SearchBox { ...urlObj} />
-            <div className='bg-slate-600 my-4 p-4'><h2>All orders </h2></div>
+            <div className='bg-dark_bg/90 my-4 p-4 font-bold capitalize tracking-[3px] text-light_bg/90'><h2>All orders </h2></div>
             <div className='min-w-[80vw] md:w-[70vw] mx-auto flexbox md:flex md:flex-row md:gap-6 md:flex-wrap gap-4'>
                     { orders ? orders.map((order: any) => (
                         <div key={order.id}>

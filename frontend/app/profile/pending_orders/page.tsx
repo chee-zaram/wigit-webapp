@@ -43,7 +43,7 @@ const PendingOrders = () => {
             <ProfileSearchBox { ...urlObj} />
             <h2 className='font-bold text-lg text-accent mb-4'>Pending orders</h2>
             <div className='min-w-[80vw] md:w-[70vw] mx-auto flexbox md:flex md:flex-row md:gap-6 md:flex-wrap gap-4'>
-                { pendingOrders ? pendingOrders.map((order: any) => (
+                { pendingOrders && pendingOrders.length > 0 ? pendingOrders.map((order: any) => (
                     <div key={order.id} className='max-w-max mx-auto'>
                         <ProfileOrderCard { ...order } />
                     </div>

@@ -14,10 +14,6 @@ const url = 'https://cheezaram.tech/api/v1/orders';
 const AllOrders = async() => {
     const router = useRouter();
     const [ allOrders, setAllOrders ] = useState<string []>([]);
-
-    const HandleBack = () => {
-        router.back();
-    };
     
     let jwt: string | null = '';
         if (typeof window !== 'undefined') {

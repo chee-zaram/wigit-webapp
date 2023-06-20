@@ -1,18 +1,15 @@
-// Dashboard
+// Dashboard pending orders page
 "use client";
 
-// import { useSignInContext } from '@app/SignInContextProvider';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import Button from '@components/Button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
 
-const AdminPendingOrders = async () => {
+const AdminPendingOrders = () => {
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const router = useRouter();
 
@@ -113,7 +110,7 @@ const AdminPendingOrders = async () => {
             <div onClick={() => {router.back()}} className='hover:bg-accent/80 text-right ml-[10vw] duration-300 rounded-full p-3 max-w-max'>
                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40"><path d="M480-160 160-480l320-320 42 42-248 248h526v60H274l248 248-42 42Z"/></svg> 
             </div>
-            <div className='bg-slate-600 p-4 my-4'><h2>Pending orders </h2></div>
+            <div className='bg-dark_bg/90 my-4 p-4 font-bold capitalize tracking-[3px] text-light_bg/90'><h2>Pending orders </h2></div>
             <div className='w-[80vw] md:w-[70vw] xl:w-[60vw] mx-auto flexbox gap-4'>
                     { orders && orders.map((order: any) => (
                         <div key={ order.id } className={!paid ? 'border border-accent w-full py-3 px-6' : 'hidden'}>
