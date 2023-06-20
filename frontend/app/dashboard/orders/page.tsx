@@ -4,24 +4,17 @@
 // import { useSignInContext } from '@app/SignInContextProvider';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import Button from '@components/Button';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import Orders from '@app/dashboard/components/Orders';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import SearchBox from '@components/SearchBox';
-import Input from '@components/Input';
 import BackButton from '@components/BackButton';
 import OrderCard from '@components/OrderCard';
-
 
 const AdminOrders = async () => {
 
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
     const searchUrl = baseUrl + '/orders/';
     const urlObj = {url: searchUrl, status: 'all'};
-    // const router = useRouter();
 
     let jwt: string | null = '';
         if (typeof window !== 'undefined') {
@@ -30,19 +23,26 @@ const AdminOrders = async () => {
             }
     }
     const [orders, setOrders] = useState<any>([]);
-
     const headers = { "Authorization": "Bearer " + jwt};
-      
-    const [ searchResult, setSearchResult ] = useState<any>(null);
-    const [searchInput, setSearchInput ] = useState<string>('');
-    const [hideList, setHideList ] = useState(false);
-        
-    
+
     useEffect(() => {
     async function getOrders() {
-        const { data, status } = await axios.get(baseUrl + '/orders', {headers: headers}) 
-        if (status == 200) {
+        try {
+            const { data, status } = await axios.get(baseUrl + '/orders', {headers: headers}) 
+            if (status == 200) {
             setOrders(data.data);
+            }
+        } catch (error) {
+            toast.error('Oops, something went wrong fetching your orders', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
         getOrders();

@@ -16,6 +16,7 @@ const SearchBox:NextPage<any> = ( props ) => {
     }
 
     const [ searchResult, setSearchResult ] = useState<any>(null);
+    const [ hideResult, setHideResult ] = useState(false);
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [searchInput, setSearchInput ] = useState<string>('');
 
@@ -26,8 +27,10 @@ const SearchBox:NextPage<any> = ( props ) => {
             const { data, status } = await axios.get(props.url + searchInput, { headers: headers });
             if ( status == 200 ) {
                 setSearchResult(data.data);
+                setHideResult(false);
             }
         } catch (error) {
+            setHideResult(true);
             toast.info("We didn't find any results for your search", {
                 position: "top-center",
                 autoClose: 5000,
@@ -53,7 +56,7 @@ const SearchBox:NextPage<any> = ( props ) => {
                 <button className='py-2 px-6 text-xs border border-accent/70 focus:outline-0 text-light_bg font-bold bg-accent/70 hover:bg-accent/90'>Search</button>
             </form>
             { searchResult && 
-            <div>
+            <div className={hideResult ? 'hidden': 'block'}>
                 { searchResult.status === props.status || props.status === 'all' ?
                 <div className='mt-4 max-w-max mx-auto min-h-screen'>
                     <p className='font-bold my-2'>Your result</p>
