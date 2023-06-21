@@ -261,7 +261,7 @@ func isValidBookingStatus(booking *db.Booking, status string) bool {
 	var isValidStatus bool
 
 	for i, stat := range validBookingStatuses {
-		if i == len(validBookingStatuses) && stat != status {
+		if i == len(validBookingStatuses)-1 && stat != status {
 			isValidStatus = false
 			break
 		}
