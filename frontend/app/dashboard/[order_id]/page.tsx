@@ -80,6 +80,8 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                     <p className='font-bold'>Delivery address: {order.shipping_address}</p> :
                     <p className='font-bold'>Delivery method: Pickup</p>
                 }
+                {order &&<div className='pt-1'>Order placed at {order.created_at.split('T')[1].split('Z')[0]} on {order.created_at.split('T')[0]}</div>}
+                {order &&<div className='pt-1'>Order updated at {order.updated_at.split('T')[1].split('Z')[0]} on {order.updated_at.split('T')[0]}</div>}
                 { order && order.paid_updated_by !== '' ?
                     <li className='bg-green-200 p-1 text-green-800 border border-green-900'>Payment confirmed by: {order.paid_updated_by}</li> :
                     <li className='bg-red-200 p-1 text-red-800 border border-red-900'>Payment not yet confirmed</li>
@@ -96,7 +98,6 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
                     <li className='bg-red-800 p-1 text-white border border-red-900'>Order cancelled by: {order.cancelled_updated_by}</li> :
                     <p></p>
                 }
-    
             </ul>
             </div>
             <p className='font-bold text-accent text-md'>Order Total: GHS <span className='font-bold text-xl'>{ order && order.total_amount}</span></p>
