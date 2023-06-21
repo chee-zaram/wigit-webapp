@@ -2,10 +2,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSignInContext } from '@app/SignInContextProvider';
 import ShoppingCart from '@app/cart/components/ShoppingCart';
 import axios from 'axios';
-import Button from '@components/Button';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
 import { ToastContainer, toast } from 'react-toastify';
@@ -19,15 +18,16 @@ const orderUrl = 'https://cheezaram.tech/api/v1/orders';
 const Cart = () => {
     
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
-    const { jwt, setJwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
     const [total, setTotal ] = useState(0);
+    const [address, setAddress ] = useState('');
 
-if (typeof window !== 'undefined') {
-    if (sessionStorage.getItem('jwt')) {
-        setJwt(sessionStorage.getItem('jwt'));
+let jwt: string | null = 'not authorized';
+        if (typeof window !== 'undefined') {
+            if (sessionStorage.getItem('jwt')) {
+                jwt = sessionStorage.getItem('jwt');
+            }
     }
-}
     
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
@@ -64,7 +64,7 @@ if (typeof window !== 'undefined') {
             return;
         }
 
-        const cartData = { delivery_method: deliveryMethod };
+        const cartData = { delivery_method: deliveryMethod, shipping_address: address };
         try {
             const { status } = await axios.post(orderUrl, cartData, {headers: headers});
             
@@ -83,7 +83,6 @@ if (typeof window !== 'undefined') {
             }
         }
         catch(error) {
-            //catch it here
             toast.error('something went horribly wrong, and we lost your order. Please shop again.', {
                 position: "top-center",
                 autoClose: 5000,
@@ -99,7 +98,10 @@ if (typeof window !== 'undefined') {
     const handleEmptyCart = async() => {
         await axios.delete(url, {headers: headers});
         router.push('/');
-        
+    };
+    const handleAddress = (event: any) => {
+        event.preventDefault();
+        setAddress(event.target.value);
     };
     
     useEffect(() => {
@@ -129,17 +131,16 @@ if (typeof window !== 'undefined') {
     return (
         <main>
             { jwt !== 'not authorized' ?
-                
-        // <div className='md:flex justify-between items-center md:container max-w-[80vw]'>
-        <div>
+            <div>
             {cart && cart.length > 0 ?
             <div className='md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md max-w-[80vw] lg:max-w-[70vw] mx-auto overflow-hidden'>
             <section className='items_list p-4 md:p-8 lg:p-12 mb-4 md:mb-0 md:w-2/3'>
-                <h2 className='text-xxl font-extrabold mb-2'>My shopping cart</h2>
-                <button className='hover:bg-red-200 ' onClick={ handleEmptyCart }>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z"/></svg>
-                    clear cart
-                </button>
+                <h2 className='text-2xl capitalize flex items-center justify-around font-extrabold p-3 mb-2'>My shopping cart
+                <button className='hover:bg-red-200 p-1' onClick={ handleEmptyCart }>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30"><path d="m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z"/></svg>
+                </button></h2>
+                
+                <p className='border-b border-dark_bg/80'></p>
                 { cart && cart.map((item: Item) => (
                 <div key={item.id}>
                     <ShoppingCart { ...item } />
@@ -149,23 +150,28 @@ if (typeof window !== 'undefined') {
             <section className='bg-neutral-300 md:w-1/3 p-4 md:p-8 lg:p-12'>
                 <div className='w-full'>
                     <div>
-                        <h4 className='border-b border-slate-200'>Order summary</h4>
+                        <h4 className='border-b border-light_bg/80 font-bold mb-2 text-lg capitalize'>Order summary</h4>
                     </div>
-                    <form onSubmit={ handleSubmit }>
-                        {/* <h2> you chose { deliveryMethod }</h2> */}
+                    <form onSubmit={ handleSubmit } className='flex flex-col gap-1'>
+                         <div >
+                            <label htmlFor='address' className='text-xs' >Ship to a different address? (optional)</label><br/>
+                            <input onChange={(event: any) => { handleAddress(event) }} id='address' name='address' type='text' placeholder='enter new address' className=' p-1 text-center text-sm w-full outline-none ' />
+                        </div>
+                    <div className='flex gap-4 justify-center'>
                         <div>
                             <input required onClick={ handlePickup } id='pickup' name='delivery_method' type='radio' value='pickup' />
-                            <label htmlFor='pickup'>pickup</label>
+                            <label htmlFor='pickup'>pickup</label> 
                         </div>
                         <div>
                             <input required onClick={ handleDelivery } id='delivery' name='delivery_method' type='radio' value='delivery' />
                             <label htmlFor='delivery'>delivery</label>
                         </div>
+                    </div>
                         <p>Total {total}</p>
                         <button type='submit' className='rounded bg-dark_bg hover:bg-dark_bg/70 duration-300 text-light_bg w-full px-4 py-2 '>
-                            checkout >>
-                            {/* <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30"><path d="m242-200 210-280-210-280h74l210 280-210 280h-74Zm252 0 210-280-210-280h74l210 280-210 280h-74Z"/></svg> */}
+                            checkout &gt;&gt;
                         </button>
+                        <Link href={'/products'} className='underline font-bold text-xs p-1 duration-300 hover:text-dark_bg/50'>Continue shopping</Link>
                     </form>
                 </div>
             </section>
