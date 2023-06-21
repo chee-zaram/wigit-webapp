@@ -54,13 +54,13 @@ const ShoppingCart: any = (props: Item) => {
     };
 
     return (
-        <section className={hideItem ? 'hidden' : 'flex p-2 justify-between min-h-[150px] border-b border-dark_bg/80'}>
+        <section className={hideItem ? 'hidden' : 'flex p-2 justify-between min-h-[130px] border-b border-dark_bg/80'}>
             <div className=' w-[80px] overflow-ellipsis'>
-                <div className='mx-auto w-[70px]'>
+                <div className='mx-auto w-[70px] h-[70px] overflow-hidden'>
                     <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
                     />
                 </div>
-                <span className='text-sm font-bold text-gray-700'>{props.product.name}</span>
+                <span className='text-sm font-bold capitalize text-dark_bg/70'>{props.product.name}</span>
             </div>
             <div className='gap-2 flex flex-col justify-center'>
                 <div className='flex gap-2 items-center'>
