@@ -2,9 +2,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSignInContext } from '@app/SignInContextProvider';
 import ShoppingCart from '@app/cart/components/ShoppingCart';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,6 +20,7 @@ const Cart = () => {
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
     const [ cart, setCart ] = useState<any> ([]);
     const [total, setTotal ] = useState(0);
+    const [address, setAddress ] = useState('');
 
 let jwt: string | null = '';
         if (typeof window !== 'undefined') {
@@ -63,7 +64,7 @@ let jwt: string | null = '';
             return;
         }
 
-        const cartData = { delivery_method: deliveryMethod };
+        const cartData = { delivery_method: deliveryMethod, shipping_address: address };
         try {
             const { status } = await axios.post(orderUrl, cartData, {headers: headers});
             
@@ -82,7 +83,6 @@ let jwt: string | null = '';
             }
         }
         catch(error) {
-            //catch it here
             toast.error('something went horribly wrong, and we lost your order. Please shop again.', {
                 position: "top-center",
                 autoClose: 5000,
@@ -98,7 +98,10 @@ let jwt: string | null = '';
     const handleEmptyCart = async() => {
         await axios.delete(url, {headers: headers});
         router.push('/');
-        
+    };
+    const handleAddress = (event: any) => {
+        event.preventDefault();
+        setAddress(event.target.value);
     };
     
     useEffect(() => {
@@ -128,9 +131,7 @@ let jwt: string | null = '';
     return (
         <main>
             { jwt !== 'not authorized' ?
-                
-        // <div className='md:flex justify-between items-center md:container max-w-[80vw]'>
-        <div>
+            <div>
             {cart && cart.length > 0 ?
             <div className='md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md max-w-[80vw] lg:max-w-[70vw] mx-auto overflow-hidden'>
             <section className='items_list p-4 md:p-8 lg:p-12 mb-4 md:mb-0 md:w-2/3'>
@@ -149,22 +150,28 @@ let jwt: string | null = '';
             <section className='bg-neutral-300 md:w-1/3 p-4 md:p-8 lg:p-12'>
                 <div className='w-full'>
                     <div>
-                        <h4 className='border-b border-slate-200'>Order summary</h4>
+                        <h4 className='border-b border-light_bg/80 font-bold mb-2 text-lg capitalize'>Order summary</h4>
                     </div>
-                    <form onSubmit={ handleSubmit }>
-                        {/* <h2> you chose { deliveryMethod }</h2> */}
+                    <form onSubmit={ handleSubmit } className='flex flex-col gap-1'>
+                         <div >
+                            <label htmlFor='address' className='text-xs' >Ship to a different address? (optional)</label><br/>
+                            <input onChange={(event: any) => { handleAddress(event) }} id='address' name='address' type='text' placeholder='enter new address' className=' p-1 text-center text-sm w-full outline-none ' />
+                        </div>
+                    <div className='flex gap-4 justify-center'>
                         <div>
                             <input required onClick={ handlePickup } id='pickup' name='delivery_method' type='radio' value='pickup' />
-                            <label htmlFor='pickup'>pickup</label>
+                            <label htmlFor='pickup'>pickup</label> 
                         </div>
                         <div>
                             <input required onClick={ handleDelivery } id='delivery' name='delivery_method' type='radio' value='delivery' />
                             <label htmlFor='delivery'>delivery</label>
                         </div>
+                    </div>
                         <p>Total {total}</p>
                         <button type='submit' className='rounded bg-dark_bg hover:bg-dark_bg/70 duration-300 text-light_bg w-full px-4 py-2 '>
                             checkout &gt;&gt;
                         </button>
+                        <Link href={'/products'} className='underline font-bold text-xs p-1 duration-300 hover:text-dark_bg/50'>Continue shopping</Link>
                     </form>
                 </div>
             </section>
