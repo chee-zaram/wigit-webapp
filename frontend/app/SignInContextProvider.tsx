@@ -4,14 +4,14 @@
 import { useState, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
 interface SignInContextProps {
-    jwt: string;
-    setJwt: Dispatch<SetStateAction<string | null>> ;
-    role: string;
-    setRole: Dispatch<SetStateAction<string | null>>;
+    jwt: string | null;
+    setJwt: Dispatch<SetStateAction<string>> | null;
+    role: string | null;
+    setRole: Dispatch<SetStateAction<string>> | null;
     isSignedIn: boolean;
-    setIsSignedIn: Dispatch<SetStateAction<boolean | null>>;
+    setIsSignedIn: Dispatch<SetStateAction<boolean>> | null;
     user: object;
-    setUser: Dispatch<SetStateAction<object | null>>;
+    setUser: any;
 }
 
 export const SignInContext = createContext<SignInContextProps>({
