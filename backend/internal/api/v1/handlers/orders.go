@@ -371,7 +371,7 @@ func isValidOrderStatus(order *db.Order, status string) bool {
 	var isValidStatus bool
 
 	for i, stat := range validOrderStatuses {
-		if i == len(validOrderStatuses) && stat != status {
+		if i == len(validOrderStatuses)-1 && stat != status {
 			isValidStatus = false
 			break
 		}
