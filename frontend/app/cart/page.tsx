@@ -18,15 +18,15 @@ const orderUrl = 'https://cheezaram.tech/api/v1/orders';
 const Cart = () => {
     
     const [ deliveryMethod, setDeliveryMethod ] = useState('');
-    const { jwt, setJwt, role } = useSignInContext();
     const [ cart, setCart ] = useState<any> ([]);
     const [total, setTotal ] = useState(0);
 
-if (typeof window !== 'undefined') {
-    if (sessionStorage.getItem('jwt')) {
-        setJwt(sessionStorage.getItem('jwt'));
+let jwt: string | null = '';
+        if (typeof window !== 'undefined') {
+            if (sessionStorage.getItem('jwt')) {
+                jwt = sessionStorage.getItem('jwt');
+            }
     }
-}
     
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();

@@ -13,13 +13,13 @@ const ShoppingCart: any = (props: Item) => {
     const [ newQty, setNewQty ] = useState(props.quantity);
     const [ newAmount, setNewAmount ] = useState(Number(props.amount));
     const [ hideItem, setHideItem ] = useState(false);
-    const { jwt, setJwt } = useSignInContext();
 
-    if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('jwt')) {
-            setJwt(sessionStorage.getItem('jwt'));
-        };
-    };
+    let jwt: string | null = '';
+        if (typeof window !== 'undefined') {
+            if (sessionStorage.getItem('jwt')) {
+                jwt = sessionStorage.getItem('jwt');
+            }
+    }
     const headers = {'Authorization': 'Bearer ' + jwt};
     const router = useRouter();
 
@@ -54,7 +54,7 @@ const ShoppingCart: any = (props: Item) => {
     };
 
     return (
-        <section className={hideItem ? 'hidden' : 'flex p-2 justify-between min-h-[150px] border-b border-t border-slate-700'}>
+        <section className={hideItem ? 'hidden' : 'flex p-2 justify-between min-h-[150px] border-b border-dark_bg/80'}>
             <div className=' w-[80px] overflow-ellipsis'>
                 <div className='mx-auto w-[70px]'>
                     <Image src={ props.product.image_url } alt={ props.product.name } width={70} height={50}
