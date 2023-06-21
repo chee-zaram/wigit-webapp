@@ -15,7 +15,7 @@ const PendingOrders = () => {
     const urlObj = {url: searchUrl, status: 'pending'};
     const [ pendingOrders, setPendingOrders ] = useState<string []>([]);
         
-    let jwt: string | null = '';
+    let jwt: string | null = 'not authorized';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
                 jwt = sessionStorage.getItem('jwt');

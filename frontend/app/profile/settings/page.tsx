@@ -13,6 +13,7 @@ const Settings = () => {
     const router = useRouter();
     const [showDelete, setShowDelete] = useState(false);
     const { jwt, setJwt, setIsSignedIn, setRole } = useSignInContext();
+
     if (typeof window !== 'undefined') {
         if (sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));

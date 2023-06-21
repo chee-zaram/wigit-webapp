@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 
 const Profile = () => {
     const { jwt, setJwt } = useSignInContext();
+
     if (typeof window !== 'undefined') {
         if (sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));

@@ -1,6 +1,10 @@
 // Sign up page
 import SignUpForm from '@app/signup/components/SignUpForm';
 
+export const metadata = {
+  title: 'Wigit Sign up'
+}
+
 const SignUp = () => {
     return (
         <main className='signin_main flex flex-col justify-around items-center'>

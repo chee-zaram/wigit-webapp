@@ -24,7 +24,6 @@ const SignUpForm = () => {
     const [ phoneNumber, setPhoneNumber ] = useState('');
     const router = useRouter();
     const url = "https://cheezaram.tech/api/v1/signup";
-    const [ setJwt ] = useState();
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();

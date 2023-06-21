@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 const Dashboard = async () => {
     const router = useRouter();
     let userObj: string = '';
-    if (sessionStorage.getItem('user')) {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
     }
     const user: any =  JSON.parse(userObj);
