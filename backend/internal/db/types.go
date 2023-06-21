@@ -1,5 +1,7 @@
 package db
 
+import "errors"
+
 const (
 	// Pending is the pending `status`. Used for both orders and bookings.
 	Pending = "pending"
@@ -14,3 +16,6 @@ const (
 	// Delivered is the status `delivered`. Used for orders.
 	Delivered = "delivered"
 )
+
+// ErrNilPointer indicates that a method has been called on a nil pointer.
+var ErrNilPointer = errors.New("Pointer cannot be nil")

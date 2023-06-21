@@ -22,8 +22,8 @@ import (
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// SetGINRouterV1 configures the gin router with all necessary routes and middleware.
-func SetGINRouterV1(conf config.Config) *gin.Engine {
+// SetAPIRouter configures the gin router with all necessary routes and middleware.
+func SetAPIRouter(conf config.Config) *gin.Engine {
 	middlewares.CreateSigner([]byte(conf.JWTSecret))
 	middlewares.CreateVerifier([]byte(conf.JWTSecret))
 
@@ -94,17 +94,17 @@ func SetGINRouterV1(conf config.Config) *gin.Engine {
 	return router
 }
 
-// SetHTTPRouter uses the gin router to configure a traditional http router.
+// SetWebRouter uses the gin router to configure a traditional http router.
 // This is to implement graceful shutdown.
-func SetHTTPRouter(router *gin.Engine, conf config.Config) *http.Server {
+func SetWebRouter(router *gin.Engine, conf config.Config) *http.Server {
 	return &http.Server{
 		Handler: router,
 		Addr:    fmt.Sprintf("%s:%s", conf.GinHost, conf.GinPort),
 	}
 }
 
-// ListenAndServer starts up the web server implementing graceful shutdown.
-func ListenAndServer(r *http.Server) {
+// ListenAndServe starts up the web server implementing graceful shutdown.
+func ListenAndServe(r *http.Server) {
 	// Start the server in go routine so graceful shutdown mechanism below can be reached
 	go func() {
 		if err := r.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {

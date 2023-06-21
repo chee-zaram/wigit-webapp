@@ -16,5 +16,5 @@ func AdminBookingsRoutes(admin *gin.RouterGroup) {
 func BookingsRoutes(customer *gin.RouterGroup) {
 	customer.POST("/bookings", handlers.CustomerPostBooking)
 	customer.GET("/bookings/:booking_id", handlers.CustomerGetBooking)
-	customer.GET("/bookings", handlers.CustomerGetBookings)
+	customer.GET("/bookings", handlers.GetCustomerBookings)
 }

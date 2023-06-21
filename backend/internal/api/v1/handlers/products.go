@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// NewProduct binds to the new product in the body of the request.
-type NewProduct struct {
+// ProductRequest binds to the new product in the body of the request.
+type ProductRequest struct {
 	Name        *string          `json:"name" binding:"required,min=3,max=45"`
 	Description *string          `json:"description" binding:"required,min=3,max=1024"`
 	Category    *string          `json:"category" binding:"required,min=3,max=45"`
@@ -23,9 +23,9 @@ type NewProduct struct {
 }
 
 // validateData validates the fields provided in the json body during when adding new product.
-func (product *NewProduct) validateData() error {
+func (product *ProductRequest) validateData() error {
 	if product.Price == nil || product.Price.Sign() < 0 {
-		return errors.New("Invalid product price")
+		return errors.New("Product price must be a positive decimal")
 	}
 
 	return nil
@@ -70,7 +70,7 @@ func GetProductByID(ctx *gin.Context) {
 
 	product := new(db.Product)
 	if err := product.LoadFromDB(id); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		AbortCtx(ctx, http.StatusBadRequest, errors.New("No product found"))
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Product with ID not found in database"))
 		return
 	} else if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
@@ -87,7 +87,7 @@ func GetProductByID(ctx *gin.Context) {
 //	@Summary	Retrieves a list of all products in given category
 //	@Tags		products
 //	@Produce	json
-//	@Param		category	path		string					true	"Product Category"
+//	@Param		category	path		string					true	"The category of the product to retrieve"
 //	@Success	200			{object}	map[string]interface{}	"data"
 //	@Failure	400			{object}	map[string]interface{}	"error"
 //	@Failure	500			{object}	map[string]interface{}	"error"
@@ -102,13 +102,13 @@ func GetProductsByCategory(ctx *gin.Context) {
 	}
 
 	if category == "trending" {
-		items, err := db.TrendingItems()
+		trendingItems, err := db.TrendingItems()
 		if err != nil {
 			AbortCtx(ctx, http.StatusInternalServerError, err)
 			return
 		}
 
-		if products, err := db.TrendingProducts(items); err != nil {
+		if products, err := db.TrendingProducts(trendingItems); err != nil {
 			AbortCtx(ctx, http.StatusInternalServerError, err)
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{"data": products})
@@ -127,39 +127,39 @@ func GetProductsByCategory(ctx *gin.Context) {
 	})
 }
 
-// AdminPostProducts	Post product
+// AdminPostProduct	Add product by admin
 //
 //	@Summary	Allows the admin add products to the database
 //	@Tags		admin
 //	@Accept		json
 //	@Produce	json
-//	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		product			body		NewProduct				true	"Add product"
+//	@Param		Authorization	header		string					true	"Authorization token format 'Bearer <token>'"
+//	@Param		product			body		ProductRequest			true	"Add product"
 //	@Success	201				{object}	map[string]interface{}	"data, msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products [post]
-func AdminPostProducts(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	admin, ok := _user.(*db.User)
+func AdminPostProduct(ctx *gin.Context) {
+	userCtx, exists := ctx.Get("user")
+	admin, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_newProduct := new(NewProduct)
-	if err := ctx.ShouldBindJSON(_newProduct); err != nil {
+	productRequest := new(ProductRequest)
+	if err := ctx.ShouldBindJSON(productRequest); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := _newProduct.validateData(); err != nil {
+	if err := productRequest.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
-	product := newProduct(_newProduct, adminName, false)
+	adminFullName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	product := newProduct(productRequest, adminFullName, false)
 	if err := product.Reload(); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
@@ -172,7 +172,7 @@ func AdminPostProducts(ctx *gin.Context) {
 }
 
 // newProduct gets a pointer to a new db.Product object.
-func newProduct(newProduct *NewProduct, adminName string, exists bool) *db.Product {
+func newProduct(newProduct *ProductRequest, adminName string, exists bool) *db.Product {
 	product := new(db.Product)
 	product.Name = newProduct.Name
 	product.Category = newProduct.Category
@@ -180,6 +180,7 @@ func newProduct(newProduct *NewProduct, adminName string, exists bool) *db.Produ
 	product.ImageURL = newProduct.ImageURL
 	product.Price = newProduct.Price
 	product.Stock = newProduct.Stock
+
 	if !exists {
 		product.AddedBy = adminName
 		msg := fmt.Sprintf("product with name = [%s] added by [%s]", *product.Name, adminName)
@@ -196,7 +197,7 @@ func newProduct(newProduct *NewProduct, adminName string, exists bool) *db.Produ
 	return product
 }
 
-// AdminDeleteProducts	Deletes a product
+// AdminDeleteProduct	Deletes a product by an admin
 //
 //	@Summary	Allows admins delete a product from the database
 //	@Tags		admin
@@ -208,7 +209,7 @@ func newProduct(newProduct *NewProduct, adminName string, exists bool) *db.Produ
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products/{product_id} [delete]
-func AdminDeleteProducts(ctx *gin.Context) {
+func AdminDeleteProduct(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	admin, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -234,7 +235,7 @@ func AdminDeleteProducts(ctx *gin.Context) {
 	})
 }
 
-// AdminPutProducts		Update product
+// AdminPutProduct		Update product
 //
 //	@Summary	Allows the admin update the product with given product_id
 //	@Tags		admin
@@ -242,46 +243,46 @@ func AdminDeleteProducts(ctx *gin.Context) {
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
 //	@Param		product_id		path		string					true	"The id of the product to update"
-//	@Param		product			body		NewProduct				true	"Update Product"
+//	@Param		product			body		ProductRequest			true	"Request body containing the new product data"
 //	@Success	200				{object}	map[string]interface{}	"data, msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/products/{product_id} [put]
-func AdminPutProducts(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	admin, ok := _user.(*db.User)
+func AdminPutProduct(ctx *gin.Context) {
+	userCtx, exists := ctx.Get("user")
+	admin, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_newProduct := new(NewProduct)
-	id := ctx.Param("product_id")
-	if id == "" {
+	productRequest := new(ProductRequest)
+	productID := ctx.Param("product_id")
+	if productID == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidProductID)
 		return
 	}
 
-	if err := ctx.ShouldBindJSON(_newProduct); err != nil {
+	if err := ctx.ShouldBindJSON(productRequest); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := _newProduct.validateData(); err != nil {
+	if err := productRequest.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	product := new(db.Product)
-	if err := product.LoadFromDB(id); err != nil {
+	if err := product.LoadFromDB(productID); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	createdAt := product.CreatedAt
-	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
-	product = newProduct(_newProduct, adminName, true)
-	product.ID = &id
+	adminFullName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	product = newProduct(productRequest, adminFullName, true)
+	product.ID = &productID
 	product.CreatedAt = createdAt
 
 	if err := product.Reload(); err != nil {

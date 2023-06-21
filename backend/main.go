@@ -14,22 +14,22 @@ import (
 //	@contact.url	/contact
 //	@contact.email	ecokeke21@gmail.com
 func main() {
-	env, logFile := flags.Parse()
+	environment, logOutputFile := flags.Parse()
 
-	switch env {
+	switch environment {
 	case "prod":
-		if logFile == nil {
-			log.Panic().Msg("failed to create log file for prod mode")
+		if logOutputFile == nil {
+			log.Panic().Msg("failed to create log file for production environment")
 		}
-		defer logFile.Close()
+		defer logOutputFile.Close()
 	default:
 		if err := godotenv.Load(); err != nil {
-			log.Panic().Err(err).Msg("failed to load .env file in dev mode")
+			log.Panic().Err(err).Msg("failed to load .env file in development environment")
 		}
 	}
 
-	conf := config.NewConfig(env)
-	ginRouter := server.SetGINRouterV1(conf)
-	httpRouter := server.SetHTTPRouter(ginRouter, conf)
-	server.ListenAndServer(httpRouter)
+	appConfig := config.NewConfig(environment)
+	ginRouter := server.SetAPIRouter(appConfig)
+	httpRouter := server.SetWebRouter(ginRouter, appConfig)
+	server.ListenAndServe(httpRouter)
 }

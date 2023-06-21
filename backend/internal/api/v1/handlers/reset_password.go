@@ -9,8 +9,8 @@ import (
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// ResetPassword is used to obtain the post and put data during password reset.
-type ResetPassword struct {
+// ResetPasswordRequest is used to obtain the post and put data during password reset.
+type ResetPasswordRequest struct {
 	Email             string `json:"email" binding:"required,email,min=5,max=45"`
 	NewPassword       string `json:"new_password" binding:"required,min=8,max=45"`
 	RepeatNewPassword string `json:"repeat_new_password" binding:"required,min=8,max=45"`
@@ -47,12 +47,13 @@ func PostResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	_token, err := generateRandomBytes()
+	randomBytes, err := generateRandomBytes()
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
-	token := base64.URLEncoding.EncodeToString(_token)[:len(_token)]
+	// token := base64.URLEncoding.EncodeToString(randomBytes)[:len(randomBytes)]
+	token := base64.URLEncoding.EncodeToString(randomBytes)
 
 	if err := user.UpdateResetToken(token); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
@@ -70,7 +71,7 @@ func PostResetPassword(ctx *gin.Context) {
 //	@Tags		reset_password
 //	@Accept		json
 //	@Produce	json
-//	@Param		reset	body		ResetPassword			true	"Reset password"
+//	@Param		reset	body		ResetPasswordRequest	true	"Data needed to reset the user's password"
 //	@Success	200		{object}	map[string]interface{}	"msg"
 //	@Failure	400		{object}	map[string]interface{}	"error"
 //	@Failure	500		{object}	map[string]interface{}	"error"
@@ -82,13 +83,13 @@ func PutResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	passHash, salt, err := hashPassword(user)
+	passwordHash, salt, err := hashPassword(user)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	user.HashedPassword = passHash
+	user.HashedPassword = passwordHash
 	user.Salt = salt
 	user.ResetToken = ""
 
@@ -105,13 +106,13 @@ func PutResetPassword(ctx *gin.Context) {
 // validateResetPasswordData validates the fields provided for the reset of a user's password.
 // It returns a user from the database, an exit code, and an error if any.
 func validateResetPasswordData(ctx *gin.Context) (*db.User, int, error) {
-	resetUser := new(ResetPassword)
-	if err := ctx.ShouldBindJSON(resetUser); err != nil {
-		return nil, http.StatusBadRequest, errors.New("Failed to bind")
+	resetPasswordRequest := new(ResetPasswordRequest)
+	if err := ctx.ShouldBindJSON(resetPasswordRequest); err != nil {
+		return nil, http.StatusBadRequest, errors.New("Failed to bind to ResetPasswordRequest")
 	}
 
 	user := new(db.User)
-	if code, err := user.LoadByEmail(resetUser.Email); err != nil {
+	if code, err := user.LoadByEmail(resetPasswordRequest.Email); err != nil {
 		return nil, code, err
 	}
 
@@ -119,15 +120,15 @@ func validateResetPasswordData(ctx *gin.Context) (*db.User, int, error) {
 		return nil, http.StatusUnauthorized, errors.New("Request to reset password first")
 	}
 
-	if resetUser.ResetToken != user.ResetToken {
+	if resetPasswordRequest.ResetToken != user.ResetToken {
 		return nil, http.StatusUnauthorized, errors.New("Provided token is different from reset token")
 	}
 
-	if resetUser.RepeatNewPassword != resetUser.NewPassword {
+	if resetPasswordRequest.RepeatNewPassword != resetPasswordRequest.NewPassword {
 		return nil, http.StatusBadRequest, ErrPassMismatch
 	}
 
-	user.Password = &resetUser.NewPassword
+	user.Password = &resetPasswordRequest.NewPassword
 
 	return user, http.StatusOK, nil
 }

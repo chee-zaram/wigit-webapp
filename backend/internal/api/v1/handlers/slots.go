@@ -7,8 +7,8 @@ import (
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// NewSlot binds to the request json body during a post to /slots
-type NewSlot struct {
+// SlotDetails binds to the request json body during a post to /slots
+type SlotDetails struct {
 	// DateString is the date as a string. Format `Wednesday, 06 Jan 1999`
 	DateString *string `json:"date_string" binding:"required"`
 	// TimeString is the time as a string. Format `04:00 AM`
@@ -43,21 +43,21 @@ func GetSlots(ctx *gin.Context) {
 //	@Tags		admin
 //	@Accept		json
 //	@Produce	json
-//	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		product			body		NewSlot					true	"Add product"
+//	@Param		Authorization	header		string					true	"Authorization token format is 'Bearer <token>'"
+//	@Param		product			body		SlotDetails				true	"New slot details"
 //	@Success	201				{object}	map[string]interface{}	"data, msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/slots [post]
 func AdminPostSlots(ctx *gin.Context) {
-	_slot := new(NewSlot)
+	newSlotDetails := new(SlotDetails)
 
-	if err := ctx.ShouldBindJSON(_slot); err != nil {
+	if err := ctx.ShouldBindJSON(newSlotDetails); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	slot := newSlot(_slot)
+	slot := createNewSlot(newSlotDetails)
 	if err := slot.Reload(); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
@@ -69,12 +69,12 @@ func AdminPostSlots(ctx *gin.Context) {
 	})
 }
 
-// newSlot fills a new db.Slot object with fields from NewSlot.
-func newSlot(newSlot *NewSlot) *db.Slot {
+// createNewSlot fills a new db.Slot object with fields from SlotDetails.
+func createNewSlot(slotDetails *SlotDetails) *db.Slot {
 	slot := new(db.Slot)
-	slot.DateString = newSlot.DateString
-	slot.TimeString = newSlot.TimeString
-	slot.IsFree = newSlot.IsFree
+	slot.DateString = slotDetails.DateString
+	slot.TimeString = slotDetails.TimeString
+	slot.IsFree = slotDetails.IsFree
 
 	return slot
 }
@@ -92,13 +92,13 @@ func newSlot(newSlot *NewSlot) *db.Slot {
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/slots/{slot_id} [delete]
 func AdminDeleteSlots(ctx *gin.Context) {
-	id := ctx.Param("slot_id")
-	if id == "" {
+	slotID := ctx.Param("slot_id")
+	if slotID == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidSlotID)
 		return
 	}
 
-	if err := db.DeleteSlot(id); err != nil {
+	if err := db.DeleteSlot(slotID); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}

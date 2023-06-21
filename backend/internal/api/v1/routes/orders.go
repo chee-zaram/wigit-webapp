@@ -7,10 +7,10 @@ import (
 
 // OrdersRoutes adds routes for the customer in the orders endpoint.
 func OrdersRoutes(customer *gin.RouterGroup) {
-	customer.POST("/orders", handlers.CustomerPostOrders)
-	customer.GET("/orders", handlers.CustomerGetOrders)
-	customer.GET("/orders/:order_id", handlers.CustomerGetOrder)
-	customer.GET("/orders/status/:status", handlers.CustomerGetOrdersByStatus)
+	customer.POST("/orders", handlers.PostCustomerOrder)
+	customer.GET("/orders", handlers.GetCustomerOrders)
+	customer.GET("/orders/:order_id", handlers.GetCustomerOrder)
+	customer.GET("/orders/status/:status", handlers.GetOrdersByStatus)
 }
 
 // AdminOrdersRoutes adds routes for the admin in the orders endpoint.

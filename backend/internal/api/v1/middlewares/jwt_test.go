@@ -45,7 +45,7 @@ func TestCreateVerifier_Invalid(t *testing.T) {
 // TestGenerateClaims tests the generateClaims function.
 func TestGenerateClaims(t *testing.T) {
 	assert := assert.New(t)
-	claims := generateClaims("1234")
+	claims := generateJWTClaims("1234")
 	assert.NotNil(claims)
 	assert.Equal(claims.ID, "1234")
 }
@@ -54,7 +54,7 @@ func TestGenerateClaims(t *testing.T) {
 func TestBuildWithClaims(t *testing.T) {
 	assert := assert.New(t)
 	CreateSigner([]byte("jwtsecret"))
-	token := buildWithClaims(generateClaims("1234"))
+	token := buildJWTString(generateJWTClaims("1234"))
 	assert.IsType("", token)
 	assert.True(len(token) > 0)
 }

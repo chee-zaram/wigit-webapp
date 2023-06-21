@@ -10,38 +10,38 @@ import (
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// NewBooking binds to the request body on post to bookings routes.
-type NewBooking struct {
+// BookingRequest binds to the request body on post to bookings routes.
+type BookingRequest struct {
 	// ServiceID is the ID of the service requested.
 	ServiceID *string `json:"service_id" binding:"required"`
 	// SlotID is the ID of the slot the user is requesting to be booked for.
 	SlotID *string `json:"slot_id" binding:"required"`
 }
 
-// allowedBookingStatus is a list of all the valid status for a booking.
-var allowedBookingStatus = []string{
+// validBookingStatuses is a list of all the valid status for a booking.
+var validBookingStatuses = []string{
 	db.Pending, db.Paid, db.Fulfilled, db.Cancelled,
 }
 
-// CustomerGetBookings Customer get all bookings
+// GetCustomerBookings Customer get all bookings
 //
-//	@Summary	Allows customer retrieves all their bookings from the database
+//	@Summary	Retrieves all their bookings from the database
 //	@Tags		bookings
 //	@Produce	json
-//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		Authorization	header		string					true	"Authorization token in the format 'Bearer <token>'"
 //	@Success	200				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/bookings [get]
-func CustomerGetBookings(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+func GetCustomerBookings(ctx *gin.Context) {
+	userCtx, exists := ctx.Get("user")
+	loggedInUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	bookings, err := db.CustomerBookings(*user.ID)
+	bookings, err := db.CustomerBookings(*loggedInUser.ID)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
@@ -52,83 +52,88 @@ func CustomerGetBookings(ctx *gin.Context) {
 	})
 }
 
-// CustomerGetBooking Customer get a booking with given ID
+// CustomerGetBooking Gets a customer's booking with given ID
 //
-//	@Summary	Allows customer retrieve a booking with given ID from database
+//	@Summary	Retrieves a booking with given ID from database
 //	@Tags		bookings
 //	@Produce	json
-//	@Param		Authorization	header		string					true	"Bearer <token>"
+//	@Param		Authorization	header		string					true	"Authorization token in the format 'Bearer <token>'"
 //	@Param		booking_id		path		string					true	"ID of the booking to get"
 //	@Success	200				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Router		/bookings/{booking_id} [get]
 func CustomerGetBooking(ctx *gin.Context) {
-	booking_id := ctx.Param("booking_id")
-	if booking_id == "" {
-		AbortCtx(ctx, http.StatusBadRequest, errors.New("Booking ID not set"))
+	bookingID := ctx.Param("booking_id")
+	if bookingID == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("The booking ID parameter is missing or empty"))
 		return
 	}
 
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+	userCtx, exists := ctx.Get("user")
+	loggedInUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	for _, booking := range user.Bookings {
-		if strings.HasPrefix(*booking.ID, booking_id) {
+	for _, userBooking := range loggedInUser.Bookings {
+		if strings.HasPrefix(*userBooking.ID, bookingID) {
 			ctx.JSON(http.StatusOK, gin.H{
-				"data": booking,
+				"data": userBooking,
 			})
 			return
 		}
 	}
 
-	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No booking with given ID for user"})
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+		"error": "No booking with given ID for user",
+	})
 }
 
 // CustomerPostBooking adds a new booking to the database for the customer.
 //
-//	@Summary	Allows customer add a new booking.
+//	@Summary	Adds a new booking to the database for the authorized customer.
 //	@Tags		bookings
 //	@Accept		json
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		booking			body		NewBooking				true	"A new customer booking"
+//	@Param		booking			body		BookingRequest			true	"A new customer booking"
 //	@Success	201				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/bookings [post]
 func CustomerPostBooking(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+	userCtx, exists := ctx.Get("user")
+	loggedInUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_booking := new(NewBooking)
-	if err := ctx.ShouldBindJSON(_booking); err != nil {
+	bookingRequest := new(BookingRequest)
+	if err := ctx.ShouldBindJSON(bookingRequest); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	service := new(db.Service)
-	if err := service.LoadFromDB(*_booking.ServiceID); err != nil {
+	if err := service.LoadFromDB(*bookingRequest.ServiceID); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	booking := newBooking(_booking)
+	booking := newBooking(bookingRequest)
+	// Set teh booking amount to the price of the service
 	booking.Amount = service.Price
-	user.Bookings = append(user.Bookings, *booking)
-	if err := user.SaveToDB(); err != nil {
+	// Add the new booking to the customer's bookings history
+	loggedInUser.Bookings = append(loggedInUser.Bookings, *booking)
+	if err := loggedInUser.SaveToDB(); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	if err := booking.LoadFromDB(*user.Bookings[len(user.Bookings)-1].ID); err != nil {
+	if err := booking.LoadFromDB(
+		*loggedInUser.Bookings[len(loggedInUser.Bookings)-1].ID); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -139,12 +144,11 @@ func CustomerPostBooking(ctx *gin.Context) {
 	})
 }
 
-// newBooking fills up the necessary fields in db.Booking object from NewBooking
-// object and returns it.
-func newBooking(newBooking *NewBooking) *db.Booking {
+// newBooking creates a new db.Booking object from the BookingRequest.
+func newBooking(bookingRequest *BookingRequest) *db.Booking {
 	booking := new(db.Booking)
-	booking.SlotID = newBooking.SlotID
-	booking.ServiceID = newBooking.ServiceID
+	booking.SlotID = bookingRequest.SlotID
+	booking.ServiceID = bookingRequest.ServiceID
 
 	return booking
 }
@@ -233,15 +237,15 @@ func AdminPutBooking(ctx *gin.Context) {
 		return
 	}
 
-	if !bookingStatusIsValid(booking, status) {
+	if !isValidBookingStatus(booking, status) {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New(
 			"The status is not valid. Likely because the service is not available at the moment",
 		))
 		return
 	}
 
-	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
-	if err := booking.UpdateStatus(status, adminName); err != nil {
+	adminFullName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	if err := booking.UpdateStatus(status, adminFullName); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -252,27 +256,34 @@ func AdminPutBooking(ctx *gin.Context) {
 	})
 }
 
-// bookingStatusIsValid checks if the new status is for updating a booking valid.
-func bookingStatusIsValid(booking *db.Booking, status string) bool {
-	var valid bool
+// isValidBookingStatus checks if the new status is for updating a booking valid.
+func isValidBookingStatus(booking *db.Booking, status string) bool {
+	var isValidStatus bool
 
-	for _, stat := range allowedBookingStatus {
-		if stat == status {
-			if status == db.Paid {
-				if !*booking.Service.Available {
-					return false
-				}
-
-				if !*booking.Slot.IsFree {
-					return false
-				} else {
-					*booking.Slot.IsFree = false
-				}
-				return true
-			}
-			return true
+	for i, stat := range validBookingStatuses {
+		if i == len(validBookingStatuses) && stat != status {
+			isValidStatus = false
+			break
 		}
+
+		if stat != status {
+			continue
+		}
+
+		if status == db.Paid {
+			if !*booking.Service.Available {
+				return false
+			}
+
+			if !*booking.Slot.IsFree {
+				return false
+			}
+			*booking.Slot.IsFree = false
+		}
+
+		isValidStatus = true
+		break
 	}
 
-	return valid
+	return isValidStatus
 }
