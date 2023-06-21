@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useSignInContext } from '@app/SignInContextProvider';
 import ShoppingCart from '@app/cart/components/ShoppingCart';
 import axios from 'axios';
-import Button from '@components/Button';
 import { useRouter } from 'next/navigation';
 import Item from '@app/cart/interfaces/ShoppingCartProps';
 import { ToastContainer, toast } from 'react-toastify';
@@ -163,8 +162,7 @@ if (typeof window !== 'undefined') {
                         </div>
                         <p>Total {total}</p>
                         <button type='submit' className='rounded bg-dark_bg hover:bg-dark_bg/70 duration-300 text-light_bg w-full px-4 py-2 '>
-                            checkout >>
-                            {/* <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30"><path d="m242-200 210-280-210-280h74l210 280-210 280h-74Zm252 0 210-280-210-280h74l210 280-210 280h-74Z"/></svg> */}
+                            checkout &gt;&gt;
                         </button>
                     </form>
                 </div>

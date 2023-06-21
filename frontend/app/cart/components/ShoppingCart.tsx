@@ -9,7 +9,7 @@ import Item from '@app/cart/interfaces/ShoppingCartProps';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-const ShoppingCart: any = async (props: Item) => {
+const ShoppingCart: any = (props: Item) => {
     const [ newQty, setNewQty ] = useState(props.quantity);
     const [ newAmount, setNewAmount ] = useState(Number(props.amount));
     const [ hideItem, setHideItem ] = useState(false);
