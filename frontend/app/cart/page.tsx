@@ -134,11 +134,13 @@ let jwt: string | null = '';
             {cart && cart.length > 0 ?
             <div className='md:min-w-5xl md:flex flex-wrap rounded-lg shadow-md max-w-[80vw] lg:max-w-[70vw] mx-auto overflow-hidden'>
             <section className='items_list p-4 md:p-8 lg:p-12 mb-4 md:mb-0 md:w-2/3'>
-                <h2 className='text-xxl font-extrabold mb-2'>My shopping cart</h2>
+                <h2 className='text-xxl capitalizea
+                 flex items-center justify-around font-extrabold mb-2'>My shopping cart
                 <button className='hover:bg-red-200 ' onClick={ handleEmptyCart }>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z"/></svg>
-                    clear cart
-                </button>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30"><path d="m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z"/></svg>
+                </button></h2>
+                
+                <p className='border-b border-dark_bg/80'></p>
                 { cart && cart.map((item: Item) => (
                 <div key={item.id}>
                     <ShoppingCart { ...item } />
