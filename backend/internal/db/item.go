@@ -69,13 +69,13 @@ func (item *Item) IsDuplicate() bool {
 	return true
 }
 
-// TrendingItems returns top ten trending products in the last 7 days by ids.
+// TrendingItems returns top ten trending products in the last 14 days by ids.
 func TrendingItems() ([]Item, error) {
 	var items []Item
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
 		return tx.Table("items").Select("product_id, SUM(quantity) as total_orders").
-			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
+			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -14)).
 			Group("product_id").
 			Order("total_orders DESC").
 			Limit(10).
