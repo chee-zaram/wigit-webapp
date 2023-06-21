@@ -5,16 +5,15 @@ import Logo from '@components/Logo';
 import { useState } from 'react';
 import { useSignInContext } from '@app/SignInContextProvider';
 
-//type check
 
 const Navbar = () => {
     const { jwt, role, setRole, isSignedIn, setIsSignedIn } = useSignInContext();
-//if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined') {
     if (sessionStorage.getItem('role')) {
         setRole(sessionStorage.getItem('role'));
         setIsSignedIn(sessionStorage.getItem('isSignedIn'));
     } else { setIsSignedIn(false)}
-//}
+}
 const [ isOpen, setIsOpen ] = useState(false);
 
 const handleMobileNav = () => {

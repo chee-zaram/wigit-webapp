@@ -5,11 +5,11 @@ import { useState, createContext, useContext, Dispatch, SetStateAction } from 'r
 
 interface SignInContextProps {
     jwt: string | null;
-    setJwt: Dispatch<SetStateAction<string>> | null;
+    setJwt: Dispatch<SetStateAction<any>>;
     role: string | null;
-    setRole: Dispatch<SetStateAction<string>> | null;
-    isSignedIn: boolean;
-    setIsSignedIn: Dispatch<SetStateAction<boolean>> | null;
+    setRole: Dispatch<SetStateAction<any>>;
+    isSignedIn: boolean | null;
+    setIsSignedIn: Dispatch<SetStateAction<any>>;
     user: object;
     setUser: any;
 }

@@ -1,7 +1,7 @@
 // Order card
 import { NextPage} from 'next';
 import Link from 'next/link';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 const OrderCard: NextPage<any> = (searchResult) => {
