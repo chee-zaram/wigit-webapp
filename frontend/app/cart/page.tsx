@@ -22,7 +22,7 @@ const Cart = () => {
     const [total, setTotal ] = useState(0);
     const [address, setAddress ] = useState('');
 
-let jwt: string | null = '';
+let jwt: string | null = 'not authorized';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
                 jwt = sessionStorage.getItem('jwt');
