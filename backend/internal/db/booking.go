@@ -123,14 +123,14 @@ func CustomerBookings(userID string) ([]Booking, error) {
 }
 
 // SortBookingsByService gets service ids of the top 10 services booked in the last
-// 7 days by quering the bookings table.
+// 14 days by quering the bookings table.
 func SortBookingsByService() ([]Booking, error) {
 	var bookings []Booking
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
 		return tx.Table("bookings").
 			Select("service_id, COUNT(*) as total_bookings").
-			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -7)).
+			Where("created_at >= ?", time.Now().UTC().AddDate(0, 0, -14)).
 			Group("service_id").
 			Order("total_bookings DESC").
 			Limit(10).

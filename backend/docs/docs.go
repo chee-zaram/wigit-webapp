@@ -208,7 +208,7 @@ const docTemplate = `{
                 "tags": [
                     "admin"
                 ],
-                "summary": "Allows admin retrieves all orders with given status from the database",
+                "summary": "Allows admin retrieve all orders with given status from the database",
                 "parameters": [
                     {
                         "type": "string",
@@ -373,7 +373,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
+                        "description": "Authorization token format 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -384,7 +384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewProduct"
+                            "$ref": "#/definitions/handlers.ProductRequest"
                         }
                     }
                 ],
@@ -441,12 +441,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Update Product",
+                        "description": "Request body containing the new product data",
                         "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewProduct"
+                            "$ref": "#/definitions/handlers.ProductRequest"
                         }
                     }
                 ],
@@ -547,12 +547,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Add service",
+                        "description": "Data of the service to add",
                         "name": "service",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewService"
+                            "$ref": "#/definitions/handlers.ServiceRequest"
                         }
                     }
                 ],
@@ -609,12 +609,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Update service",
+                        "description": "Data of the service to update",
                         "name": "service",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewService"
+                            "$ref": "#/definitions/handlers.ServiceRequest"
                         }
                     }
                 ],
@@ -709,18 +709,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
+                        "description": "Authorization token format is 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "Add product",
+                        "description": "New slot details",
                         "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewSlot"
+                            "$ref": "#/definitions/handlers.SlotDetails"
                         }
                     }
                 ],
@@ -860,11 +860,11 @@ const docTemplate = `{
                 "tags": [
                     "bookings"
                 ],
-                "summary": "Allows customer retrieves all their bookings from the database",
+                "summary": "Retrieves all their bookings from the database",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
+                        "description": "Authorization token in the format 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -904,7 +904,7 @@ const docTemplate = `{
                 "tags": [
                     "bookings"
                 ],
-                "summary": "Allows customer add a new booking.",
+                "summary": "Adds a new booking to the database for the authorized customer.",
                 "parameters": [
                     {
                         "type": "string",
@@ -919,7 +919,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewBooking"
+                            "$ref": "#/definitions/handlers.BookingRequest"
                         }
                     }
                 ],
@@ -956,11 +956,11 @@ const docTemplate = `{
                 "tags": [
                     "bookings"
                 ],
-                "summary": "Allows customer retrieve a booking with given ID from database",
+                "summary": "Retrieves a booking with given ID from database",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
+                        "description": "Authorization token in the format 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -1058,7 +1058,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewItem"
+                            "$ref": "#/definitions/handlers.ItemRequest"
                         }
                     }
                 ],
@@ -1093,7 +1093,7 @@ const docTemplate = `{
                 "tags": [
                     "cart"
                 ],
-                "summary": "Allows the current user all items in their cart.",
+                "summary": "Clears all the items in the logged in user's cart.",
                 "parameters": [
                     {
                         "type": "string",
@@ -1136,7 +1136,7 @@ const docTemplate = `{
                 "tags": [
                     "cart"
                 ],
-                "summary": "Allows the current user delete an item from the cart.",
+                "summary": "Delete an item from the customer's cart.",
                 "parameters": [
                     {
                         "type": "string",
@@ -1190,7 +1190,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
+                        "description": "Authorization token format 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -1243,7 +1243,7 @@ const docTemplate = `{
                 "tags": [
                     "orders"
                 ],
-                "summary": "Allows the customer retrieve all their orders from the database.",
+                "summary": "Retrieve all the orders from the database belonging to the customer.",
                 "parameters": [
                     {
                         "type": "string",
@@ -1302,7 +1302,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.NewOrder"
+                            "$ref": "#/definitions/handlers.OrderRequest"
                         }
                     }
                 ],
@@ -1470,7 +1470,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Product Category",
+                        "description": "The category of the product to retrieve",
                         "name": "category",
                         "in": "path",
                         "required": true
@@ -1558,12 +1558,12 @@ const docTemplate = `{
                 "summary": "Allows to send new password details",
                 "parameters": [
                     {
-                        "description": "Reset password",
+                        "description": "Data needed to reset the user's password",
                         "name": "reset",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResetPassword"
+                            "$ref": "#/definitions/handlers.ResetPasswordRequest"
                         }
                     }
                 ],
@@ -1746,7 +1746,7 @@ const docTemplate = `{
                 "tags": [
                     "signin"
                 ],
-                "summary": "Logs a user into their account",
+                "summary": "Authenticate a user and generate a JWT.",
                 "parameters": [
                     {
                         "description": "Sign user in",
@@ -1754,7 +1754,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.SignInUser"
+                            "$ref": "#/definitions/handlers.UserCredentials"
                         }
                     }
                 ],
@@ -1794,15 +1794,15 @@ const docTemplate = `{
                 "tags": [
                     "signup"
                 ],
-                "summary": "Add a new user account",
+                "summary": "Create a new user account with the provided details",
                 "parameters": [
                     {
-                        "description": "Add user account",
+                        "description": "New user details",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.SignUpUser"
+                            "$ref": "#/definitions/handlers.NewUserDetails"
                         }
                     }
                 ],
@@ -2197,7 +2197,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.NewBooking": {
+        "handlers.BookingRequest": {
             "type": "object",
             "required": [
                 "service_id",
@@ -2214,7 +2214,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.NewItem": {
+        "handlers.ItemRequest": {
             "type": "object",
             "required": [
                 "product_id",
@@ -2231,174 +2231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.NewOrder": {
-            "type": "object",
-            "required": [
-                "delivery_method"
-            ],
-            "properties": {
-                "delivery_method": {
-                    "description": "DeliveryMethod is the method in which the order should be deliver.\n\nAllowed values are ` + "`" + `pickup` + "`" + `, ` + "`" + `delivery` + "`" + `.",
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.NewProduct": {
-            "type": "object",
-            "required": [
-                "category",
-                "description",
-                "image_url",
-                "name",
-                "price",
-                "stock"
-            ],
-            "properties": {
-                "category": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 3
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 1024,
-                    "minLength": 3
-                },
-                "image_url": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 3
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 3
-                },
-                "price": {
-                    "type": "number"
-                },
-                "stock": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.NewService": {
-            "type": "object",
-            "required": [
-                "available",
-                "description",
-                "name",
-                "price"
-            ],
-            "properties": {
-                "available": {
-                    "description": "Available says whether the service is available or not.",
-                    "type": "boolean"
-                },
-                "description": {
-                    "description": "Description is a brief description of the service.",
-                    "type": "string",
-                    "maxLength": 1024,
-                    "minLength": 5
-                },
-                "name": {
-                    "description": "Name is the name of the service.",
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 3
-                },
-                "price": {
-                    "description": "Price is the cost of the service.",
-                    "type": "number"
-                }
-            }
-        },
-        "handlers.NewSlot": {
-            "type": "object",
-            "required": [
-                "date_string",
-                "is_free",
-                "time_string"
-            ],
-            "properties": {
-                "date_string": {
-                    "description": "DateString is the date as a string. Format ` + "`" + `Wednesday, 06 Jan 1999` + "`" + `",
-                    "type": "string"
-                },
-                "is_free": {
-                    "description": "IsFree is a boolean that says if the slot is free or not.",
-                    "type": "boolean"
-                },
-                "time_string": {
-                    "description": "TimeString is the time as a string. Format ` + "`" + `04:00 AM` + "`" + `",
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.PostEmail": {
-            "type": "object",
-            "required": [
-                "email"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 5
-                }
-            }
-        },
-        "handlers.ResetPassword": {
-            "type": "object",
-            "required": [
-                "email",
-                "new_password",
-                "repeat_new_password",
-                "reset_token"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 5
-                },
-                "new_password": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 8
-                },
-                "repeat_new_password": {
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 8
-                },
-                "reset_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.SignInUser": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "description": "Email is the user's email.",
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 3
-                },
-                "password": {
-                    "description": "Password is the user's password.",
-                    "type": "string",
-                    "maxLength": 45,
-                    "minLength": 8
-                }
-            }
-        },
-        "handlers.SignUpUser": {
+        "handlers.NewUserDetails": {
             "type": "object",
             "required": [
                 "address",
@@ -2447,6 +2280,157 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.OrderRequest": {
+            "type": "object",
+            "required": [
+                "delivery_method"
+            ],
+            "properties": {
+                "delivery_method": {
+                    "description": "DeliveryMethod specifies the method in which the order should be delivered.\n\nAllowed values are ` + "`" + `pickup` + "`" + `, ` + "`" + `delivery` + "`" + `.",
+                    "type": "string",
+                    "maxLength": 45
+                },
+                "shipping_address": {
+                    "description": "ShippingAddress specifies the delivery address if DeliveryMethod is ` + "`" + `delivery` + "`" + `.",
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.PostEmail": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 5
+                }
+            }
+        },
+        "handlers.ProductRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "description",
+                "image_url",
+                "name",
+                "price",
+                "stock"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 3
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "minLength": 3
+                },
+                "image_url": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 3
+                },
+                "price": {
+                    "type": "number"
+                },
+                "stock": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.ResetPasswordRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "new_password",
+                "repeat_new_password",
+                "reset_token"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 5
+                },
+                "new_password": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 8
+                },
+                "repeat_new_password": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 8
+                },
+                "reset_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ServiceRequest": {
+            "type": "object",
+            "required": [
+                "available",
+                "description",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "available": {
+                    "description": "Available says whether the service is available or not.",
+                    "type": "boolean"
+                },
+                "description": {
+                    "description": "Description is a brief description of the service.",
+                    "type": "string",
+                    "maxLength": 1024,
+                    "minLength": 5
+                },
+                "name": {
+                    "description": "Name is the name of the service.",
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 3
+                },
+                "price": {
+                    "description": "Price is the cost of the service.",
+                    "type": "number"
+                }
+            }
+        },
+        "handlers.SlotDetails": {
+            "type": "object",
+            "required": [
+                "date_string",
+                "is_free",
+                "time_string"
+            ],
+            "properties": {
+                "date_string": {
+                    "description": "DateString is the date as a string. Format ` + "`" + `Wednesday, 06 Jan 1999` + "`" + `",
+                    "type": "string"
+                },
+                "is_free": {
+                    "description": "IsFree is a boolean that says if the slot is free or not.",
+                    "type": "boolean"
+                },
+                "time_string": {
+                    "description": "TimeString is the time as a string. Format ` + "`" + `04:00 AM` + "`" + `",
+                    "type": "string"
+                }
+            }
+        },
         "handlers.UpdateUser": {
             "type": "object",
             "required": [
@@ -2477,6 +2461,25 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "maxLength": 11,
+                    "minLength": 8
+                }
+            }
+        },
+        "handlers.UserCredentials": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "minLength": 3
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 45,
                     "minLength": 8
                 }
             }

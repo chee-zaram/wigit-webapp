@@ -10,38 +10,42 @@ import (
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// NewOrder binds to the json body during a post request for a new order.
-type NewOrder struct {
-	// DeliveryMethod is the method in which the order should be deliver.
+// OrderRequest binds to the json body during a post request for a new order.
+type OrderRequest struct {
+	// DeliveryMethod specifies the method in which the order should be delivered.
 	//
 	// Allowed values are `pickup`, `delivery`.
 	DeliveryMethod *string `json:"delivery_method" binding:"required,max=45"`
-	// ShippingAddress is the address in which the current order should be delivered
-	// if the DeliveryMethod is `delivery`.
+	// ShippingAddress specifies the delivery address if DeliveryMethod is `delivery`.
 	ShippingAddress *string `json:"shipping_address"`
 }
 
-// validate validates the values of the fields in the NewOrder body.
-func (order *NewOrder) validate() error {
+const (
+	pickup   = "pickup"
+	delivery = "delivery"
+)
+
+// validate validates the values of the fields in the OrderRequest body.
+func (order *OrderRequest) validate() error {
 	if order == nil {
 		return db.ErrNilPointer
 	}
 
-	if *order.DeliveryMethod != "pickup" && *order.DeliveryMethod != "delivery" {
-		return errors.New("Invalid delivery option")
+	if *order.DeliveryMethod != pickup && *order.DeliveryMethod != delivery {
+		return errors.New("DeliveryMethod must be either pickup or delivery")
 	}
 
 	return nil
 }
 
-// allowedOrderStatus is a slice of status allowed to be set for an order.
-var allowedOrderStatus = []string{
+// validOrderStatuses is a slice of status allowed to be set for an order.
+var validOrderStatuses = []string{
 	db.Pending, db.Paid, db.Shipped, db.Delivered, db.Cancelled,
 }
 
-// CustomerGetOrders Get all given customer's orders.
+// GetCustomerOrders Get all given customer's orders.
 //
-//	@Summary	Allows the customer retrieve all their orders from the database.
+//	@Summary	Retrieve all the orders from the database belonging to the customer.
 //	@Tags		orders
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
@@ -49,26 +53,26 @@ var allowedOrderStatus = []string{
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/orders [get]
-func CustomerGetOrders(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+func GetCustomerOrders(ctx *gin.Context) {
+	userCtx, exists := ctx.Get("user")
+	dbUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	orders, err := db.CustomerOrders(*user.ID)
+	customerOrders, err := db.CustomerOrders(*dbUser.ID)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
+		"data": customerOrders,
 	})
 }
 
-// CustomerGetOrdersByStatus Get orders by status.
+// GetOrdersByStatus Get orders by status.
 //
 //	@Summary	Allows the customer retrieve all the orders from the database with given status.
 //	@Tags		orders
@@ -79,7 +83,7 @@ func CustomerGetOrders(ctx *gin.Context) {
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/orders/status/{status} [get]
-func CustomerGetOrdersByStatus(ctx *gin.Context) {
+func GetOrdersByStatus(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -87,24 +91,24 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 		return
 	}
 
-	status := ctx.Param("status")
-	if status == "" {
+	orderStatus := ctx.Param("status")
+	if orderStatus == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrStatusCtx)
 		return
 	}
 
-	orders, err := db.CustomerOrdersByStatus(*user.ID, status)
+	customerOrdersbyStatus, err := db.CustomerOrdersByStatus(*user.ID, orderStatus)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": orders,
+		"data": customerOrdersbyStatus,
 	})
 }
 
-// CustomerGetOrder Customer get an order with given ID
+// GetCustomerOrder Customer get an order with given ID
 //
 //	@Summary	Allows customer retrieve an order with given ID from database
 //	@Tags		orders
@@ -115,7 +119,7 @@ func CustomerGetOrdersByStatus(ctx *gin.Context) {
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/orders/{order_id} [get]
-func CustomerGetOrder(ctx *gin.Context) {
+func GetCustomerOrder(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	user, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -128,44 +132,45 @@ func CustomerGetOrder(ctx *gin.Context) {
 		return
 	}
 
-	order := new(db.Order)
-	if err := order.CustomerLoadFromDB(*user.ID, id); err != nil {
+	// customerOrder is initialized as a pointer to enable the methods modify the object.
+	customerOrder := new(db.Order)
+	if err := customerOrder.CustomerLoadFromDB(*user.ID, id); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": order,
+		"data": customerOrder,
 	})
 }
 
-// CustomerPostOrders Add order to the database
+// PostCustomerOrder Add order to the database
 //
 //	@Summary	Allows the current user place a new order
 //	@Tags		orders
 //	@Accept		json
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		order			body		NewOrder				true	"A new customer order"
+//	@Param		order			body		OrderRequest			true	"A new customer order"
 //	@Success	201				{object}	map[string]interface{}	"data"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/orders [post]
-func CustomerPostOrders(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+func PostCustomerOrder(ctx *gin.Context) {
+	userCtx, exists := ctx.Get("user")
+	user, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		AbortCtx(ctx, http.StatusBadRequest, ErrUserCtx)
 		return
 	}
 
-	_order := new(NewOrder)
-	if err := ctx.ShouldBindJSON(_order); err != nil {
+	orderRequest := new(OrderRequest)
+	if err := ctx.ShouldBindJSON(orderRequest); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := _order.validate(); err != nil {
+	if err := orderRequest.validate(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -176,8 +181,8 @@ func CustomerPostOrders(ctx *gin.Context) {
 		return
 	}
 
-	order := newOrder(_order, items)
-	if *order.DeliveryMethod == "delivery" && order.ShippingAddress == nil {
+	order := newOrder(orderRequest, items)
+	if *order.DeliveryMethod == delivery && order.ShippingAddress == nil {
 		order.ShippingAddress = user.Address
 	}
 	user.Orders = append(user.Orders, *order)
@@ -198,16 +203,16 @@ func CustomerPostOrders(ctx *gin.Context) {
 	})
 }
 
-// newOrder fills up fields in the db.Order object from NewOrder and returns it.
-func newOrder(newOrder *NewOrder, items []db.Item) *db.Order {
+// newOrder fills up fields in the db.Order object from OrderRequest and returns it.
+func newOrder(orderRequest *OrderRequest, items []db.Item) *db.Order {
 	order := new(db.Order)
-	order.DeliveryMethod = newOrder.DeliveryMethod
+	order.DeliveryMethod = orderRequest.DeliveryMethod
 	order.Items = items
 	order.TotalAmount = getOrderTotal(items)
 
-	if *newOrder.DeliveryMethod == "delivery" {
-		if newOrder.ShippingAddress != nil && *newOrder.ShippingAddress != "" {
-			order.ShippingAddress = newOrder.ShippingAddress
+	if *order.DeliveryMethod == delivery {
+		if orderRequest.ShippingAddress != nil && *orderRequest.ShippingAddress != "" {
+			order.ShippingAddress = orderRequest.ShippingAddress
 		}
 	}
 
@@ -246,7 +251,7 @@ func AdminGetOrders(ctx *gin.Context) {
 
 // AdminGetOrdersByStatus Get all orders with given status
 //
-//	@Summary	Allows admin retrieves all orders with given status from the database
+//	@Summary	Allows admin retrieve all orders with given status from the database
 //	@Tags		admin
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
@@ -341,15 +346,15 @@ func AdminPutOrders(ctx *gin.Context) {
 		return
 	}
 
-	if !orderStatusIsValid(order, status) {
+	if !isValidOrderStatus(order, status) {
 		AbortCtx(ctx, http.StatusBadRequest, errors.New(
 			"Status cannot be updated. Likely because a product is out of stock",
 		))
 		return
 	}
 
-	adminName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
-	if err := order.UpdateStatus(status, adminName); err != nil {
+	adminFullName := fmt.Sprintf("%s %s", *admin.FirstName, *admin.LastName)
+	if err := order.UpdateStatus(status, adminFullName); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -360,25 +365,32 @@ func AdminPutOrders(ctx *gin.Context) {
 	})
 }
 
-// orderStatusIsValid validates the status to which an order is about to be updated.
+// isValidOrderStatus validates the status to which an order is about to be updated.
 // returns true if the status is valid, or false otherwise.
-func orderStatusIsValid(order *db.Order, status string) bool {
-	var valid bool
+func isValidOrderStatus(order *db.Order, status string) bool {
+	var isValidStatus bool
 
-	for _, stat := range allowedOrderStatus {
-		if stat == status {
-			if status == db.Paid {
-				for _, item := range order.Items {
-					if *item.Quantity > *item.Product.Stock {
-						return false
-					}
-					*item.Product.Stock = *item.Product.Stock - *item.Quantity
-				}
-				return true
-			}
-			return true
+	for i, stat := range validOrderStatuses {
+		if i == len(validOrderStatuses) && stat != status {
+			isValidStatus = false
+			break
 		}
+
+		if stat != status {
+			continue
+		}
+
+		if status == db.Paid {
+			for _, orderItem := range order.Items {
+				if *orderItem.Quantity > *orderItem.Product.Stock {
+					return false
+				}
+				*orderItem.Product.Stock = *orderItem.Product.Stock - *orderItem.Quantity
+			}
+		}
+		isValidStatus = true
+		break
 	}
 
-	return valid
+	return isValidStatus
 }

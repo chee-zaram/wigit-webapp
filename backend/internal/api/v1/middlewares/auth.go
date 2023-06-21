@@ -18,7 +18,9 @@ func JWTAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		ctx.Header(`WWW-Authenticate`, `Bearer realm="Restricted"`)
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Missing Authorization header. Please provide a valid JWT",
+		})
 		return
 	}
 
@@ -27,7 +29,9 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Invalid Authorization header format"`,
 		))
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization header format"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid Authorization header format. Please provide a valid JWT",
+		})
 		return
 	}
 
@@ -35,11 +39,13 @@ func JWTAuthentication(ctx *gin.Context) {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="Authorization value does not contain Bearer"`,
 		))
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization value does not contain Bearer"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Authorization value does not contain Bearer. Please provide a valid JWT",
+		})
 		return
 	}
 
-	userID, err := validateJWT(bearerToken[1])
+	userID, err := verifyJWTSignature(bearerToken[1])
 	if err != nil {
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", error="invalid_token", error_description="%s"`, err.Error(),
@@ -58,24 +64,24 @@ func JWTAuthentication(ctx *gin.Context) {
 	ctx.Next()
 }
 
-// validateJWT checks the validity of the jwt provided.
+// verifyJWTSignature checks the validity of the jwt provided.
 // It returns the user ID stored in the claims, and any error if any occurs.
-func validateJWT(_token string) (string, error) {
+func verifyJWTSignature(_token string) (string, error) {
 	token, err := parseToken(_token)
 	if err != nil {
 		return "", err
 	}
 
-	claims, err := retrieveTokenClaims(token)
+	jwtClaims, err := retrieveTokenClaims(token)
 	if err != nil {
 		return "", err
 	}
 
-	if !claims.IsValidAt(time.Now().UTC()) {
-		return "", errors.New("Token has expired")
+	if !jwtClaims.IsValidAt(time.Now().UTC()) {
+		return "", errors.New("JWT has expired. Please sign in again.")
 	}
 
-	return claims.ID, nil
+	return jwtClaims.ID, nil
 }
 
 // parseToken takes a token as a string and verify the signature.
@@ -83,7 +89,7 @@ func validateJWT(_token string) (string, error) {
 func parseToken(_token string) (*jwt.Token, error) {
 	token, err := jwt.Parse([]byte(_token), JWTVerifier)
 	if err != nil {
-		return nil, errors.New("failed to parse JWT")
+		return nil, errors.New("failed to parse JWT. Please provide valid JWT.")
 	}
 
 	return token, nil
@@ -93,7 +99,7 @@ func parseToken(_token string) (*jwt.Token, error) {
 func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 	claims := new(jwt.RegisteredClaims)
 	if err := json.Unmarshal(token.Claims(), claims); err != nil {
-		return nil, errors.New("failed to Unmarshal claims")
+		return nil, errors.New("Failed to retrieve JWT claims. Please provide a valid JWT.")
 	}
 
 	return claims, nil
@@ -101,14 +107,14 @@ func retrieveTokenClaims(token *jwt.Token) (*jwt.RegisteredClaims, error) {
 
 // AdminAuthorization validates if the user has admin privileges or not.
 func AdminAuthorization(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+	userCtx, exists := ctx.Get("user")
+	loggedInUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in ctx"})
 		return
 	}
 
-	if *user.Role != "admin" && *user.Role != "super_admin" {
+	if *loggedInUser.Role != "admin" && *loggedInUser.Role != "super_admin" {
 		err := "You are not allowed to view this resource"
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="admin super_admin", error="insufficient_scope", error_description="%s"`, err,
@@ -122,14 +128,14 @@ func AdminAuthorization(ctx *gin.Context) {
 
 // SuperAdminAuthorization validates if the user is the super admin.
 func SuperAdminAuthorization(ctx *gin.Context) {
-	_user, exists := ctx.Get("user")
-	user, ok := _user.(*db.User)
+	userCtx, exists := ctx.Get("user")
+	loggedInUser, ok := userCtx.(*db.User)
 	if !exists || !ok {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not set in ctx"})
 		return
 	}
 
-	if *user.Role != "super_admin" {
+	if *loggedInUser.Role != "super_admin" {
 		err := "You are not allowed to view this resource"
 		ctx.Header(`WWW-Authenticate`, fmt.Sprintf(
 			`Bearer realm="Restricted", scope="super_admin", error="insufficient_scope", error_description="%s"`, err,

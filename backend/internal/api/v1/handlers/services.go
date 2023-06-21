@@ -13,8 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// NewService binds to the request body during a post request.
-type NewService struct {
+// ServiceRequest binds to the request body during a post or put request.
+type ServiceRequest struct {
 	// Name is the name of the service.
 	Name *string `json:"name" binding:"required,min=3,max=45"`
 
@@ -29,7 +29,7 @@ type NewService struct {
 }
 
 // validateData checks to make sure the data to be added is valid.
-func (service *NewService) validateData() error {
+func (service *ServiceRequest) validateData() error {
 	if service.Price == nil || service.Price.Sign() < 0 {
 		return errors.New("Price must be set and cannot be a negative value")
 	}
@@ -88,19 +88,19 @@ func GetServiceByID(ctx *gin.Context) {
 	})
 }
 
-// AdminPostServices	Add service
+// AdminPostService	Add service
 //
 //	@Summary	Allows the admin add services to the database
 //	@Tags		admin
 //	@Accept		json
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
-//	@Param		service			body		NewService				true	"Add service"
+//	@Param		service			body		ServiceRequest			true	"Data of the service to add"
 //	@Success	201				{object}	map[string]interface{}	"data, msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services [post]
-func AdminPostServices(ctx *gin.Context) {
+func AdminPostService(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	admin, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -108,7 +108,7 @@ func AdminPostServices(ctx *gin.Context) {
 		return
 	}
 
-	_service := new(NewService)
+	_service := new(ServiceRequest)
 	if err := ctx.ShouldBindJSON(_service); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -141,7 +141,7 @@ func AdminPostServices(ctx *gin.Context) {
 }
 
 // newService fills up the fields for db.Service object.
-func newService(newService *NewService, adminName string, exists bool) *db.Service {
+func newService(newService *ServiceRequest, adminName string, exists bool) *db.Service {
 	service := new(db.Service)
 	service.Name = newService.Name
 	service.Description = newService.Description
@@ -166,7 +166,7 @@ func newService(newService *NewService, adminName string, exists bool) *db.Servi
 	return service
 }
 
-// AdminDeleteServices	Deletes a service
+// AdminDeleteService	Deletes a service
 //
 //	@Summary	Allows admins delete a service from the database
 //	@Tags		admin
@@ -178,7 +178,7 @@ func newService(newService *NewService, adminName string, exists bool) *db.Servi
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services/{service_id} [delete]
-func AdminDeleteServices(ctx *gin.Context) {
+func AdminDeleteService(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	admin, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -205,7 +205,7 @@ func AdminDeleteServices(ctx *gin.Context) {
 	})
 }
 
-// AdminPutServices		Update product
+// AdminPutService		Update product
 //
 //	@Summary	Allows the admin update the service with given service_id
 //	@Tags		admin
@@ -213,12 +213,12 @@ func AdminDeleteServices(ctx *gin.Context) {
 //	@Produce	json
 //	@Param		Authorization	header		string					true	"Bearer <token>"
 //	@Param		service_id		path		string					true	"Service ID to update"
-//	@Param		service			body		NewService				true	"Update service"
+//	@Param		service			body		ServiceRequest			true	"Data of the service to update"
 //	@Success	200				{object}	map[string]interface{}	"data, msg"
 //	@Failure	400				{object}	map[string]interface{}	"error"
 //	@Failure	500				{object}	map[string]interface{}	"error"
 //	@Router		/admin/services/{service_id} [put]
-func AdminPutServices(ctx *gin.Context) {
+func AdminPutService(ctx *gin.Context) {
 	_user, exists := ctx.Get("user")
 	admin, ok := _user.(*db.User)
 	if !exists || !ok {
@@ -226,7 +226,7 @@ func AdminPutServices(ctx *gin.Context) {
 		return
 	}
 
-	_service := new(NewService)
+	_service := new(ServiceRequest)
 	id := ctx.Param("service_id")
 	if id == "" {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
