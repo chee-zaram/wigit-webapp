@@ -3,14 +3,20 @@
 
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
-
+import { useEffect, useState } from 'react';
 const Dashboard = async () => {
     const router = useRouter();
-    let userObj: string = '';
-    if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
-        userObj = sessionStorage.getItem('user')!;
-    }
-    const user: any =  JSON.parse(userObj);
+    
+    const [user, setUser ] = useState<any>('');
+    
+    useEffect(() => {
+        let userObj: string = '';
+        if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
+            userObj = sessionStorage.getItem('user')!;
+        }
+    setUser(JSON.parse(userObj));
+    }, []);
+    
     
     const handleAllOrders = () => {
         router.push('/dashboard/orders');
