@@ -1,14 +1,16 @@
 // sign in page
-"use client";
+
 import SignInForm from '@app/signin/components/SignInForm';
-import { useSignInContext } from '../SignInContextProvider';
+
+export const metadata = {
+  title: 'Wigit Sign in'
+}
 
 const signin = () => {
     // check if user is signed in
-    const { jwt } = useSignInContext();
-    const user: any = window.sessionStorage.getItem('user') ?
-        JSON.parse(window.sessionStorage.getItem('user')) :
-        {};
+    // const user: any = window.sessionStorage.getItem('user') ?
+    //     JSON.parse(window.sessionStorage.getItem('user')) :
+    //     {};
     // const { data, error } = useQuery({ queryKey: ['signInSubmit'], queryFn: handleAxios})
     // console.log(data);
     // async function handleAxios () {

@@ -15,7 +15,7 @@ const AllOrders = async() => {
     const router = useRouter();
     const [ allOrders, setAllOrders ] = useState<string []>([]);
     
-    let jwt: string | null = '';
+    let jwt: string | null = 'not authorized';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
                 jwt = sessionStorage.getItem('jwt');

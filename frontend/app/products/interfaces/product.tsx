@@ -3,7 +3,7 @@
 export interface Product {
     name: string;
     id: string;
-    category: "accessory" | "wavy" | "straight";
+    category: string;
     stock: number;
     description: string;
     price: number;

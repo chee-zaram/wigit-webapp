@@ -6,6 +6,7 @@ import { Product } from '@app/products/interfaces/product';
 import { getProducts } from '@app/products/page';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 const ProductDetails = async ({params}: {params: {product_id: string} }) => {
     const url = 'https://cheezaram.tech/api/v1/products/' + params.product_id;
     let product;

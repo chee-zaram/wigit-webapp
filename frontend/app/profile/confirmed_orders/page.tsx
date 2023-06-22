@@ -15,7 +15,7 @@ const ConfirmedOrders = () => {
     const searchUrl = 'https://cheezaram.tech/api/v1/orders/';
     const urlObj = {url: searchUrl, status: 'paid'};
     
-    let jwt: string | null = '';
+    let jwt: string | null = 'no authorized';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
                 jwt = sessionStorage.getItem('jwt');

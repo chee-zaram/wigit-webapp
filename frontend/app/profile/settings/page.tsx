@@ -13,25 +13,29 @@ const Settings = () => {
     const router = useRouter();
     const [showDelete, setShowDelete] = useState(false);
     const { jwt, setJwt, setIsSignedIn, setRole } = useSignInContext();
-    if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('jwt')) {
+
+    const [ user, setUser ] = useState<any>('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));
         };
-    };
+        let userObj: string = '';
+        if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
+            userObj = sessionStorage.getItem('user')!;
+        }
+        setUser(JSON.parse(userObj, undefined));
+    }, []);
+    
 
-    let userObj: string = '';
     let email = '';
-    let user: any = {};
+    // let user: any = {};
     let headers = {};
     let url = '';
 
-    if (sessionStorage.getItem('user')) {
-        userObj = sessionStorage.getItem('user')!;
-        user =  JSON.parse(userObj, undefined);
-        email = user.email;
-        headers = {'Authorization': 'Bearer ' + jwt};
-        url = 'https://cheezaram.tech/api/v1/users/' + email;
-    }
+    email = user.email;
+    headers = {'Authorization': 'Bearer ' + jwt};
+    url = 'https://cheezaram.tech/api/v1/users/' + email;
 
     const handleShowDelete = () => {
         setShowDelete(currValue => !currValue);
@@ -40,8 +44,6 @@ const Settings = () => {
         try {
             const { status } = await axios.delete(url, {headers: headers});
             if (status == 200) {
-                
-                
                 toast.info('Account deleted!', {
                     position: "top-center",
                     autoClose: 3000,
