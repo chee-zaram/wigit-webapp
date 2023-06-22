@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+  <a href="https://wigit.com.ng"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
   <br/>
   <strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
   <h1>WIG!T Web Application</h1>
@@ -45,7 +45,7 @@ To learn more about the **WIG!T** brand, you can:
 - Know the [founder](https://example.com/founder) and [developers](#developers).
 - Read our [blog post](https://example.com/blog) on the launch of the Web
   Application.
-- Try out [our application](https://example.com/app).
+- Try out [our application](https://wigit.com.ng).
 
 ## Starting the Application
 
@@ -101,7 +101,7 @@ This will start the backend server to listen on all hosts on port `8000`.
 **Gin** will also start in debug mode which should make all routes visible on
 start-up.
 
-### [Frontend](https://github.com/wigit-gh/webapp/blob/main/frontend)
+### [Frontend](/frontend)
 
 For the frontend, the [initial steps](#starting-the-application) are carried out
 on the already configured frontend server in production, or anywhere for testing
@@ -112,10 +112,9 @@ hostname is used in the source code.
 
 - [Node and npm](https://github.com/nvm-sh/nvm)
 
-Next, change directory into the
-[frontend](https://github.com/wigit-gh/webapp/tree/main/frontend) directory
-which is where the frontend source code resides and is the root of the frontend
-built with [Next.js](https://nextjs.org/).
+Next, change directory into the [frontend](/frontend) directory which is where
+the frontend source code resides and is the root of the frontend built with
+[Next.js](https://nextjs.org/).
 
 ```sh
 cd frontend
@@ -226,8 +225,8 @@ application. Their full names, links, and contact information are listed below:
 
 Only members of the software engineering team can contribute to the source code.
 To report bugs and issues, or make feature requests, kindly send us a mail
-through our [support page](https://example.com) or directly at our support email
-support@wigit.com.
+through our [support page](https://wigit.com.ng/contact) or directly at our
+support email support@wigit.com.
 
 ## Related Projects
 
