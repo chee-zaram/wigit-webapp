@@ -53,7 +53,9 @@ export default async function Home() {
         <div className=' flex gap-4 max-w-full overflow-x-scroll'>
           {
             trendingProducts && trendingProducts.map((item: Product) => (
-              < ProductCard { ...item } />
+              <div key={item.id}>
+                < ProductCard { ...item } />
+              </div>
             ))
           }
         </div>

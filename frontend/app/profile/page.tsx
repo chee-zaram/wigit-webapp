@@ -3,24 +3,23 @@
 
 import { useSignInContext } from '@app/SignInContextProvider';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const Profile = () => {
     const { jwt, setJwt } = useSignInContext();
+    const router = useRouter();
+    const [ user, setUser ] = useState<any>('');
 
-    if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('jwt')) {
+    useEffect(() => {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));
         };
-    };
-    // const headers = {'Authorization': 'Bearer ' + jwt};
     let userObj: string = '';
-    let user: any = {};
-    if (sessionStorage.getItem('user')) {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
         userObj = sessionStorage.getItem('user')!;
-        user =  JSON.parse(userObj, undefined);
     }
-    const router = useRouter();
+    setUser(JSON.parse(userObj, undefined));
+    }, []);
     
     const handleAllOrders = () => {
         router.push('/profile/all_orders');

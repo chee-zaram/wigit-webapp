@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSignInContext } from '@app/SignInContextProvider';
 import Input from '@components/Input';
 import Button from '@components/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,11 +13,19 @@ import { ToastContainer, toast } from 'react-toastify';
 
 const ProfilePage = () => {
     const { jwt, setJwt } = useSignInContext();
-    if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('jwt')) {
+    const [ user, setUser ] = useState<any>('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('jwt')) {
             setJwt(sessionStorage.getItem('jwt'));
         };
-    };
+    let userObj: string = '';
+    if (typeof window !== 'undefined' && sessionStorage.getItem('user')) {
+        userObj = sessionStorage.getItem('user')!;
+    }
+    setUser(JSON.parse(userObj, undefined));
+    }, []);
+    
     const headers = {'Authorization': 'Bearer ' + jwt};
     const [ editProfile, setEditProfile ] = useState(false);
     const [ firstName, setFirstName ] = useState('');
@@ -29,11 +37,7 @@ const ProfilePage = () => {
     const [ confirmPassword, setConfirmPassword ] = useState('');
     const [ passwordInput, setPasswordInput] = useState(false);
     
-    let userObj: string = '';
-    if (sessionStorage.getItem('user')) {
-        userObj = sessionStorage.getItem('user')!;
-    }
-    const user: any =  JSON.parse(userObj, undefined);
+    
     const email = user.email;
     const userData = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
     const url = 'https://cheezaram.tech/api/v1/users/' + email;
