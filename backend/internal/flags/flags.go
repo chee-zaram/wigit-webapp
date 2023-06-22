@@ -10,16 +10,16 @@ import (
 
 // usage prints out a usage message when wrong flags or values are passed to the program.
 func usage() {
-	fmt.Print(`
+	fmt.Fprintf(os.Stderr, `
 This executable runs the WIG!T Web Application backend.
 
 Usage:
 
-wwapp_be [arguments]
+  wwapp_be [flags] [arguments]
 
-Supported arguments:
+Supported flags are:
 
-`)
+`[1:])
 	flag.PrintDefaults()
 	os.Exit(1)
 }
