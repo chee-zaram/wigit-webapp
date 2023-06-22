@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://wigit.com.gh"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+  <a href="https://wigit.com.ng"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
   <br/>
   <strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
   <h1>WIG!T Web Application</h1>
@@ -41,11 +41,11 @@ informed and reassured every step of the way.
 
 To learn more about the **WIG!T** brand, you can:
 
-- Visit the [landing page](https://example.com).
-- Know the [founder](https://example.com/founder) and [developers](#developers).
-- Read our [blog post](https://example.com/blog) on the launch of the Web
+- Visit the [landing page](https://wigit.com.ng).
+- Know the [founder](https://wigit.com.ng) and [developers](#developers).
+- Read our [blog post](https://wigit.com.ng) on the launch of the Web
   Application.
-- Try out [our application](https://example.com/app).
+- Try out [our application](https://wigit.com.ng).
 
 ## Starting the Application
 
@@ -67,7 +67,7 @@ changing working directory into the application directory:
 cd wigit-webapp
 ```
 
-### [Backend](https://github.com/wigit-gh/webapp/blob/main/backend)
+### [Backend](/backend)
 
 The backend is written in [Go Programming Language](https://go.dev/) and uses
 the [Gin Web Framework](https://gin-gonic.com/). Server configurations will be
@@ -101,7 +101,7 @@ This will start the backend server to listen on all hosts on port `8000`.
 **Gin** will also start in debug mode which should make all routes visible on
 start-up.
 
-### [Frontend](https://github.com/wigit-gh/webapp/blob/main/frontend)
+### [Frontend](/frontend)
 
 For the frontend, the [initial steps](#starting-the-application) are carried out
 on the already configured frontend server in production, or anywhere for testing
@@ -112,10 +112,9 @@ hostname is used in the source code.
 
 - [Node and npm](https://github.com/nvm-sh/nvm)
 
-Next, change directory into the
-[frontend](https://github.com/wigit-gh/webapp/tree/main/frontend) directory
-which is where the frontend source code resides and is the root of the frontend
-built with [Next.js](https://nextjs.org/).
+Next, change directory into the [frontend](/frontend) directory which is where
+the frontend source code resides and is the root of the frontend built with
+[Next.js](https://nextjs.org/).
 
 ```sh
 cd frontend
@@ -226,8 +225,8 @@ application. Their full names, links, and contact information are listed below:
 
 Only members of the software engineering team can contribute to the source code.
 To report bugs and issues, or make feature requests, kindly send us a mail
-through our [support page](https://example.com) or directly at our support email
-support@wigit.com.
+through our [support page](https://wigit.com.ng/contact) or directly at our
+support email support@wigit.com.
 
 ## Related Projects
 
@@ -238,11 +237,12 @@ Some project similar to ours include:
 
 ## Licensing
 
+Copyright (c) 2023, WIG!T. All Rights Reserved
+
 The code in this repository is not provided under an open source license. It is
-solely intended for internal use within **WIG!T** as is stated in the
-[LICENSE](https://github.com/wigit-gh/webapp/blob/main/LICENSE) file. If you
-wish to use this code or incorporate it into your own projects, please contact
-support@wigit.com to discuss licensing and obtain permission.
+solely intended for internal use within **WIG!T**. If you wish to use this code
+or incorporate it into your own projects, please contact support@wigit.com to
+discuss licensing and obtain permission.
 
 [workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
 [report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
