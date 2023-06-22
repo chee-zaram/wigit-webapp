@@ -20,6 +20,7 @@ export default function RootLayout({
   return (
       <html lang="en">
         <head>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
           <script src="https://kit.fontawesome.com/40485fe37e.js" crossOrigin="anonymous"></script>
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
         </head>
