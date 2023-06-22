@@ -81,7 +81,50 @@ body {
     background-size: cover;
     background-position: center;
 }
-
+.section_group {
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.919), rgba(0, 0, 0, 0.329));
+    font-weight: bold;
+    text-transform: capitalize;
+    letter-spacing: 3px;
+    width: 100%;
+    height: 100%;
+    color: var(--light-color);
+}
+.section_group:hover {
+    background-image: none;
+    border: 2px solid var(--accent-color);
+}
+.outer_group {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.wigs {
+    background-image: url('../public/assets/images/products_card.jpg');
+}
+.accessories {
+    background-image: url('../public/assets/images/accessories_card.jpg');
+}
+.services {
+    background-image: url('../public/assets/images/service_card.jpg');
+}
+.about {
+    background-image: url('../public/assets/images/pexels-brian-jr-asare-13221796.jpg');
+}
+.inner_group_text {
+    opacity: 0;
+    transition: all 700ms ease;
+    width: 100%;
+    height: 100%;
+    padding: 0.3rem;
+    text-align: center;
+    transform: translateY(-20%);
+    background-color: var(--dark-color)/70;
+}
+.inner_group_text:hover {
+    opacity: 1;
+    transform: translateY(50%);
+}
 .cart_signin, .logout, .no_orders_bg, .empty_cart {
     background-repeat: no-repeat;
     background-size: contain;

@@ -60,12 +60,44 @@ export default async function Home() {
           }
         </div>
       </section>
-      <section className=' group row-span-4 home_section grid grid-rows-4 gap-4 grid-cols-4' >
+      <section className='group capitalize row-span-4 home_section grid grid-rows-4 gap-4 grid-cols-4' >
 
-          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-400'>accessories</div>
-          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-500'>our services</div>
-          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-500'>view events</div>
-          <div className='group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section bg-gray-700'>newsletter?? omo!!</div>
+          <div className='wigs outer_group group-hover:blur  group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section '>
+            <div className='section_group'>
+              <div className='inner_group_text'>
+                <h3 className='text-2xl'>Our wigs</h3>
+                <p className='text-xs'>Experience luxury when you wear wigit</p>
+                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>shop now</button>
+              </div>
+            </div>
+          </div>
+          <div className='services outer_group group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section'>
+            <div className='section_group'>
+              <div className='inner_group_text'>
+                <h3 className='text-2xl'>Our services</h3>
+                <p className='text-xs'>Let us show you what real pampering is</p>
+                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>Book now</button>
+              </div>
+            </div>
+          </div>
+          <div className='accessories outer_group group-hover:blur  group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section'>
+            <div className='section_group'>
+              <div className='inner_group_text'>
+                <h3 className='text-2xl'>accessories</h3>
+                <p className='text-xs'>Gentle care tools to keep your wigs alive</p>
+                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>View tools</button>
+              </div>
+            </div>
+          </div>
+          <div className='about outer_group group-hover:blur group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section'>
+            <div className='section_group'>
+              <div className='inner_group_text'>
+                <h3 className='text-2xl'>About us</h3>
+                <p className='text-xs text-dark_bg'>We are so much more than this box can take</p>
+                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>know us</button>
+              </div>
+            </div>
+          </div>
       </section>
       <ToastContainer />
     </main>
