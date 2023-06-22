@@ -2,7 +2,7 @@
 "use client";
 
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Input from '@components/Input';
 import Button from '@components/Button';
 import Link from 'next/link';
@@ -19,11 +19,12 @@ const AddProduct = () => {
     const [stock, setStock ] = useState(0);
     const [category, setCategory ] = useState('');
     const [imageUrl, setImageUrl ] = useState('');
+    const [id, setId ] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const baseUrl = 'https://cheezaram.tech/api/v1/admin';
         
-        let jwt: string | null = '';
+        let jwt: string | null = 'not authorized';
         if (typeof window !== 'undefined') {
             if (sessionStorage.getItem('jwt')) {
                 jwt = sessionStorage.getItem('jwt');
@@ -65,7 +66,8 @@ const AddProduct = () => {
             image_url: imageUrl,
             name,
             price,
-            stock
+            stock,
+            id
         };
         try {
             const { status } = await axios.post(baseUrl + '/products', productData, {headers: headers});
