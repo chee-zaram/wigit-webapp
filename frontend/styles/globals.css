@@ -67,6 +67,9 @@ body {
     background-size: cover;
     background-position: center;
 }
+.header_wrap {
+    background-image: linear-gradient(to right, #E0DEDD, #dfb428);
+}
 .home_trending {
     background-image: url('../public/assets/images/textured_bg.png');
     /* background-attachment: fixed; */

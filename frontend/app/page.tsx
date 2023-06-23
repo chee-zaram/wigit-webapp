@@ -6,18 +6,20 @@ import { Product } from '@app/products/interfaces/product';
 import ProductCard from '@app/products/components/ProductCard';
 import Link from 'next/link';
 import { ToastContainer } from 'react-toastify';
+import ProductSearchBox from '@components/ProductSearchBox';
 
 
 export default async function Home() {
-  
+  const url = "https://cheezaram.tech/api/v1/products";
   const trendingUrl = "https://cheezaram.tech/api/v1/products/categories/trending";
   const trendingProducts = await getProducts(trendingUrl); 
+  const searchObj = {url, tag: 'name'};
   
   return (
     <main className='home_page grid max-w-[100vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
-      <section className='flexbox row-span-2 home_section bg-[#E0DEDD]'>
-        <div className='home_header flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
-          <div className='bg-[#E0DEDD]'>
+      <section className='flexbox home_header header_wrap row-span-2 home_section'>
+        <div className=' flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
+          <div className=''>
             <Image
             src={ headerImage }
             alt='girl on afro, smiling'
@@ -34,17 +36,14 @@ export default async function Home() {
       </section>
       <section className='row-span-1 home_section'>
         <div className='flexbox_row gap-2 md:gap-4 p-4 md:p-8'>
-          <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>straight<i className='btn_icon mr-1'></i></button>
-          <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>wavy<i className='btn_icon mr-1'></i></button>
-          <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>accessory<i className='btn_icon mr-1'></i></button>
-          <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>trending<i className='btn_icon mr-1'></i></button>
+          <Link href={'/straight'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>straight<i className='btn_icon mr-1'></i></button></Link>
+          <Link href={'/wavy'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>wavy<i className='btn_icon mr-1'></i></button></Link>
+          <Link href={'/accessories'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>accessory<i className='btn_icon mr-1'></i></button></Link>
+          <Link href={'/'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>trending<i className='btn_icon mr-1'></i></button></Link>
           <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>cheap<i className='btn_icon mr-1'></i></button>
           <button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>luxury<i className='btn_icon mr-1'></i></button>
         </div>
-        <div className='flex flex-nowrap rounded-full overflow-hidden shadow max-w-[70px] bg-green-200'>
-          <input type='text' placeholder='search' className='outline-accent px-4 bg-slate-100' />
-          <button className='w-max'>search</button>
-        </div>
+        <ProductSearchBox { ...searchObj} />
       </section>
       <section className='flexbox max-w-[100vw] home_trending p-4 md:p-10 row-span-3 home_section  bg-accent/80' >
         <div className='mb-6'>
