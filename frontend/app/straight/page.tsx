@@ -6,7 +6,6 @@
 import { getProducts } from '@app/products/page';
 import { Product } from '@app/products/interfaces/product';
 import ProductCard from '@app/products/components/ProductCard';
-import Link from 'next/link';
 import { ToastContainer } from 'react-toastify';
 import BackButton from '@components/BackButton';
 
@@ -22,8 +21,8 @@ const Straight = async () => {
             <div>
                 <h3 className='border-b border-accent text-2xl font-bold text-dark_bg/80 mb-4'>straight</h3>
             </div>
-            <div className='max-w-[80vw] mx-auto'>
-                <div className=' flex justify-center gap-4 p-4'>
+            <div className='max-w-[100vw] mx-auto'>
+                <div className=' flex justify-center flex-wrap max-w-full gap-4 p-4'>
                 {
                 straightProducts && straightProducts.map((item: Product) => (
                   <div key={item.id}>

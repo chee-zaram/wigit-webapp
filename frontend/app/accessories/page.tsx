@@ -19,8 +19,8 @@ const Accessories = async () => {
             <div>
                 <h3 className='border-b border-accent text-2xl font-bold text-dark_bg/80 mb-4'>Accessories</h3>
             </div>
-            <div className='max-w-[80vw] mx-auto'>
-                <div className=' flex justify-center gap-4 p-4'>
+            <div className='max-w-[100vw] mx-auto'>
+                <div className=' flex justify-center flex-wrap max-w-full gap-4 p-4'>
                 {
                 accessoryProducts && accessoryProducts.map((item: Product) => (
                   <div key={item.id}>
