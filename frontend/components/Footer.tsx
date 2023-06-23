@@ -6,7 +6,7 @@ import Socials from "@components/Socials";
 
 const Footer = () => (
     <footer className='px-8 footer min-h-[40vh] mt-8 max-w-[100vw] text-light_bg/50 text-xs'>
-        <section className='flex flex-col md:flex-row justify-center md:justify-between flex-wrap gap-6 py-4 items-center'>
+        <section className='flex flex-col md:flex-row justify-center md:justify-center flex-wrap gap-6 md:gap-10 py-4 w-full items-center'>
             <Feedback />
             <UsefulLinks />
             <Socials />
