@@ -2,8 +2,8 @@
 import Image from 'next/image';
 import headerImage from '@/public/assets/images/afro_girl.png';
 import { getProducts } from '@app/products/page';
-import { Product } from './products/interfaces/product';
-import ProductCard from './products/components/ProductCard';
+import { Product } from '@app/products/interfaces/product';
+import ProductCard from '@app/products/components/ProductCard';
 import Link from 'next/link';
 import { ToastContainer } from 'react-toastify';
 
@@ -61,13 +61,12 @@ export default async function Home() {
         </div>
       </section>
       <section className='group capitalize row-span-4 home_section grid grid-rows-4 gap-4 grid-cols-4' >
-
           <div className='wigs outer_group group-hover:blur  group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section '>
             <div className='section_group'>
               <div className='inner_group_text'>
                 <h3 className='text-2xl'>Our wigs</h3>
                 <p className='text-xs'>Experience luxury when you wear wigit</p>
-                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>shop now</button>
+                <Link href={'/products'}><button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>shop now</button></Link>
               </div>
             </div>
           </div>
@@ -76,7 +75,7 @@ export default async function Home() {
               <div className='inner_group_text'>
                 <h3 className='text-2xl'>Our services</h3>
                 <p className='text-xs'>Let us show you what real pampering is</p>
-                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>Book now</button>
+                <Link href={'/services'}><button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>Book now</button></Link>
               </div>
             </div>
           </div>
@@ -85,7 +84,7 @@ export default async function Home() {
               <div className='inner_group_text'>
                 <h3 className='text-2xl'>accessories</h3>
                 <p className='text-xs'>Gentle care tools to keep your wigs alive</p>
-                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>View tools</button>
+                <Link href={'/accessories'}><button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>View tools</button></Link>
               </div>
             </div>
           </div>
@@ -94,7 +93,7 @@ export default async function Home() {
               <div className='inner_group_text'>
                 <h3 className='text-2xl'>About us</h3>
                 <p className='text-xs text-dark_bg'>We are so much more than this box can take</p>
-                <button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>know us</button>
+                <Link href={'/about'}><button className='py-2 px-6 border mt-1 hover:scale-105 duration-300 text-dark_bg/70 hover:underline border-accent bg-light_bg'>know us</button></Link>
               </div>
             </div>
           </div>
