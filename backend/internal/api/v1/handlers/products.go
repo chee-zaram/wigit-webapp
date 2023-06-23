@@ -146,7 +146,7 @@ func GetProductsByCategory(ctx *gin.Context) {
 		return
 	}
 
-	products, err := db.ProductCategory(category)
+	products, err := db.GetProductsByCategory(category)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return

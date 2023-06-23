@@ -84,8 +84,8 @@ func TrendingProducts(items []Item) ([]Product, error) {
 	return products, nil
 }
 
-// ProductCategory gets all the products belonging to the given category.
-func ProductCategory(category string) ([]Product, error) {
+// GetProductsByCategory gets all the products belonging to the given category.
+func GetProductsByCategory(category string) ([]Product, error) {
 	var products []Product
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
