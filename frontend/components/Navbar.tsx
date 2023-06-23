@@ -21,8 +21,15 @@ const handleMobileNav = () => {
 };
 
   return (
-    <header id='header' className='mb-10'>
+    <header id='header' className='mb-2'>
         <Logo />
+        <div className='capitalize text-accent hover:underline absolute top-4 right-[100px] inline md:hidden'>
+          {
+            isSignedIn == false ?
+            <Link href='/signin'>Sign In</Link> :
+            <Link href='/signout'>Sign Out</Link>
+          }
+          </div>
         <nav id="navbar" className="flex px-4 gap-2 mr-4">
         <Link className='nav_link font-thin' href='/'>Home</Link>
         {
