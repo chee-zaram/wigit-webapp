@@ -16,7 +16,7 @@ export default async function Home() {
   const searchObj = {url, tag: 'name'};
   
   return (
-    <main className='home_page grid max-w-[100vw] mx-auto grid-rows-[repeat(10,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
+    <main className='home_page grid max-w-[100vw] mx-auto grid-rows-[repeat(14,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
       <section className='flexbox home_header header_wrap row-span-2 home_section'>
         <div className=' flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
           <div className=''>
@@ -59,7 +59,7 @@ export default async function Home() {
           }
         </div>
       </section>
-      <section className='group capitalize row-span-4 home_section grid grid-rows-4 gap-4 grid-cols-4' >
+      <section className='group capitalize row-[span_8_/_span_8] home_section grid grid-rows-4 gap-4 grid-cols-4' >
           <div className='wigs outer_group group-hover:blur  group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section '>
             <div className='section_group'>
               <div className='inner_group_text'>
