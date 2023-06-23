@@ -128,7 +128,7 @@ body {
     opacity: 1;
     transform: translateY(50%);
 }
-.cart_signin, .logout, .no_orders_bg, .empty_cart {
+.cart_signin, .logout, .no_orders_bg, .empty_cart, .not_found {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: bottom;
@@ -144,6 +144,9 @@ body {
 }
 .no_orders_bg {
     background-image: url('../public/assets/images/undraw_empty_cart_co35.svg');
+}
+.not_found {
+    background-image: url('../public/assets/images/undraw_by_the_road_re_vvs7.svg');
 }
 .overlay {
     width: 100%;
