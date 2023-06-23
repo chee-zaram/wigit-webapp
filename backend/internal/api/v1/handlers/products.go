@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -79,6 +80,35 @@ func GetProductByID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": product,
+	})
+}
+
+// GetProductsByName	Get products with the given substring in name.
+//
+//	@Summary	Retrieves a list of all products in given substring `name` in their name.
+//	@Tags		products
+//	@Produce	json
+//	@Param		name	path		string					true	"The name to search for"
+//	@Success	200		{object}	map[string]interface{}	"data"
+//	@Failure	400		{object}	map[string]interface{}	"error"
+//	@Failure	500		{object}	map[string]interface{}	"error"
+//	@Router		/products/search/{name} [get]
+func GetProductsByName(ctx *gin.Context) {
+	name := ctx.Param("name")
+	if name == "" {
+		AbortCtx(ctx, http.StatusBadRequest, errors.New("Product name not set in cxt"))
+		return
+	}
+
+	name = strings.ToLower(name)
+	products, err := db.GetProductsByName(name)
+	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, errors.New("Failed to get products by name"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": products,
 	})
 }
 

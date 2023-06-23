@@ -1263,6 +1263,36 @@ paths:
       summary: Retrieves a list of all products in given category
       tags:
       - products
+  /products/search/{name}:
+    get:
+      parameters:
+      - description: The name to search for
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: data
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieves a list of all products in given substring `name` in their
+        name.
+      tags:
+      - products
   /reset_password:
     post:
       consumes:

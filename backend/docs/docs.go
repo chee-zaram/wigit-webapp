@@ -1501,6 +1501,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/products/search/{name}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Retrieves a list of all products in given substring ` + "`" + `name` + "`" + ` in their name.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The name to search for",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/products/{product_id}": {
             "get": {
                 "produces": [
