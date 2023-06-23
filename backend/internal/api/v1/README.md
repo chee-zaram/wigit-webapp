@@ -37,6 +37,12 @@ where applicable, as well as response codes and types.
     the given category.
     On failure, it will return a <b>400</b> or <b>500</b> response code and an <b>error</b> string in the payload.
     </li>
+    <li><h4>/products/search/{name}</h4>
+    Get all products in a given substring `name` in their name. The search is case insensitive.
+    On success, it will return a <b>200</b> response code with a <b>data</b> object in the payload. This will be a list of all product objects with
+    the given substring `name`.
+    On failure, it will return a <b>400</b> or <b>500</b> response code and an <b>error</b> string in the payload.
+    </li>
     <li><h4>/cart *</h4>
     Get all items in the user's cart.
     On success, it will return a <b>200</b> response code with a <b>data</b> object in the payload. This will be a list of all item objects in

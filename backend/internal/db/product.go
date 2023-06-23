@@ -84,8 +84,8 @@ func TrendingProducts(items []Item) ([]Product, error) {
 	return products, nil
 }
 
-// ProductCategory gets all the products belonging to the given category.
-func ProductCategory(category string) ([]Product, error) {
+// GetProductsByCategory gets all the products belonging to the given category.
+func GetProductsByCategory(category string) ([]Product, error) {
 	var products []Product
 
 	if err := Connector.Query(func(tx *gorm.DB) error {
@@ -106,4 +106,22 @@ func DeleteProduct(id string) error {
 	}
 
 	return nil
+}
+
+// GetProductsByName gets all products in the database containing the substring
+// `name` using a case insensitive search.
+func GetProductsByName(name string) ([]Product, error) {
+	var products []Product
+
+	if err := Connector.Query(func(tx *gorm.DB) error {
+		// This insensitive search is dependent on the character set the database
+		// is configured in, in this case `utf8mb4`.
+		return tx.
+			Where("name COLLATE utf8mb4_general_ci LIKE ?", "%"+name+"%").
+			Order("name").
+			Find(&products).Error
+	}); err != nil {
+		return nil, err
+	}
+	return products, nil
 }
