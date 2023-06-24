@@ -23,6 +23,21 @@ type NewUserDetails struct {
 	Phone          *string `json:"phone" binding:"required,min=8,max=11"`
 }
 
+// cleanUp trims all leading and trailing white-spaces from the input data.
+func (newUserDetails *NewUserDetails) cleanUp() {
+	if newUserDetails == nil {
+		return
+	}
+
+	*newUserDetails.Email = strings.TrimSpace(*newUserDetails.Email)
+	*newUserDetails.Password = strings.TrimSpace(*newUserDetails.Password)
+	*newUserDetails.RepeatPassword = strings.TrimSpace(*newUserDetails.RepeatPassword)
+	*newUserDetails.FirstName = strings.TrimSpace(*newUserDetails.FirstName)
+	*newUserDetails.LastName = strings.TrimSpace(*newUserDetails.LastName)
+	*newUserDetails.Address = strings.TrimSpace(*newUserDetails.Address)
+	*newUserDetails.Phone = strings.TrimSpace(*newUserDetails.Phone)
+}
+
 // validate validates all fields in the post request.
 func (user *NewUserDetails) validate() (int, error) {
 	if user == nil {
@@ -54,6 +69,7 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 
+	newUserDetails.cleanUp()
 	if code, err := newUserDetails.validate(); err != nil {
 		AbortCtx(ctx, code, err)
 		return
@@ -83,6 +99,7 @@ func SignUp(ctx *gin.Context) {
 // It returns a new user object, a status code, and an error if any.
 func newUser(newUserDetails *NewUserDetails) (*db.User, int, error) {
 	user := new(db.User)
+
 	user.Email = newUserDetails.Email
 	user.Password = newUserDetails.Password
 	user.RepeatPassword = newUserDetails.RepeatPassword
