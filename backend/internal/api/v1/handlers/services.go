@@ -28,6 +28,16 @@ type ServiceRequest struct {
 	Available *bool `json:"available" binding:"required"`
 }
 
+// cleanUp removes all leading and trailing whitespace from the data.
+func (s *ServiceRequest) cleanUp() {
+	if s == nil {
+		return
+	}
+
+	*s.Name = strings.TrimSpace(*s.Name)
+	*s.Description = strings.TrimSpace(*s.Description)
+}
+
 // validateData checks to make sure the data to be added is valid.
 func (service *ServiceRequest) validateData() error {
 	if service.Price == nil || service.Price.Sign() < 0 {
@@ -114,6 +124,7 @@ func AdminPostService(ctx *gin.Context) {
 		return
 	}
 
+	_service.cleanUp()
 	if err := _service.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -238,6 +249,7 @@ func AdminPutService(ctx *gin.Context) {
 		return
 	}
 
+	_service.cleanUp()
 	if err := _service.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
