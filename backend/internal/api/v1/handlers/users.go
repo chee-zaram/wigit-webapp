@@ -3,18 +3,31 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
-// UpdateUser binds to the request sent to update a user's information.
+// UpdateUser binds to the request body sent to update a user's information.
 type UpdateUser struct {
-	Email     *string `json:"email" binding:"required,email,min=5,max=45"`
+	Email     *string `json:"email" binding:"required,email,max=45"`
 	Phone     *string `json:"phone" binding:"required,min=8,max=11"`
 	Address   *string `json:"address" binding:"required,max=255"`
 	FirstName *string `json:"first_name" binding:"required,max=45"`
 	LastName  *string `json:"last_name" binding:"required,max=45"`
+}
+
+// cleanUp removes whitespaces from the request body.
+func (user *UpdateUser) cleanUp() {
+	if user == nil {
+		return
+	}
+
+	*user.Phone = strings.TrimSpace(*user.Phone)
+	*user.Address = strings.TrimSpace(*user.Address)
+	*user.FirstName = strings.TrimSpace(*user.FirstName)
+	*user.LastName = strings.TrimSpace(*user.LastName)
 }
 
 // CustomerDeleteUser Deletes the current user from the database.
@@ -85,6 +98,7 @@ func CustomerPutUser(ctx *gin.Context) {
 		return
 	}
 
+	newUser.cleanUp()
 	if err := user.UpdateInfo(
 		*newUser.Email,
 		*newUser.Address,
