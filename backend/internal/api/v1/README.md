@@ -150,7 +150,7 @@ where applicable, as well as response codes and types.
       <li><strong>first_name</strong>: The user's first name. Not more than 45 characters.</li>
       <li><strong>last_name</strong>: The user's last name. Not more than 45 characters.</li>
       <li><strong>address</strong>: The user's address. Not more than 255 characters.</li>
-      <li><strong>phone</strong>: The user's phone number. Between 9 and 11 characters.</li>
+      <li><strong>phone</strong>: The user's phone number. Between 8 and 11 characters.</li>
     </ul>
     On success, it will return a <b>201</b> response code with a <b>jwt</b> string and a <b>msg</b> string in the payload.
     On failure, it will return a <b>400</b> or <b>500</b> response code, and an <b>error</b> string in the payload.
