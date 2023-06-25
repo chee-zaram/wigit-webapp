@@ -123,7 +123,7 @@ func CustomerPostBooking(ctx *gin.Context) {
 	}
 
 	booking := newBooking(bookingRequest)
-	// Set teh booking amount to the price of the service
+	// Set the booking amount to the price of the service
 	booking.Amount = service.Price
 	// Add the new booking to the customer's bookings history
 	loggedInUser.Bookings = append(loggedInUser.Bookings, *booking)
