@@ -23,6 +23,18 @@ type ProductRequest struct {
 	ImageURL    *string          `json:"image_url" binding:"required,min=3,max=255"`
 }
 
+// cleanUp removes all leading and trailing spaces from the data string fields.
+func (p *ProductRequest) cleanUp() {
+	if p == nil {
+		return
+	}
+
+	*p.Name = strings.TrimSpace(*p.Name)
+	*p.Description = strings.TrimSpace(*p.Description)
+	*p.Category = strings.TrimSpace(*p.Category)
+	*p.ImageURL = strings.TrimSpace(*p.ImageURL)
+}
+
 // validateData validates the fields provided in the json body during when adding new product.
 func (product *ProductRequest) validateData() error {
 	if product.Price == nil || product.Price.Sign() < 0 {
@@ -183,6 +195,7 @@ func AdminPostProduct(ctx *gin.Context) {
 		return
 	}
 
+	productRequest.cleanUp()
 	if err := productRequest.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
@@ -298,6 +311,7 @@ func AdminPutProduct(ctx *gin.Context) {
 		return
 	}
 
+	productRequest.cleanUp()
 	if err := productRequest.validateData(); err != nil {
 		AbortCtx(ctx, http.StatusBadRequest, err)
 		return
