@@ -2299,12 +2299,12 @@ const docTemplate = `{
                 "first_name": {
                     "type": "string",
                     "maxLength": 45,
-                    "minLength": 3
+                    "minLength": 1
                 },
                 "last_name": {
                     "type": "string",
                     "maxLength": 45,
-                    "minLength": 3
+                    "minLength": 1
                 },
                 "password": {
                     "type": "string",
@@ -2348,8 +2348,7 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string",
-                    "maxLength": 45,
-                    "minLength": 5
+                    "maxLength": 45
                 }
             }
         },
@@ -2403,8 +2402,7 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string",
-                    "maxLength": 45,
-                    "minLength": 5
+                    "maxLength": 45
                 },
                 "new_password": {
                     "type": "string",
@@ -2490,8 +2488,7 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string",
-                    "maxLength": 45,
-                    "minLength": 5
+                    "maxLength": 45
                 },
                 "first_name": {
                     "type": "string",

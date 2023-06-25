@@ -36,11 +36,11 @@ definitions:
         type: string
       first_name:
         maxLength: 45
-        minLength: 3
+        minLength: 1
         type: string
       last_name:
         maxLength: 45
-        minLength: 3
+        minLength: 1
         type: string
       password:
         maxLength: 45
@@ -83,7 +83,6 @@ definitions:
     properties:
       email:
         maxLength: 45
-        minLength: 5
         type: string
     required:
     - email
@@ -122,7 +121,6 @@ definitions:
     properties:
       email:
         maxLength: 45
-        minLength: 5
         type: string
       new_password:
         maxLength: 45
@@ -188,7 +186,6 @@ definitions:
         type: string
       email:
         maxLength: 45
-        minLength: 5
         type: string
       first_name:
         maxLength: 45
