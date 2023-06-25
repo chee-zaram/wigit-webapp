@@ -14,8 +14,8 @@ import (
 
 // NewUserDetails binds to a user during signup.
 type NewUserDetails struct {
-	FirstName      *string `json:"first_name" binding:"required,min=3,max=45"`
-	LastName       *string `json:"last_name" binding:"required,min=3,max=45"`
+	FirstName      *string `json:"first_name" binding:"required,min=1,max=45"`
+	LastName       *string `json:"last_name" binding:"required,min=1,max=45"`
 	Email          *string `json:"email" binding:"required,email,min=5,max=45"`
 	Password       *string `json:"password" binding:"required,min=8,max=45"`
 	RepeatPassword *string `json:"repeat_password" binding:"required,min=8,max=45"`
