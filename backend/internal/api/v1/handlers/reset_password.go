@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/backend/internal/db"
@@ -11,15 +12,26 @@ import (
 
 // ResetPasswordRequest is used to obtain the post and put data during password reset.
 type ResetPasswordRequest struct {
-	Email             string `json:"email" binding:"required,email,min=5,max=45"`
+	Email             string `json:"email" binding:"required,email,max=45"`
 	NewPassword       string `json:"new_password" binding:"required,min=8,max=45"`
 	RepeatNewPassword string `json:"repeat_new_password" binding:"required,min=8,max=45"`
 	ResetToken        string `json:"reset_token" binding:"required"`
 }
 
+// cleanUp removes all leading and trailing whitespace from a string fields.
+func (r *ResetPasswordRequest) cleanUp() {
+	if r == nil {
+		return
+	}
+
+	r.NewPassword = strings.TrimSpace(r.NewPassword)
+	r.RepeatNewPassword = strings.TrimSpace(r.RepeatNewPassword)
+	r.ResetToken = strings.TrimSpace(r.ResetToken)
+}
+
 // PostEmail binds to the post request body made to the `reset_password` endpoint.
 type PostEmail struct {
-	Email string `json:"email" binding:"required,email,min=5,max=45"`
+	Email string `json:"email" binding:"required,email,max=45"`
 }
 
 // PostResetPassword Sends a request for a password update
@@ -111,6 +123,7 @@ func validateResetPasswordData(ctx *gin.Context) (*db.User, int, error) {
 		return nil, http.StatusBadRequest, errors.New("Failed to bind to ResetPasswordRequest")
 	}
 
+	resetPasswordRequest.cleanUp()
 	user := new(db.User)
 	if code, err := user.LoadByEmail(resetPasswordRequest.Email); err != nil {
 		return nil, code, err
