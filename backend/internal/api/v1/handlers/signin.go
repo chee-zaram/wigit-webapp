@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wigit-gh/webapp/backend/internal/api/v1/middlewares"
@@ -13,6 +14,16 @@ import (
 type UserCredentials struct {
 	Email    *string `json:"email" binding:"required,email,min=3,max=45"`
 	Password *string `json:"password" binding:"required,min=8,max=45"`
+}
+
+// cleanUp removes all leading and tailing spaces from the credentials.
+func (user *UserCredentials) cleanUp() {
+	if user == nil {
+		return
+	}
+
+	*user.Email = strings.TrimSpace(*user.Email)
+	*user.Password = strings.TrimSpace(*user.Password)
 }
 
 // SignIn		Sign a user in
@@ -33,6 +44,7 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
+	userCredentials.cleanUp()
 	user, code, err := verifyUserCredentials(userCredentials)
 	if err != nil {
 		AbortCtx(ctx, code, err)
