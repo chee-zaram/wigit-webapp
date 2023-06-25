@@ -26,6 +26,32 @@ func (user *UserCredentials) cleanUp() {
 	*user.Password = strings.TrimSpace(*user.Password)
 }
 
+// verify loads user from database and validates the user credentials.
+//
+// It returns the user from the database and the code and error if any.
+func (user *UserCredentials) verify() (*db.User, int, error) {
+	// Get user with Email from the database.
+	dbUser := new(db.User)
+	if code, err := dbUser.LoadByEmail(*user.Email); err != nil {
+		return nil, code, err
+	}
+
+	if err := user.validatePassword(dbUser); err != nil {
+		return nil, http.StatusBadRequest, err
+	}
+
+	return dbUser, http.StatusOK, nil
+}
+
+// validatePassword verifies the user's password.
+func (user *UserCredentials) validatePassword(dbUser *db.User) error {
+	salted := append([]byte(*user.Password), dbUser.Salt...)
+	if err := bcrypt.CompareHashAndPassword(dbUser.HashedPassword, salted); err != nil {
+		return ErrInvalidPass
+	}
+	return nil
+}
+
 // SignIn		Sign a user in
 //
 //	@Summary	Authenticate a user and generate a JWT.
@@ -45,7 +71,7 @@ func SignIn(ctx *gin.Context) {
 	}
 
 	userCredentials.cleanUp()
-	user, code, err := verifyUserCredentials(userCredentials)
+	user, code, err := userCredentials.verify()
 	if err != nil {
 		AbortCtx(ctx, code, err)
 		return
@@ -56,30 +82,4 @@ func SignIn(ctx *gin.Context) {
 		"user": user,
 		"jwt":  middlewares.CreateJWT(*user.ID),
 	})
-}
-
-// verifyUserCredentials loads user from database and validates the user credentials.
-//
-// It returns the user from the database and the code and error if any.
-func verifyUserCredentials(user *UserCredentials) (*db.User, int, error) {
-	// Get user with Email from the database.
-	dbUser := new(db.User)
-	if code, err := dbUser.LoadByEmail(*user.Email); err != nil {
-		return nil, code, err
-	}
-
-	if err := validateUserPassword(user, dbUser); err != nil {
-		return nil, http.StatusBadRequest, err
-	}
-
-	return dbUser, http.StatusOK, nil
-}
-
-// validateUserPassword verifies the user's password.
-func validateUserPassword(user *UserCredentials, dbUser *db.User) error {
-	salted := append([]byte(*user.Password), dbUser.Salt...)
-	if err := bcrypt.CompareHashAndPassword(dbUser.HashedPassword, salted); err != nil {
-		return ErrInvalidPass
-	}
-	return nil
 }
