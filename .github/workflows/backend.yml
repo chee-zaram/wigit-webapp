@@ -156,7 +156,7 @@ jobs:
           envs: BE_EXEC
           script: |
             if [[ ! -d webapp ]]; then
-              git clone https://github.com/chee-zaram/wigit-webapp.git
+              git clone https://github.com/wigit-ng/webapp.git
             fi
             cd webapp
             git stash && git checkout main && git pull origin --rebase
