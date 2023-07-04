@@ -40,8 +40,8 @@ const ProfilePage = () => {
     
     const email = user.email;
     const userData = { email, first_name: firstName, last_name: lastName, phone: phoneNumber, address };
-    const url = 'https://cheezaram.tech/api/v1/users/' + email;
-    const passwordUrl = 'https://cheezaram.tech/api/v1/reset_password';
+    const url = 'https://backend.wigit.com.ng/api/v1/users/' + email;
+    const passwordUrl = 'https://backend.wigit.com.ng/api/v1/reset_password';
     const router = useRouter();
     
     const handleEditProfile = () => {

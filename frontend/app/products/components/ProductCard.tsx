@@ -29,7 +29,7 @@ const ProductCard: NextPage<Product> = (props) => {
     
     const addToCart = async (product_id: string, quantity: number) => {
     // send the product id and quantity
-    const url = "https://cheezaram.tech/api/v1/cart";
+    const url = "https://backend.wigit.com.ng/api/v1/cart";
     const payload = {
         product_id,
         quantity

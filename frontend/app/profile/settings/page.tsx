@@ -35,7 +35,7 @@ const Settings = () => {
 
     email = user.email;
     headers = {'Authorization': 'Bearer ' + jwt};
-    url = 'https://cheezaram.tech/api/v1/users/' + email;
+    url = 'https://backend.wigit.com.ng/api/v1/users/' + email;
 
     const handleShowDelete = () => {
         setShowDelete(currValue => !currValue);

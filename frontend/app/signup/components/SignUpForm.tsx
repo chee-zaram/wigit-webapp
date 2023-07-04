@@ -23,7 +23,7 @@ const SignUpForm = () => {
     const [ address, setAddress ] = useState('');
     const [ phoneNumber, setPhoneNumber ] = useState('');
     const router = useRouter();
-    const url = "https://cheezaram.tech/api/v1/signup";
+    const url = "https://backend.wigit.com.ng/api/v1/signup";
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();

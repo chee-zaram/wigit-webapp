@@ -12,7 +12,7 @@ import BackButton from '@components/BackButton';
 export const metadata = { title: 'Wigit Wavy Wigs' };
 
 const Straight = async () => {
-    const straightUrl = "https://cheezaram.tech/api/v1/products/categories/straight";
+    const straightUrl = "https://backend.wigit.com.ng/api/v1/products/categories/straight";
     const straightProducts = await getProducts(straightUrl);
     
     return (

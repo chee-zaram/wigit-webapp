@@ -3,8 +3,8 @@
 import ProductCard from './components/ProductCard';
 import { Product } from './interfaces/product';
 
-const productsUrl = "https://cheezaram.tech/api/v1/products";
-const trendingUrl = "https://cheezaram.tech/api/v1/products/categories/trending";
+const productsUrl = "https://backend.wigit.com.ng/api/v1/products";
+const trendingUrl = "https://backend.wigit.com.ng/api/v1/products/categories/trending";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

@@ -10,8 +10,8 @@ import BackButton from '@components/BackButton';
 import ProfileSearchBox from '@components/ProfileSearchBox';
 
 const PendingOrders = () => {
-    const url = 'https://cheezaram.tech/api/v1/orders/status/pending';
-    const searchUrl = 'https://cheezaram.tech/api/v1/orders/';
+    const url = 'https://backend.wigit.com.ng/api/v1/orders/status/pending';
+    const searchUrl = 'https://backend.wigit.com.ng/api/v1/orders/';
     const urlObj = {url: searchUrl, status: 'pending'};
     const [ pendingOrders, setPendingOrders ] = useState<string []>([]);
         

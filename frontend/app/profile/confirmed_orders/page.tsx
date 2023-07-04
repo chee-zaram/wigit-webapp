@@ -11,8 +11,8 @@ import ProfileSearchBox from '@components/ProfileSearchBox';
 
 const ConfirmedOrders = () => {
     const [ confirmedOrders, setConfirmedOrders ] = useState<string []>([]);
-    const url = 'https://cheezaram.tech/api/v1/orders/status/paid';
-    const searchUrl = 'https://cheezaram.tech/api/v1/orders/';
+    const url = 'https://backend.wigit.com.ng/api/v1/orders/status/paid';
+    const searchUrl = 'https://backend.wigit.com.ng/api/v1/orders/';
     const urlObj = {url: searchUrl, status: 'paid'};
     
     let jwt: string | null = 'no authorized';

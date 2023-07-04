@@ -11,8 +11,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const url = 'https://cheezaram.tech/api/v1/cart';
-const orderUrl = 'https://cheezaram.tech/api/v1/orders';
+const url = 'https://backend.wigit.com.ng/api/v1/cart';
+const orderUrl = 'https://backend.wigit.com.ng/api/v1/orders';
 // export const metadata = { title: 'wigit Cart' };
 
 const Cart = () => {
