@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 	"gorm.io/gorm"
 )
 

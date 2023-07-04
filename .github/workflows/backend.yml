@@ -155,7 +155,7 @@ jobs:
           script_stop: true
           envs: BE_EXEC
           script: |
-            if [[ ! -d wigit-webapp ]]; then
+            if [[ ! -d webapp ]]; then
               git clone https://github.com/chee-zaram/wigit-webapp.git
             fi
             cd webapp

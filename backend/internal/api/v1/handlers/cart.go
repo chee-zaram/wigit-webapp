@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 )
 
 // ItemRequest binds to the json body on post request to cart.

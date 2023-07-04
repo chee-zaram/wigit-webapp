@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/middlewares"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-ng/webapp/backend/internal/api/v1/middlewares"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 

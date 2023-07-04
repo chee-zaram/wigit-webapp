@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 )
 
 // UpdateUser binds to the request body sent to update a user's information.
