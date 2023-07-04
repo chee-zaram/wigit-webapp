@@ -11,7 +11,7 @@ const OrderDetails = ({ params }: { params: {order_id: string } }) => {
    
     const router = useRouter();
     const [ order, setOrder ] = useState<any>(null);
-    const url = 'https://cheezaram.tech/api/v1/orders/' + params.order_id;
+    const url = 'https://backend.wigit.com.ng/api/v1/orders/' + params.order_id;
 
     let jwt: string | null = 'not authorized';
     if (typeof window !== 'undefined') {

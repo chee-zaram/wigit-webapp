@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ProductDetails = async ({params}: {params: {product_id: string} }) => {
-    const url = 'https://cheezaram.tech/api/v1/products/' + params.product_id;
+    const url = 'https://backend.wigit.com.ng/api/v1/products/' + params.product_id;
     let product;
     try {
         product = await getProducts(url);

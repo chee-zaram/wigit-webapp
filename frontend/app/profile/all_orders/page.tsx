@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
-const url = 'https://cheezaram.tech/api/v1/orders';
+const url = 'https://backend.wigit.com.ng/api/v1/orders';
 
 const AllOrders = async() => {
     const router = useRouter();

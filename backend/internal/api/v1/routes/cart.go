@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/handlers"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/backend/internal/api/v1/handlers"
 )
 
 // CartRoutes adds new routes to the cart endpoint for a customer.

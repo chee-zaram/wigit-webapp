@@ -10,7 +10,7 @@ import BackButton from '@components/BackButton';
 export const metadata = { title: 'Wigit Accessories' };
 
 const Accessories = async () => {
-    const accessoryUrl = "https://cheezaram.tech/api/v1/products/categories/accessory";
+    const accessoryUrl = "https://backend.wigit.com.ng/api/v1/products/categories/accessory";
     const accessoryProducts = await getProducts(accessoryUrl);
     
     return (

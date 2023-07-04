@@ -10,7 +10,7 @@ import BackButton from '@components/BackButton';
 export const metadata = { title: 'Wigit Wavy Wigs' };
 
 const Wavy = async () => {
-    const wavyUrl = "https://cheezaram.tech/api/v1/products/categories/wavy";
+    const wavyUrl = "https://backend.wigit.com.ng/api/v1/products/categories/wavy";
     const wavyProducts = await getProducts(wavyUrl);
     
     return (

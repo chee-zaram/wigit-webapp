@@ -12,7 +12,7 @@ import OrderCard from '@components/OrderCard';
 
 const AdminOrders = async () => {
 
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
+    const baseUrl = 'https://backend.wigit.com.ng/api/v1/admin';
     const searchUrl = baseUrl + '/orders/';
     const urlObj = {url: searchUrl, status: 'all'};
 

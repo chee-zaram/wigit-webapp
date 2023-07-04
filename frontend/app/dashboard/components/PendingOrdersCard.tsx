@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { NextPage } from 'next';
 
 const PendingOrdersCard: NextPage<any> = (order) => {
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
+    const baseUrl = 'https://backend.wigit.com.ng/api/v1/admin';
     const router = useRouter();
 
     let jwt: string | null = 'not authorized';

@@ -10,8 +10,8 @@ import ProductSearchBox from '@components/ProductSearchBox';
 
 
 export default async function Home() {
-  const url = "https://cheezaram.tech/api/v1/products";
-  const trendingUrl = "https://cheezaram.tech/api/v1/products/categories/trending";
+  const url = "https://backend.wigit.com.ng/api/v1/products";
+  const trendingUrl = "https://backend.wigit.com.ng/api/v1/products/categories/trending";
   const trendingProducts = await getProducts(trendingUrl); 
   const searchObj = {url, tag: 'name'};
   

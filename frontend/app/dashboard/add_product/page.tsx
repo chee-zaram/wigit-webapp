@@ -22,7 +22,7 @@ const AddProduct = () => {
     const [id, setId ] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
+    const baseUrl = 'https://backend.wigit.com.ng/api/v1/admin';
         
         let jwt: string | null = 'not authorized';
         if (typeof window !== 'undefined') {

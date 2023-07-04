@@ -2,8 +2,8 @@
 
 This is the first version of the backend API for the **WIG!T Web Application**.
 You can view the
-[Swagger docs](https://cheezaram.tech/api/v1/swagger/index.html) to see more
-details and test out the routes.
+[Swagger docs](https://backend.wigit.com.ng/api/v1/swagger/index.html) to see
+more details and test out the routes.
 
 The following are endpoints implemented and the data needed in the JSON payload
 where applicable, as well as response codes and types.

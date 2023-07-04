@@ -10,7 +10,7 @@ import BackButton from '@components/BackButton';
 import PendingSearchBox from '@app/dashboard/components/PendingSearchBox';
 
 const AdminPendingOrders = () => {
-    const baseUrl = 'https://cheezaram.tech/api/v1/admin';
+    const baseUrl = 'https://backend.wigit.com.ng/api/v1/admin';
     const urlObj = {url: baseUrl + '/orders/', status: 'pending'};
 
     let jwt: string | null = 'not authorized';

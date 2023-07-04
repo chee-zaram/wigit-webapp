@@ -22,7 +22,7 @@ const signInForm = () => {
 
     const { setJwt, setRole, isSignedIn, setIsSignedIn, user, setUser } = useSignInContext();
     const router = useRouter();
-    const url = "https://cheezaram.tech/api/v1/signin";
+    const url = "https://backend.wigit.com.ng/api/v1/signin";
 
 
     const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +78,7 @@ const signInForm = () => {
     const handleResetPassword = async () => {
         //event.preventDefault();
         try {
-            await axios.post("https://cheezaram.tech/api/v1/reset_password", { email });
+            await axios.post("https://backend.wigit.com.ng/api/v1/reset_password", { email });
             toast.success('A password reset link has been sent to your email!', {
                 position: "top-center",
                 autoClose: 3000,

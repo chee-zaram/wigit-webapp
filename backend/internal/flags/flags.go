@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/wigit-gh/webapp/backend/internal/logger"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/logger"
 )
 
 // usage prints out a usage message when wrong flags or values are passed to the program.
