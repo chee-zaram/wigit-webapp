@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/handlers"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/backend/internal/api/v1/handlers"
 )
 
 // SignUpRoutes adds the routes all routes configured for the signup endpoint.

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // ResetPasswordRequest is used to obtain the post and put data during password reset.

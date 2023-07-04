@@ -10,16 +10,16 @@ import (
 	"syscall"
 	"time"
 
+	docs "github.com/chee-zaram/wigit-webapp/backend/docs"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/middlewares"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/routes"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/config"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	docs "github.com/wigit-gh/webapp/backend/docs"
-	"github.com/wigit-gh/webapp/backend/internal/api/v1/middlewares"
-	"github.com/wigit-gh/webapp/backend/internal/api/v1/routes"
-	"github.com/wigit-gh/webapp/backend/internal/config"
-	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // SetAPIRouter configures the gin router with all necessary routes and middleware.
@@ -49,7 +49,7 @@ func SetAPIRouter(conf config.Config) *gin.Engine {
 	docs.SwaggerInfo.Title = "Wigit Web Application Backend Server"
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Description = "This is the backend server for the application."
-	docs.SwaggerInfo.Host = "cheezaram.tech"
+	docs.SwaggerInfo.Host = "backend.wigit.com.ng"
 	// docs.SwaggerInfo.Host = "localhost:8000"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"https"}

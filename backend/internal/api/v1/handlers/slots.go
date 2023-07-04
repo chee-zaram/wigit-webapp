@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
-	"github.com/wigit-gh/webapp/backend/internal/db"
 )
 
 // SlotDetails binds to the request json body during a post to /slots

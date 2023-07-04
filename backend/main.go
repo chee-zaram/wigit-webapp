@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/config"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/flags"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
-	"github.com/wigit-gh/webapp/backend/internal/api/v1"
-	"github.com/wigit-gh/webapp/backend/internal/config"
-	"github.com/wigit-gh/webapp/backend/internal/flags"
 )
 
 // main Entry point to the program

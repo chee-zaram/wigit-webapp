@@ -4,9 +4,9 @@ import (
 	"fmt"
 	// _ "time/tzdata" if we make use of select time zone we may have to uncomment this and move to main
 
+	"github.com/chee-zaram/wigit-webapp/backend/internal/config"
+	"github.com/chee-zaram/wigit-webapp/backend/internal/logger"
 	"github.com/rs/zerolog/log"
-	"github.com/wigit-gh/webapp/backend/internal/config"
-	"github.com/wigit-gh/webapp/backend/internal/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

@@ -5,10 +5,10 @@
   <h1>WIG!T Web Application</h1>
 </div>
 
-[![Workflow](https://github.com/wigit-gh/webapp/actions/workflows/backend.yml/badge.svg)][workflow]
-[![Go Report](https://goreportcard.com/badge/github.com/wigit-gh/webapp/backend)][report]
-![Last Commit](https://img.shields.io/github/last-commit/wigit-gh/webapp)
-![Contributors](https://img.shields.io/github/contributors/wigit-gh/webapp)
+[![Workflow](https://github.com/chee-zaram/wigit-webapp/actions/workflows/backend.yml/badge.svg)][workflow]
+[![Go Report](https://goreportcard.com/badge/github.com/chee-zaram/wigit-webapp/backend)][report]
+![Last Commit](https://img.shields.io/github/last-commit/chee-zaram/wigit-webapp)
+![Contributors](https://img.shields.io/github/contributors/chee-zaram/wigit-webapp)
 
 ---
 
@@ -59,7 +59,7 @@ be started by cloning this repository on the command line using the following
 command:
 
 ```sh
-git clone https://github.com/wigit-gh/webapp.git wigit-webapp
+git clone https://github.com/chee-zaram/wigit-webapp.git wigit-webapp
 ```
 
 changing working directory into the application directory:
@@ -75,7 +75,7 @@ the [Gin Web Framework](https://gin-gonic.com/). Server configurations will be
 carried out by the DevOps team in production prior to backend deployment. The
 following instructions apply to devolopment and testing. Documentation for the
 backend API is available on
-[GitHub](https://github.com/wigit-gh/webapp/blob/main/backend/internal/api/v1/README.md).
+[GitHub](https://github.com/chee-zaram/wigit-webapp/blob/main/backend/internal/api/v1/README.md).
 Documentation on the API has also been done using
 [Swagger](https://cheezaram.tech/api/v1/swagger/index.html).
 
@@ -246,5 +246,5 @@ solely intended for internal use within **WIG!T**. If you wish to use this code
 or incorporate it into your own projects, please contact support@wigit.com to
 discuss licensing and obtain permission.
 
-[workflow]: https://github.com/wigit-gh/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
-[report]: https://goreportcard.com/report/github.com/wigit-gh/webapp/backend
+[workflow]: https://github.com/chee-zaram/wigit-webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
+[report]: https://goreportcard.com/report/github.com/chee-zaram/wigit-webapp/backend
