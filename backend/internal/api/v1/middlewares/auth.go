@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 )
 
 // JWTAuthentication validates a user's signin JWT set in the `Authorization` header.

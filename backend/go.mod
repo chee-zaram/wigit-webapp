@@ -1,4 +1,4 @@
-module github.com/chee-zaram/wigit-webapp/backend
+module github.com/wigit-ng/webapp/backend
 
 go 1.20
 

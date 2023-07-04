@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 )
 
 // OrderRequest binds to the json body during a post request for a new order.

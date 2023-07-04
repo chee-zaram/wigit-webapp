@@ -10,16 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	docs "github.com/chee-zaram/wigit-webapp/backend/docs"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/middlewares"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/routes"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/config"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/db"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	docs "github.com/wigit-ng/webapp/backend/docs"
+	"github.com/wigit-ng/webapp/backend/internal/api/v1/middlewares"
+	"github.com/wigit-ng/webapp/backend/internal/api/v1/routes"
+	"github.com/wigit-ng/webapp/backend/internal/config"
+	"github.com/wigit-ng/webapp/backend/internal/db"
 )
 
 // SetAPIRouter configures the gin router with all necessary routes and middleware.

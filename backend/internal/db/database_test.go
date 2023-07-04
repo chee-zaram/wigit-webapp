@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/chee-zaram/wigit-webapp/backend/internal/config"
-	"github.com/chee-zaram/wigit-webapp/backend/internal/logger"
 	"github.com/stretchr/testify/assert"
+	"github.com/wigit-ng/webapp/backend/internal/config"
+	"github.com/wigit-ng/webapp/backend/internal/logger"
 	"gorm.io/gorm"
 )
 

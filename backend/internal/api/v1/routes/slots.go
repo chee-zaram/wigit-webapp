@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/chee-zaram/wigit-webapp/backend/internal/api/v1/handlers"
 	"github.com/gin-gonic/gin"
+	"github.com/wigit-ng/webapp/backend/internal/api/v1/handlers"
 )
 
 // SlotsRoutes adds new routes to the slots endpoint.
