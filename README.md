@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://webapp-wigit.vercel.app/"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
+  <a href="https://webapp-wigit-ng.vercel.app/"><img alt="Wigit" src="https://github.com/wigit-gh/.github/raw/main/wigit.png" width="558" /></a>
   <br/>
   <strong>Bringing wig products and services online for easy access and convenience in Ghana</strong>
   <h1>WIG!T Web Application</h1>
@@ -41,12 +41,12 @@ informed and reassured every step of the way.
 
 To learn more about the **WIG!T** brand, you can:
 
-- Visit the [landing page](https://webapp-wigit.vercel.app/).
-- Know the [founder](https://webapp-wigit.vercel.app/) and
+- Visit the [landing page](https://webapp-wigit-ng.vercel.app/).
+- Know the [founder](https://webapp-wigit-ng.vercel.app/) and
   [developers](#developers).
-- Read our [blog post](https://webapp-wigit.vercel.app/) on the launch of the
+- Read our [blog post](https://webapp-wigit-ng.vercel.app/) on the launch of the
   Web Application.
-- Try out [our application](https://webapp-wigit.vercel.app/).
+- Try out [our application](https://webapp-wigit-ng.vercel.app/).
 
 ## Starting the Application
 
@@ -141,7 +141,7 @@ Visit `http://localhost:3000` on your browser to interact with the application.
 
 The fullstack application can be interacted with from the browser by visiting
 the deployed application at
-[the webapp](https://webapp-wigit.vercel.app/contact).
+[the webapp](https://webapp-wigit-ng.vercel.app/contact).
 
 Anyone can perform the following:
 
@@ -227,7 +227,7 @@ application. Their full names, links, and contact information are listed below:
 
 Only members of the software engineering team can contribute to the source code.
 To report bugs and issues, or make feature requests, kindly send us a mail
-through our [support page](https://webapp-wigit.vercel.app/contact) or directly
+through our [support page](https://webapp-wigit-ng.vercel.app/contact) or directly
 at our support email support@wigit.com.
 
 ## Related Projects
