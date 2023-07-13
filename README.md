@@ -228,7 +228,7 @@ application. Their full names, links, and contact information are listed below:
 Only members of the software engineering team can contribute to the source code.
 To report bugs and issues, or make feature requests, kindly send us a mail
 through our [support page](https://webapp-wigit-ng.vercel.app/contact) or
-directly at our support email support@wigit.com.
+directly at our support email support@wigit.com.ng.
 
 ## Related Projects
 
@@ -243,7 +243,7 @@ Copyright (c) 2023, WIG!T. All Rights Reserved
 
 The code in this repository is not provided under an open source license. It is
 solely intended for internal use within **WIG!T**. If you wish to use this code
-or incorporate it into your own projects, please contact support@wigit.com to
+or incorporate it into your own projects, please contact support@wigit.com.ng to
 discuss licensing and obtain permission.
 
 [workflow]: https://github.com/wigit-ng/webapp/actions/workflows/backend.yml?query=branch%3Amain+event%3Apush
