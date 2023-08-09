@@ -16,7 +16,7 @@ export default async function Home() {
   const searchObj = {url, tag: 'name'};
   
   return (
-    <main className='home_page grid max-w-[100vw] mx-auto grid-rows-[repeat(14,_minmax(0,_1fr))] gap-4 md:gap-8 grid-flow-col min-h-screen'>
+    <main className='home_page grid max-w-[100vw] grid-rows-[repeat(14,_minmax(0,_1fr))] gap-y-4 md:gap-y-8 grid-flow-col min-h-screen justify-center'>
       <section className='flexbox home_header header_wrap row-span-2 home_section'>
         <div className=' flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
           <div className=''>
