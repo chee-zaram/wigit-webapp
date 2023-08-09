@@ -16,8 +16,8 @@ export default async function Home() {
   const searchObj = {url, tag: 'name'};
   
   return (
-    <main className='home_page grid max-w-[100vw] grid-rows-[repeat(14,_minmax(0,_1fr))] gap-y-4 md:gap-y-8 grid-flow-col min-h-screen justify-center'>
-      <section className='flexbox home_header header_wrap row-span-2 home_section'>
+    <main className='home_page  max-w-[100vw] min-h-screen justify-center'>
+      <section className='flexbox home_header header_wrap home_section'>
         <div className=' flex w-full flex-wrap gap-2 justify-center sm:justify-around items-center'>
           <div className=''>
             <Image
@@ -34,7 +34,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <section className='row-span-1 home_section'>
+      <section className='home_section my-4 md:my-10 lg:my-12'>
         <div className='flexbox_row gap-2 md:gap-4 p-4 md:p-8'>
           <Link href={'/straight'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>straight<i className='btn_icon mr-1'></i></button></Link>
           <Link href={'/wavy'}><button className='font-bold text-xs text-slate-700 py-1 px-4 shadow rounded-full bg-slate-300/80'>wavy<i className='btn_icon mr-1'></i></button></Link>
@@ -45,7 +45,7 @@ export default async function Home() {
         </div>
         <ProductSearchBox { ...searchObj} />
       </section>
-      <section className='flexbox max-w-[100vw] home_trending p-4 md:p-10 row-span-3 home_section  bg-accent/80' >
+      <section className='flexbox max-w-[100vw] home_trending p-4 md:p-10 home_section  bg-accent/80' >
         <div className='mb-6'>
           <h2 className='text-sky-900 uppercase text-2xl  font-extrabold'>See what's trending</h2>
         </div>
@@ -59,7 +59,7 @@ export default async function Home() {
           }
         </div>
       </section>
-      <section className='group capitalize row-[span_8_/_span_8] home_section grid grid-rows-4 gap-4 grid-cols-4' >
+      <section className='group my-4 md:my-10 lg:my-12 min-h-[200vh] md:min-h-[150vh] lg:min-h-[100vh] capitalize row-[span_8_/_span_8] home_section grid grid-rows-4 gap-4 grid-cols-4' >
           <div className='wigs outer_group group-hover:blur  group-hover:scale-90 hover:!scale-100 duration-500 hover:!blur-none row-span-1 col-span-4 md:row-span-2 md:col-span-2 home_section '>
             <div className='section_group'>
               <div className='inner_group_text'>
