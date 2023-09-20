@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -66,7 +65,7 @@ func backupLastLog() {
 	bkpLogName := fmt.Sprintf("%s_%s%s", base, timeStamp, filepath.Ext(logFilePath))
 	bkpLogPath := filepath.Join(logsDir, bkpLogName)
 
-	logFile, err := ioutil.ReadFile(logFilePath)
+	logData, err := os.ReadFile(logFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return
@@ -74,7 +73,7 @@ func backupLastLog() {
 		log.Panic().Err(err).Msg("failed to read file for backup")
 	}
 
-	if err = ioutil.WriteFile(bkpLogPath, logFile, 0644); err != nil {
+	if err = os.WriteFile(bkpLogPath, logData, 0644); err != nil {
 		log.Panic().Err(err).Msg("failed to write to backup log file")
 	}
 }
