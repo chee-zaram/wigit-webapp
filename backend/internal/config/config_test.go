@@ -60,8 +60,31 @@ func TestMain(m *testing.M) {
 	}
 	defer os.Setenv(jwtSecret, oldJWTValue)
 
-	exitCode := m.Run()
-	os.Exit(exitCode)
+	oldRedisHostVal := os.Getenv(redisHost)
+	if err := os.Setenv(redisHost, "localhost"); err != nil {
+		log.Panic().Err(err).Msg("failed to set env in config_test")
+	}
+	defer os.Setenv(redisHost, oldRedisHostVal)
+
+	oldRedisPortVal := os.Getenv(redisPort)
+	if err := os.Setenv(redisPort, "6379"); err != nil {
+		log.Panic().Err(err).Msg("failed to set env in config_test")
+	}
+	defer os.Setenv(redisPort, oldRedisPortVal)
+
+	oldRedisPassVal := os.Getenv(redisPass)
+	if err := os.Setenv(redisPass, ""); err != nil {
+		log.Panic().Err(err).Msg("failed to set env in config_test")
+	}
+	defer os.Setenv(redisPass, oldRedisPassVal)
+
+	oldRedisDBVal := os.Getenv(redisDB)
+	if err := os.Setenv(redisDB, "0"); err != nil {
+		log.Panic().Err(err).Msg("failed to set env in config_test")
+	}
+	defer os.Setenv(redisDB, oldRedisDBVal)
+
+	os.Exit(m.Run())
 }
 
 // TestNewDevConfig tests that all variables are set and returned.
