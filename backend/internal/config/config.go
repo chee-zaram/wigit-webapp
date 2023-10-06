@@ -17,6 +17,10 @@ const (
 	dbUser    = "WIGIT_DB_USER"
 	dbPass    = "WIGIT_DB_PASS"
 	jwtSecret = "WIGIT_JWT_SECRET"
+	redisHost = "WIGIT_REDIS_HOST"
+	redisPort = "WIGIT_REDIS_PORT"
+	redisPass = "WIGIT_REDIS_PASS"
+	redisDB   = "WIGIT_REDIS_DB"
 )
 
 type Config struct {
@@ -38,6 +42,14 @@ type Config struct {
 	JWTSecret string
 	// Env is the environment where the server is currently running. Either `dev` or `prod`
 	Env string
+	// RedisHost is the address of the redis server.
+	RedisHost string
+	// RedisPort is the port of the redis server.
+	RedisPort string
+	// RedisPass is the password of the redis server.
+	RedisPass string
+	// RedisDB is the number of the redis database.
+	RedisDB string
 }
 
 // NewConfig returns a configuration struct based on the current values of the
@@ -52,6 +64,10 @@ func NewConfig(env string) Config {
 		DBUser:    getVariableValue(dbUser),
 		DBPass:    getVariableValue(dbPass),
 		JWTSecret: getVariableValue(jwtSecret),
+		RedisHost: getVariableValue(redisHost),
+		RedisPort: getVariableValue(redisPort),
+		RedisPass: getVariableValue(redisPass),
+		RedisDB:   getVariableValue(redisDB),
 		Env:       env,
 	}
 }
@@ -61,7 +77,9 @@ func NewConfig(env string) Config {
 func getVariableValue(envVar string) string {
 	envVal, ok := os.LookupEnv(envVar)
 	if !ok || envVal == "" {
-		log.Panic().Str("var", envVar).Msg("environment variable not set or value is invalid")
+		if envVar != redisPass && envVar != redisDB {
+			log.Panic().Str("var", envVar).Msg("environment variable not set or value is invalid")
+		}
 	}
 
 	if strings.Contains(envVar, "PORT") {

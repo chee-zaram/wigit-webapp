@@ -83,6 +83,7 @@ Documentation on the back-end API has also been done using
 
 - Go 1.2.x
 - MySQL 8.x
+- Redis 7.x
 
 After carrying out the [initial steps](#starting-the-application) and setting up
 dependencies, navigate to the backend directory and install all required module
@@ -92,7 +93,8 @@ dependencies:
 cd backend && go mod tidy
 ```
 
-start the backend using:
+confirm the variables in [.env](/backend/.env) are suitable, then start the
+backend using:
 
 ```sh
 go run main.go
