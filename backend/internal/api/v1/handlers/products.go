@@ -1,14 +1,17 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
+	"github.com/wigit-ng/webapp/backend/internal/api/v1/middlewares"
 	"github.com/wigit-ng/webapp/backend/internal/db"
 	"gorm.io/gorm"
 )
@@ -59,6 +62,11 @@ func GetProducts(ctx *gin.Context) {
 		return
 	}
 
+	if err := tryCache(ctx, products, 10*time.Second); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": products,
 	})
@@ -90,6 +98,11 @@ func GetProductByID(ctx *gin.Context) {
 		return
 	}
 
+	if err := tryCache(ctx, product, 10*time.Second); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": product,
 	})
@@ -116,6 +129,11 @@ func GetProductsByName(ctx *gin.Context) {
 	products, err := db.GetProductsByName(name)
 	if err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, errors.New("Failed to get products by name"))
+		return
+	}
+
+	if err := tryCache(ctx, products, 10*time.Second); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -160,6 +178,11 @@ func GetProductsByCategory(ctx *gin.Context) {
 
 	products, err := db.GetProductsByCategory(category)
 	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := tryCache(ctx, products, 10*time.Second); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -338,4 +361,35 @@ func AdminPutProduct(ctx *gin.Context) {
 		"msg":  "Product updated successfully",
 		"data": product,
 	})
+}
+
+// marshalValue calls json.Marshal on the given value.
+func marshalValue(value interface{}) ([]byte, error) {
+	return json.Marshal(&value)
+}
+
+// cacheToRedis takes in key, value, and saves them to Redis for the given
+// duration. It returns any error that may occur.
+func cacheToRedis(ctx *gin.Context, key string, value []byte, expires time.Duration) error {
+	err := middlewares.RedisClient.Set(ctx, key, value, expires).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// tryCache attempts to cache the given value for the given duration to Redis.
+func tryCache(ctx *gin.Context, value interface{}, expires time.Duration) error {
+	marshalledValue, err := marshalValue(value)
+	if err != nil {
+		return err
+	}
+
+	err = cacheToRedis(ctx, ctx.Request.URL.String(), marshalledValue, expires)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
