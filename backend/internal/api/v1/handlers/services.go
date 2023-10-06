@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -62,6 +63,11 @@ func GetServices(ctx *gin.Context) {
 		return
 	}
 
+	if err := tryCache(ctx, services, 10*time.Second); err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": services,
 	})
@@ -89,6 +95,11 @@ func GetServiceByID(ctx *gin.Context) {
 		AbortCtx(ctx, http.StatusBadRequest, ErrInvalidServiceID)
 		return
 	} else if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := tryCache(ctx, service, 10*time.Second); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
@@ -300,6 +311,11 @@ func GetTrendingServices(ctx *gin.Context) {
 
 	services, err := db.GetTrendingServices(bookings)
 	if err != nil {
+		AbortCtx(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := tryCache(ctx, services, 10*time.Second); err != nil {
 		AbortCtx(ctx, http.StatusInternalServerError, err)
 		return
 	}
