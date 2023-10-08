@@ -47,8 +47,15 @@ func NewRedis(cnf config.Config) error {
 // the request chain.
 func Redis(ctx *gin.Context) {
 	content, err := RedisClient.Get(ctx, ctx.Request.URL.String()).Bytes()
-	if err != nil {
+	if err == redis.Nil {
 		ctx.Next()
+		return
+	}
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
