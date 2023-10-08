@@ -162,17 +162,15 @@ func GetProductsByCategory(ctx *gin.Context) {
 	}
 
 	if category == "trending" {
-		trendingItems, err := db.TrendingItems()
+		products, err := getTrendingProducts(ctx)
 		if err != nil {
 			AbortCtx(ctx, http.StatusInternalServerError, err)
-			return
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{
+				"data": products,
+			})
 		}
 
-		if products, err := db.TrendingProducts(trendingItems); err != nil {
-			AbortCtx(ctx, http.StatusInternalServerError, err)
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"data": products})
-		}
 		return
 	}
 
@@ -392,4 +390,22 @@ func tryCache(ctx *gin.Context, value interface{}, expires time.Duration) error 
 	}
 
 	return nil
+}
+
+func getTrendingProducts(ctx *gin.Context) ([]db.Product, error) {
+	trendingItems, err := db.TrendingItems()
+	if err != nil {
+		return nil, err
+	}
+
+	products, err := db.TrendingProducts(trendingItems)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tryCache(ctx, products, 10*time.Second); err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
