@@ -12,6 +12,7 @@ debug
 *.test
 *.pem
 logs/
+*.env
 
 ################# BACKEND #########################
 /backend/vendor
