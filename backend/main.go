@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -23,17 +24,20 @@ var (
 
 	// HTTPRouter runs the backend server.
 	HTTPRouter *http.Server
+
+	// logOutputFile is the file pointer to the log file.
+	logOutputFile *os.File
 )
 
 func init() {
-	environment, logOutputFile := flags.Parse()
+	var environment string
+	environment, logOutputFile = flags.Parse()
 
 	switch environment {
 	case "prod":
 		if logOutputFile == nil {
 			log.Panic().Msg("failed to create log file for production environment")
 		}
-		defer logOutputFile.Close()
 	default:
 		if err := godotenv.Load(); err != nil {
 			log.Panic().Err(err).Msg("failed to load .env file in development environment")
@@ -56,4 +60,7 @@ func init() {
 //	@contact.email	ecokeke21@gmail.com
 func main() {
 	server.ListenAndServe(HTTPRouter)
+	if logOutputFile != nil {
+		defer logOutputFile.Close()
+	}
 }
