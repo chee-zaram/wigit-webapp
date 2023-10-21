@@ -81,28 +81,135 @@ Documentation on the back-end API has also been done using
 
 ##### Dependencies
 
-- Go 1.2.x
-- MySQL 8.x
-- Redis 7.x
+You only need [docker](https://docs.docker.com/engine/install/) installed.
 
-After carrying out the [initial steps](#starting-the-application) and setting up
-dependencies, navigate to the backend directory and install all required module
-dependencies:
+Navigate to the [backend](/backend) directory from the root of the project:
 
 ```sh
-cd backend && go mod tidy
+cd backend
 ```
 
-confirm the variables in [.env](/backend/.env) are suitable, then start the
-backend using:
+Run the docker compose command:
 
 ```sh
-go run main.go
+docker compose up --build -d
 ```
 
-This will start the backend server to listen on all hosts on port `8000`.
-**Gin** will also start in debug mode which should make all routes visible on
-start-up.
+to create three required services, and start three required containers namely:
+
+- wigit
+- wigit-mysql
+- wigit-redis
+
+Run `docker compose ps` to see the containers running.
+
+The `wigit` container runs the main app, and listens for connections on port
+`8080`.
+
+> NB: You can edit this [sample.env](/backend/sample.env) file based on your
+> preferred backend configuration, and then rename it to `.env` to allow docker
+> compose use it instead of the defaults, if you wish.
+
+You can now send requests to the backend API on port `8080`. You can use `cURL`,
+E.g but I like to use [xh](https://github.com/ducaale/xh). Cleaner output and
+easier syntax.
+
+xh:
+
+```sh
+xh :8080/api/v1/products
+```
+
+cURL:
+
+```sh
+curl http://localhost:8080/api/v1/products
+```
+
+You will need to create a regular user account:
+
+xh:
+
+```sh
+xh post :8080/api/v1/signup email='yours@email.com' password='password' \
+repeat_password='password' first_name='John' last_name='Doe' \
+address='No 10. Nothing Rd' phone=07038639012
+```
+
+cURL:
+
+```sh
+curl -X POST http://localhost:8080/api/v1/signup \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "yours@email.com",
+  "password": "password",
+  "repeat_password": "password",
+  "first_name": "John",
+  "last_name": "Doe",
+  "address": "No 10. Nothing Rd",
+  "phone": "07038639012"
+}'
+```
+
+Then, update the role from **customer** to **admin** to enable you manage
+products and services by starting up a shell in the `wigit-mysql` container:
+
+```sh
+docker exec -it wigit-mysql bash
+```
+
+Go into the database:
+
+```sh
+mysql
+```
+
+Update the newly created user role to `admin`:
+
+```sh
+UPDATE wigit.users SET role = 'admin' WHERE email = 'your_user_email'; exit;
+```
+
+Exit the `wigit-mysql` terminal by typing `exit`.
+
+The above actions now gives the user permission to perform admin duties, like
+managing products and services.
+
+JWT is used for authentication. A sample request to add a new product looks
+like:
+
+xh:
+
+```sh
+xh post :8080/api/v1/admin/products Authorization:'Bearer token_returned_on_signup' \
+name='Ghanaian wig' description='A custom made wig for ghana' stock:=10 price:=300 \
+image_url='https://images.pexels.com/photos/973406/pexels-photo-973406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' \
+category='straight'
+```
+
+cURL:
+
+```sh
+curl -X POST http://localhost:8080/api/v1/admin/products \
+-H "Authorization: Bearer token_returned_on_signup" \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Ghanaian wig",
+  "description": "A custom made wig for Ghana",
+  "stock": 10,
+  "price": 300,
+  "image_url": "https://images.pexels.com/photos/973406/pexels-photo-973406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  "category": "straight"
+}'
+```
+
+The docker environment is setup to persist the data between runs, or even if a
+new container is spun, as volumes are mounted in the `wigit-docker-data`
+directory for the database and logs.
+
+Visit [the docs](/backend/internal/api/v1/README.md) to see more available
+endpoints and required fields.
 
 ### [Frontend](/frontend)
 
