@@ -1,0 +1,68 @@
+version: '3'
+name: wigit-backend
+services:
+  wigit:
+    build:
+      context: .
+    container_name: wigit
+    networks:
+      - mynet
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - WIGIT_GIN_HOST=${WIGIT_GIN_HOST:-0.0.0.0}
+      - WIGIT_GIN_PORT=${WIGIT_GIN_PORT:-8080}
+      - WIGIT_DB_HOST=mysql
+      - WIGIT_DB_PORT=${WIGIT_DB_PORT:-3306}
+      - WIGIT_DB_NAME=${WIGIT_DB_NAME:-wigit}
+      - WIGIT_DB_USER=${WIGIT_DB_USER:-wigit-dev}
+      - WIGIT_DB_PASS=${WIGIT_DB_PASS:-password}
+      - WIGIT_JWT_SECRET=${WIGIT_JWT_SECRET:-secret}
+      - WIGIT_REDIS_HOST=redis
+      - WIGIT_REDIS_PORT=${WIGIT_REDIS_PORT:-6379}
+      - WIGIT_REDIS_PASS=${WIGIT_REDIS_PASS:-}
+      - WIGIT_REDIS_DB=${WIGIT_REDIS_DB:-0}
+      - WIGIT_ORIGIN_TOKEN=${WIGIT_ORIGIN_TOKEN:-secret}
+
+  mysql:
+    image: mysql:8.0
+    container_name: wigit-mysql
+    networks:
+      - mynet
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: ${WIGIT_DB_NAME:-wigit}
+      MYSQL_USER: ${WIGIT_DB_USER:-wigit-dev}
+      MYSQL_PASSWORD: ${WIGIT_DB_PASS:-password}
+    volumes:
+      - ${PWD}/wigit-docker-data/data:/var/lib/mysql
+      - ${PWD}/wigit-docker-data/logs:/go/src/logs
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: wigit-redis
+    networks:
+      - mynet
+    ports:
+      - "6379:6379"
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
+networks:
+  mynet:
+    driver: bridge

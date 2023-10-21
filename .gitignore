@@ -18,6 +18,7 @@ logs/
 /backend/vendor
 /backend/dist
 /backend/local-archive
+/backend/wigit-docker-data/
 coverage.txt
 
 ################# FRONTEND #########################
