@@ -106,9 +106,10 @@ Run `docker compose ps` to see the containers running.
 The `wigit` container runs the main app, and listens for connections on port
 `8080`.
 
-> NB: You can edit this [sample.env](/backend/sample.env) file based on your
-> preferred backend configuration, and then rename it to `.env` to allow docker
-> compose use it instead of the defaults, if you wish.
+> NB: You can edit this
+> [sample.env](https://github/wigit-ng/webapp/backend/sample.env) file based on
+> your preferred backend configuration, and then rename it to `.env` to allow
+> docker compose use it instead of the defaults, if you wish.
 
 You can now send requests to the backend API on port `8080`. You can use `cURL`,
 E.g but I like to use [xh](https://github.com/ducaale/xh). Cleaner output and
@@ -168,7 +169,7 @@ mysql
 Update the newly created user role to `admin`:
 
 ```sh
-UPDATE wigit.users SET role = 'admin' WHERE email = 'your_user_email'; exit;
+UPDATE wigit.users SET role = 'admin' WHERE email = 'yours@email.com'; exit;
 ```
 
 Exit the `wigit-mysql` terminal by typing `exit`.
