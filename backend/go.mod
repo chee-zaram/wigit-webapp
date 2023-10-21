@@ -3,6 +3,7 @@ module github.com/wigit-ng/webapp/backend
 go 1.20
 
 require (
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cristalhq/jwt/v5 v5.1.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
