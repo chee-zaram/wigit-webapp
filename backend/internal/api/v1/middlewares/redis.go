@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/wigit-ng/webapp/backend/internal/config"
@@ -25,20 +26,24 @@ func NewRedis(cnf config.Config) error {
 		return err
 	}
 
-	client := redis.NewClient(
-		&redis.Options{
-			Addr:     fmt.Sprintf("%s:%s", cnf.RedisHost, cnf.RedisPort),
-			Password: cnf.RedisPass,
-			DB:       db,
-		},
-	)
+	operation := func() error {
+		client := redis.NewClient(
+			&redis.Options{
+				Addr:     fmt.Sprintf("%s:%s", cnf.RedisHost, cnf.RedisPort),
+				Password: cnf.RedisPass,
+				DB:       db,
+			},
+		)
 
-	if client == nil {
-		return fmt.Errorf("failed to initialize redis client")
+		if client == nil {
+			return fmt.Errorf("failed to initialize redis client")
+		}
+
+		RedisClient = client
+		return nil
 	}
 
-	RedisClient = client
-	return nil
+	return backoff.Retry(operation, backoff.NewExponentialBackOff())
 }
 
 // Redis is a Gin middleware that checks if the requested URL is
