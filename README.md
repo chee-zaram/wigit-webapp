@@ -183,7 +183,7 @@ like:
 xh:
 
 ```sh
-xh post :8080/api/v1/admin/products Authorization:'Bearer token_returned_on_signup' \
+xh post :8080/api/v1/admin/products -A bearer -a token_returned_on_signup \
 name='Ghanaian wig' description='A custom made wig for ghana' stock:=10 price:=300 \
 image_url='https://images.pexels.com/photos/973406/pexels-photo-973406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' \
 category='straight'
