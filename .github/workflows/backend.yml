@@ -25,7 +25,7 @@ jobs:
       fail-fast: true
       matrix:
         go: ['1.20.x']
-        os: ['ubuntu-20.04']
+        os: ['nscloud-ubuntu-22.04-amd64-4x16']
     runs-on: ${{ matrix.os }}
 
     services:
@@ -71,7 +71,7 @@ jobs:
       fail-fast: true
       matrix:
         go: ['1.20.x']
-        os: ['ubuntu-20.04']
+        os: ['nscloud-ubuntu-22.04-amd64-4x16']
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -115,7 +115,7 @@ jobs:
       fail-fast: true
       matrix:
         go: ['1.20.x']
-        os: ['ubuntu-20.04']
+        os: ['nscloud-ubuntu-22.04-amd64-4x16']
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -136,7 +136,7 @@ jobs:
     name: Deploy Backend
     needs: [check, build, test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-20.04
+    runs-on: nscloud-ubuntu-22.04-amd64-4x16
     strategy:
       fail-fast: true
 
