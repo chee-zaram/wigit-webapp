@@ -98,8 +98,11 @@ func SetAPIRouter(conf config.Config) *gin.Engine {
 // This is to implement graceful shutdown.
 func SetWebRouter(router *gin.Engine, conf config.Config) *http.Server {
 	return &http.Server{
-		Handler: router,
-		Addr:    fmt.Sprintf("%s:%s", conf.GinHost, conf.GinPort),
+		Handler:      router,
+		Addr:         fmt.Sprintf("%s:%s", conf.GinHost, conf.GinPort),
+		IdleTimeout:  1 * time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 }
 
